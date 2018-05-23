@@ -72,29 +72,49 @@ maaslin2_heatmap <- function(maaslin_output, title = "", cell_value = "Q.value",
   return(p)
 }
 
-maaslin2_scatter <- function(input_df, output_df, write_to_file = F, output_path='./'){ 
+maaslin2_association_plots <- function(input_df, output_df, write_to_file = F, output_path='./'){ 
   #MaAslin2 scatter plot function and theme
   
-  input_df = as.data.frame(t(rbind(bugs, metabolites)))
+  # read the masslin2 input
+  input_df = read.table('~/Documents/input.txt', header = TRUE,
+                        row.names = 1,   sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  
+  # read MaAsLin output
+  output_df <- read.table( maaslin_output,
+                    header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
+  # a list to store scatter plot of all associations 
+  scatter_plot <- vector(mode="list", length=dim(output_df)[1])
   for (i in (1:dim(output_df)[1])){
-    scatter_plot[i] <- ggplot(data=bugs_metabolites,aes(output_df[i, 'variable'], output_df[i, 'feature'])) +
+    x <- as.character(output_df[i, 'Variable'])
+    y <- as.character(output_df[i, 'Feature'])
+    
+    # if Variable is continuous generate a Jitter plot with boxplot
+    scatter_plot[[i]] <- ggplot(data=input_df,aes(x, y)) +
       geom_point( aes(), fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
-      scale_x_continuous(limits=c(min(input_df[output_df[i, 'variable']]), max(input_df[output_df[i, 'variable']])))+
-      scale_y_continuous(limits=c(min(input_df[output_df[i, 'feature']]), max(input_df[output_df[i, 'feature']])))+
+      scale_x_continuous(limits=c(min(input_df[x]), max(input_df[x])))+
+      scale_y_continuous(limits=c(min(input_df[y]), max(input_df[y])))+
       stat_smooth(method = "glm", color ='blue')+ 
       guides(alpha='none')+labs("")+
-      xlab(output_df[i, 'variable']) +  ylab(output_df[i, 'feature']) + nature_theme+
-      annotate(geom="text", x=(max(input_df[output_df[i, 'variable']],na.rm = T) - 
-                              .5*(max(input_df[output_df[i, 'variable']], na.rm = T) - 
-                              min(input_df[output_df[i, 'variable']], na.rm = T))),
-               y=max(input_df[output_df[i, 'feature']], na.rm = T) -0.012, 
-               label=paste("Spearman correlation: ", str(output_df[i, 'correllation']),"q-value = ",
-                           str(output_df[i, 'fdr'])), color="black", size=rel(2), fontface="italic")+
-      guides(legend.position=NULL)+
-      theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-            panel.background = element_blank(), axis.line = element_line(colour = "black"))
+      xlab(x) +  ylab(y) 
+    
+    # if Variable is categorical generate a Jitter plot with boxplot
+    scatter_plot[[i]] <- ggplot(data=input_df, aes(x, y)) + 
+      geom_boxplot(notch = TRUE) +
+      geom_jitter(position = position_jitter(0.5), aes(colour = x))
+    
+    # fomrat the figure to defual nature format and add some statistics (Q.value and Coefficient) to the plot 
+    scatter_plot[[i]] <- scatter_plot[[i]]+ nature_theme+
+                         annotate(geom="text", x=(max(input_df[x],na.rm = T) - 
+                                                .5*(max(input_df[y], na.rm = T) - 
+                                                min(input_df[x], na.rm = T))),
+                                              y=max(input_df[, y], na.rm = T) -0.012, 
+                                 label=paste("Spearman correlation: ", str(output_df[i, 'Coefficient']),"q-value = ",
+                                 str(output_df[i, 'Q.value'])), color="black", size=rel(2), fontface="italic")+
+                         guides(legend.position=NULL)+
+                         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                               panel.background = element_blank(), axis.line = element_line(colour = "black"))
     if (write_to_file)
-      ggsave(filename=paste(output_path,'/' + str(i), '.pdf'), plot=scatter_plot[i],
+      ggsave(filename=paste(output_path,'/', i, '.pdf', sep = ''), plot=scatter_plot[[i]],
              width = 6, height = 6, units = "cm", dpi = 300)
   }
   return (scatter_plot)
