@@ -1,4 +1,4 @@
-snippet header
+#snippet header
 # Author: Gholamali (Ali) rahnavard
 # Email: gholamali.rahnavard@gmail.com
 # This script includes functions for visualzing overall output of MaAsLin2 and
@@ -77,51 +77,69 @@ maaslin2_heatmap <- function(maaslin_output, title = "", cell_value = "Q.value",
   return(p)
 }
 
-maaslin2_association_plots <- function(input_df, output_df, write_to_file = F, output_path='./'){ 
+maaslin2_association_plots <- function(metadata_path, features_path,
+                                       output_path, write_to_file = F, write_to='./')
+  { 
   #MaAslin2 scatter plot function and theme
   
   # read the masslin2 input
-  input_df = read.table(input_df, header = TRUE,
+  features <- read.table(features_path, header = TRUE,
                         row.names = 1,   sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  metadata <- read.table(metadata_path, header = TRUE,
+                       row.names = 1,   sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  # combine the data and metadata to one datframe using common rows
+  common_rows <- intersect(rownames(features), rownames(metadata))
+  input_df <- cbind(features[common_rows,], metadata[common_rows,])
   
   # read MaAsLin output
-  output_df <- read.table( output_df,
-                    header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
-  # a list to store scatter plot of all associations 
-  scatter_plot <- vector(mode="list", length=dim(output_df)[1])
-  for (i in (1:dim(output_df)[1])){
-    i <- 1
+  output_df <- read.table( output_path, header = TRUE,
+                           row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  
+  # a list to store association(scatter or boxplot) plot of all associations 
+  association_plot <- vector(mode="list", length=dim(output_df)[1])
+  
+  for (i in 1:dim(output_df)[1]){
+    #print(i)
+    #i <- 2
     x <- as.character(output_df[i, 'Variable'])
     y <- as.character(output_df[i, 'Feature'])
     
-    # if Variable is continuous generate a scatter plot 
-    scatter_plot[[i]] <- ggplot(data=input_df,aes(as.double(x), as.double(y))) +
-      geom_point( aes(), fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
-      scale_x_continuous(limits=c(min(input_df[x]), max(input_df[x])))+
-      scale_y_continuous(limits=c(min(input_df[y]), max(input_df[y])))+
-      stat_smooth(method = "glm", color ='blue')+ 
-      guides(alpha='none')+labs("")+
-      xlab(x) +  ylab(y) 
-    
-    # if Variable is categorical generate a Jitter plot with boxplot
-    scatter_plot[[i]] <- ggplot(data=input_df, aes(x, y)) + 
-      geom_boxplot(notch = TRUE) +
-      geom_jitter(position = position_jitter(0.5), aes(colour = x))
-    
-    # fomrat the figure to defual nature format and add some statistics (Q.value and Coefficient) to the plot 
-    scatter_plot[[i]] <- scatter_plot[[i]]+ nature_theme+
-                         annotate(geom="text", x=(max(input_df[x],na.rm = T) - 
-                                                .5*(max(input_df[y], na.rm = T) - 
-                                                min(input_df[x], na.rm = T))),
-                                              y=max(input_df[, y], na.rm = T) -0.012, 
-                                 label=paste("Spearman correlation: ", str(output_df[i, 'Coefficient']),"q-value = ",
-                                 str(output_df[i, 'Q.value'])), color="black", size=rel(2), fontface="italic")+
-                         guides(legend.position=NULL)+
-                         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                               panel.background = element_blank(), axis.line = element_line(colour = "black"))
-    if (write_to_file)
-      ggsave(filename=paste(output_path,'/', i, '.pdf', sep = ''), plot=scatter_plot[[i]],
-             width = 6, height = 6, units = "cm", dpi = 300)
+    # if Variable is continuous generate a scatter plo
+    temp_plot <- NULL
+    if (all(sapply(input_df[x], is.numeric))){
+      temp_plot <- ggplot(data=input_df, aes(input_df[x], input_df[y])) +
+        geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
+        scale_x_continuous(limits=c(min(input_df[x]), max(input_df[x])))+
+        scale_y_continuous(limits=c(min(input_df[y]), max(input_df[y])))+
+        stat_smooth(method = "glm", color ='blue')+ 
+        guides(alpha='none')+labs("")+
+        xlab(x) +  ylab(y) + nature_theme
+    }else{
+      # if Variable is categorical generate a Jitter plot with boxplot
+      ### check if the variable is categorical
+      temp_plot <- ggplot(data=input_df, aes(input_df[x], input_df[y])) + 
+        geom_boxplot(notch = TRUE) +
+        geom_jitter(position = position_jitter(0.5), aes(colour = x))
+      
+      # fomrat the figure to defualt nature format and add some 
+      # statistics (Q.value and Coefficient) to the plot 
+      temp_plot <- temp_plot + nature_theme +
+                           annotate(geom="text", x=(max(input_df[x],na.rm = T) - 
+                                                  .5*(max(input_df[y], na.rm = T) - 
+                                                  min(input_df[x], na.rm = T))),
+                                                y=max(input_df[, y], na.rm = T) -0.012, 
+                                   label=paste("Spearman correlation: ", str(output_df[i, 'Coefficient']),"q-value = ",
+                                   str(output_df[i, 'Q.value'])), color="black", size=rel(2), fontface="italic")+
+                           guides(legend.position=NULL)+
+                           theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                                 panel.background = element_blank(), axis.line = element_line(colour = "black"))
+    }
+    association_plot[[i]] <- temp_plot 
+      if (write_to_file){
+        ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot,
+               width = 6.5, height = 5, units = "cm", dpi = 300)
+        #dev.off()
+      }
   }
-  return (scatter_plot)
+  return (association_plot)
 }
