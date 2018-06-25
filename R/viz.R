@@ -89,45 +89,46 @@ maaslin2_association_plots <- function(metadata_path, features_path,
                        row.names = 1,   sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   # combine the data and metadata to one datframe using common rows
   common_rows <- intersect(rownames(features), rownames(metadata))
-  input_df <- cbind(features[common_rows,], metadata[common_rows,])
+  input_df_all <- cbind(features[common_rows,], metadata[common_rows,])
   
   # read MaAsLin output
-  output_df <- read.table( output_path, header = TRUE,
+  output_df_all <- read.table( output_path, header = TRUE,
                            row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   
   # a list to store association(scatter or boxplot) plot of all associations 
-  association_plot <- vector(mode="list", length=dim(output_df)[1])
+  association_plot <- vector(mode="list", length=dim(output_df_all)[1])
   
-  for (i in 1:dim(output_df)[1]){
+  for (i in 1:dim(output_df_all)[1]){
     #print(i)
-    #i <- 2
-    x <- as.character(output_df[i, 'Variable'])
-    y <- as.character(output_df[i, 'Feature'])
-    
+    #i <- 1
+    x_label <- as.character(output_df_all[i, 'Variable'])
+    y_label <- as.character(output_df_all[i, 'Feature'])
+    input_df <- input_df_all[c(x_label,y_label)]
+    colnames(input_df) <- c("x", "y")
     # if Variable is continuous generate a scatter plo
     temp_plot <- NULL
-    if (all(sapply(input_df[x], is.numeric))){
-      temp_plot <- ggplot(data=input_df, aes(input_df[x], input_df[y])) +
+    if (is.numeric(input_df[1,'x'])){
+      temp_plot <- ggplot(data=input_df, aes(x, y)) +
         geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
-        scale_x_continuous(limits=c(min(input_df[x]), max(input_df[x])))+
-        scale_y_continuous(limits=c(min(input_df[y]), max(input_df[y])))+
+        scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
+        scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
         stat_smooth(method = "glm", color ='blue')+ 
         guides(alpha='none')+labs("")+
-        xlab(x) +  ylab(y) + nature_theme
+        xlab(x_label) +  ylab(y_label) + nature_theme
     }else{
       # if Variable is categorical generate a Jitter plot with boxplot
       ### check if the variable is categorical
-      temp_plot <- ggplot(data=input_df, aes(input_df[x], input_df[y])) + 
+      temp_plot <- ggplot(data=input_df, aes(x, y)) + 
         geom_boxplot(notch = TRUE) +
         geom_jitter(position = position_jitter(0.5), aes(colour = x))
       
       # fomrat the figure to defualt nature format and add some 
       # statistics (Q.value and Coefficient) to the plot 
       temp_plot <- temp_plot + nature_theme +
-                           annotate(geom="text", x=(max(input_df[x],na.rm = T) - 
-                                                  .5*(max(input_df[y], na.rm = T) - 
-                                                  min(input_df[x], na.rm = T))),
-                                                y=max(input_df[, y], na.rm = T) -0.012, 
+                           annotate(geom="text", x=(max(input_df['x'],na.rm = T) - 
+                                                  .5*(max(input_df['y'], na.rm = T) - 
+                                                  min(input_df['x'], na.rm = T))),
+                                                y=max(input_df['y'], na.rm = T) -0.012, 
                                    label=paste("Spearman correlation: ", str(output_df[i, 'Coefficient']),"q-value = ",
                                    str(output_df[i, 'Q.value'])), color="black", size=rel(2), fontface="italic")+
                            guides(legend.position=NULL)+
