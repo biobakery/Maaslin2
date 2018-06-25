@@ -11,18 +11,22 @@ library(ggplot2)
 library(pheatmap)
 
 # MaAsLin2 theme based on Nutur journal rquiremnts
-nature_theme <- theme(axis.text.x = element_text(size = 8, vjust = 1),
-                      axis.text.y = element_text(size = 8, hjust = 1),
-                      axis.title=element_text(size = 10  ),
-                      plot.title =element_text(size=7, face='bold'),
-                      legend.title=element_text(size=6, face='bold'),
-                      legend.text=element_text(size=6),
-                      axis.line = element_line(colour = 'black', size = .25),
-                      axis.line.x = element_line(colour = 'black', size = .25), axis.line.y = element_line(colour = 'black', size = .25)) 
+nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 1),
+                                   axis.text.y = element_text(size = 8, hjust = 1),
+                                   axis.title=element_text(size = 10  ),
+                                   plot.title =element_text(size=7, face='bold'),
+                                   legend.title=element_text(size=6, face='bold'),
+                                   legend.text=element_text(size=6),
+                                   axis.line = element_line(colour = 'black', size = .25),
+                                   axis.line.x = element_line(colour = 'black', size = .25), 
+                                   axis.line.y = element_line(colour = 'black', size = .25),
+                                   panel.border = element_blank(), 
+                                   panel.grid.major = element_blank(),
+                                   panel.grid.minor = element_blank())
 
 # MaAsLin2 heatmap function for overall view of associations 
 maaslin2_heatmap <- function(maaslin_output, title = "", cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
-                            border_color = "grey93", color = colorRampPalette(c("blue","grey90", "red"))(50)) {#)
+                            border_color = "grey93", format =  NA, color = colorRampPalette(c("blue","grey90", "red"))(50)) {#)
   # read MaAsLin output
   df <- read.table( maaslin_output,
                     header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
@@ -30,6 +34,7 @@ maaslin2_heatmap <- function(maaslin_output, title = "", cell_value = "Q.value",
   data <- df$Feature
   value <- NA
   # values to use for coloring the heatmap
+  # and set the colorbar boundaries
   if (cell_value == "P.value"){
     value <- -log(df$P.value)*sign(df$Coefficient)
     value <- pmax(-2, pmin(2, value))
@@ -76,20 +81,21 @@ maaslin2_association_plots <- function(input_df, output_df, write_to_file = F, o
   #MaAslin2 scatter plot function and theme
   
   # read the masslin2 input
-  input_df = read.table('~/Documents/input.txt', header = TRUE,
+  input_df = read.table(input_df, header = TRUE,
                         row.names = 1,   sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   
   # read MaAsLin output
-  output_df <- read.table( maaslin_output,
+  output_df <- read.table( output_df,
                     header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
   # a list to store scatter plot of all associations 
   scatter_plot <- vector(mode="list", length=dim(output_df)[1])
   for (i in (1:dim(output_df)[1])){
+    i <- 1
     x <- as.character(output_df[i, 'Variable'])
     y <- as.character(output_df[i, 'Feature'])
     
-    # if Variable is continuous generate a Jitter plot with boxplot
-    scatter_plot[[i]] <- ggplot(data=input_df,aes(x, y)) +
+    # if Variable is continuous generate a scatter plot 
+    scatter_plot[[i]] <- ggplot(data=input_df,aes(as.double(x), as.double(y))) +
       geom_point( aes(), fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
       scale_x_continuous(limits=c(min(input_df[x]), max(input_df[x])))+
       scale_y_continuous(limits=c(min(input_df[y]), max(input_df[y])))+
