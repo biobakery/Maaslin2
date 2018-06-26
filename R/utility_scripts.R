@@ -2,7 +2,41 @@
 
 if(! require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org') 
 suppressPackageStartupMessages(library("pacman"))
-pacman::p_load('vegan', 'chemometrics', 'car')
+pacman::p_load('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')
+
+##################
+## Normalization #
+##################
+
+normalizeFeatures = function(features, normalization) {
+  
+  if (normalization=='TSS')
+  {
+    features<-TSSnorm(features)
+  }
+  
+  if (normalization=='CLR')
+  {
+    features<-CLRnorm(features)
+  }
+  
+  if (normalization=='CSS')
+  {
+    features<-CSSnorm(features)
+  }
+  
+  if (normalization=='TMM')
+  {
+    features<-TMMnorm(features)
+  }
+  
+  if (normalization=='NONE')
+  {
+    features<-features
+  }
+  
+  return(features)
+}
 
 ######################
 ## TSS Normalization #
@@ -53,6 +87,62 @@ CLRnorm = function(features) {
   
   # Return
   return(features_CLR)
+}
+
+######################
+## CSS Normalization #
+######################
+
+# Apply CSS Normalization To A Dataset
+
+CSSnorm = function(physeq) {
+  
+  # Convert to Matrix from Data Frame
+  features_norm = as.matrix(features)
+  dd<-colnames(features_norm)
+  
+  # CSS Normalizing the Data
+  # Create the metagenomeSeq object
+  MGS = newMRexperiment(t(features_norm), featureData=NULL, libSize=NULL, normFactors=NULL)
+  # Trigger metagenomeSeq to calculate its Cumulative Sum scaling factor.
+  MGS = cumNorm(MGS, p=cumNormStat(MGS))
+  # Save the normalized data as data.frame
+  features_CSS = as.data.frame(t(MRcounts(MGS, norm=TRUE, log=TRUE))) 
+  
+  # Rename the True Positive Features - Same Format as Before
+  colnames(features_CSS) <- dd;
+  
+  # Return as list
+  return(features_CSS)
+}
+
+######################
+## TMM Normalization #
+######################
+
+# Apply TMM Normalization To A Dataset
+
+TMMnorm = function(physeq) {
+  
+  # Convert to Matrix from Data Frame
+  features_norm = as.matrix(features)
+  dd<-colnames(features_norm)
+
+  # TMM Normalizing the Data
+  X<-t(features_norm);
+  libSize = edgeR::calcNormFactors(X,method="TMM") #Calculate normaization factors
+  eff.lib.size = colSums(X)*libSize;
+  ref.lib.size = mean(eff.lib.size); #Use the mean of the effective library sizes as a reference library size 
+  X.output = sweep(X,MARGIN=2,eff.lib.size,"/")*ref.lib.size; #Normalized read counts
+  
+  # Convert back to data frame
+  features_TMM<-as.data.frame(t(X.output))
+  
+  # Rename the True Positive Features - Same Format as Before
+  colnames(features_TMM) <- dd;
+  
+  # Return as list
+  return(features_TMM)
 }
 
 #######################################

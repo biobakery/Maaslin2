@@ -2,11 +2,11 @@
 
 if(! require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org') 
 suppressPackageStartupMessages(library("pacman"))
-pacman::p_load('pbapply', 'car', 'nlme', 'dplyr')
+pacman::p_load('car', 'dplyr', 'pbapply', 'cplm')
 
-# Fit Linear Model To A Dataset
+# Fit Zero-inflated Compound Poisson Linear Model (ZICP) To A Dataset
 
-fit.LM <- function(features, 
+fit.ZICP <- function(features, 
                    metadata, 
                    normalization ='TSS', 
                    transformation ='LOG', 
@@ -35,15 +35,15 @@ fit.LM <- function(features,
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
     formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
     fit <- tryCatch({
-          fit1 <- glm(formula, data = dat_sub, family='gaussian')
-        }, error=function(err){
-          fit1 <- try({glm(formula, data = dat_sub, family='gaussian')}) 
-          return(fit1)
-        })
+      fit1 <- cplm::zcpglm(formula, data = dat_sub)
+    }, error=function(err){
+      fit1 <- try({cplm::zcpglm(formula, data = dat_sub)}) 
+      return(fit1)
+    })
     
     # Gather Output
     if (class(fit) != "try-error"){
-          para<-as.data.frame(summary(fit)$coefficients)[-1,-c(2:3)]
+          para<-as.data.frame(summary(fit)$coefficients$tweedie)[-1,-c(2:3)]
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
