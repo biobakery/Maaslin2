@@ -1,0 +1,13 @@
+Package: Maaslin2
+Title: Maaslin2
+Version: 0.1
+Authors@R: as.person(c(
+    "Himel Mallick <hmallick@broadinstitute.org> [aut, cre]", 
+    "Ali Rahnavard <rah@broadinstitute.org> [aut]",
+    "Lauren McIver <lauren.j.mciver@gmail.com> [aut]"
+  ))
+Description: MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate statistical framework that finds associations between clinical metadata and microbial community abundance or function. 
+Depends: R (>= 3.4.0)
+License: MIT License
+LazyData: true
+Imports: edgeR, metagenomeSeq, pscl, pbapply, car, nlme, dplyr, vegan, chemometrics, ggplot2, pheatmap, cplm
