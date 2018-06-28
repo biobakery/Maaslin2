@@ -1,8 +1,7 @@
-# Install or Load Required Packages
-
-if(! require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org') 
-suppressPackageStartupMessages(library("pacman"))
-pacman::p_load('dplyr', 'pbapply', 'pscl')
+# Load Required Packages
+for( lib in c('dplyr', 'pbapply', 'pscl')) {
+  if(! require(lib, character.only=TRUE) ) stop(paste("Please install the R package: ",lib))
+}
 
 # Fit Zero-inflated Negative Binomial (ZINB) To A Dataset
 

@@ -1,8 +1,7 @@
-# Install or Load Required Packages
-
-if(! require("pacman")) install.packages("pacman", repos='http://cran.us.r-project.org') 
-suppressPackageStartupMessages(library("pacman"))
-pacman::p_load('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')
+# Load Required Packages
+for( lib in c('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')) {
+  if(! require(lib, character.only=TRUE) ) stop(paste("Please install the R package: ",lib))
+}
 
 ##################
 ## Normalization #
