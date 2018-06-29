@@ -36,7 +36,7 @@ fit.ZINB <- function(features,
     })
     
     # Gather Output
-    if (class(fit) != "try-error"){
+    if (all(class(fit) != "try-error")){
           para<-as.data.frame(summary(fit)$coefficients$count)[-c(1, (ncol(metadata)+2)),-c(2:3)]
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)

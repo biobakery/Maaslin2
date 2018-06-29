@@ -41,7 +41,7 @@ fit.LM <- function(features,
         })
     
     # Gather Output
-    if (class(fit) != "try-error"){
+    if (all(class(fit) != "try-error")){
           para<-as.data.frame(summary(fit)$coefficients)[-1,-c(2:3)]
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)
