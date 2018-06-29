@@ -27,6 +27,11 @@
 # load in the required libraries, report an error if they are not installed
 library("optparse")
 
+# set the default choices
+normalization_choices <- c("TSS","CLR","CSS","TSS","NONE","TMM")
+analysis_method_choices <- c("LM","CPLM","ZICP","NEGBIN","ZINB")
+transform_choices <- c("LOG","LOGIT","AST","NONE")
+
 # set the default run options
 args <- list()
 args$input_data <- NULL
@@ -34,22 +39,22 @@ args$input_metadata <- NULL
 args$output <- NULL
 args$min_abundance <- 0.0
 args$min_prevalence <- 0.1
-args$normalization <- "tss"
-args$transform <- "log"
-args$analysis_method <- "lm"
+args$normalization <- normalization_choices[1]
+args$transform <- transform_choices[1]
+args$analysis_method <- analysis_method_choices[1]
 
 # add command line arguments
 options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
 options <- add_option(options, c("-a","--min_abundance"), type="double", dest="min_abundance", 
-    default=args$min_abundance, help="The minimum abundance for each feature [Default %default]")
+    default=args$min_abundance, help="The minimum abundance for each feature [ Default: %default ]")
 options <- add_option(options, c("-p","--min_prevalence"), type="double", dest="min_prevalence", 
-    default=args$min_prevalence, help="The minimum percent of samples for which a feature is detected [Default %default]")
+    default=args$min_prevalence, help="The minimum percent of samples for which a feature is detected [ Default: %default ]")
 options <- add_option(options, c("-n","--normalization"), type="character", dest="normalization", 
-    default=args$normalization, help="The normalization method to apply [Default %default]")
+    default=args$normalization, help=paste("The normalization method to apply [ Default: %default ] [ Choices:",toString(normalization_choices),"]"))
 options <- add_option(options, c("-t","--transform"), type="character", dest="transform", 
-    default=args$transform, help="The transform to apply [Default %default]")
+    default=args$transform, help=paste("The transform to apply [ Default: %default ] [ Choices:",toString(transform_choices),"]"))
 options <- add_option(options, c("-m","--analysis_method"), type="character", dest="analysis_method", 
-    default=args$analysis_method, help="The analysis method to apply [Default %default]")
+    default=args$analysis_method, help=paste("The analysis method to apply [ Default: %default ] [ Choices:",toString(analysis_method_choices),"]"))
 
 # main maaslin2 function with defaults set to the same as those used on the command line
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
@@ -58,12 +63,27 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 {
     # read in the data and metadata
     data <- read.table(input_data, header=TRUE, sep = "\t", row.names = 1)
-    meta_data <- read.table(input_metadata, header=TRUE, sep = "\t", row.names = 1)
+    metadata <- read.table(input_metadata, header=TRUE, sep = "\t", row.names = 1)
 
     # create an output folder if it does not exist
     if (!file.exists(output)) {
         print("Creating output folder")
         dir.create(output)
+    }
+
+    # check valid normalization option selected
+    if (! normalization %in% normalization_choices) {
+        stop(paste("Please select a normalization from the list of available options:", toString(normalization_choices)))
+    }
+
+    # check valid transform option selected
+    if (! transform %in% transform_choices) {
+        stop(paste("Please select a transform from the list of available options:", toString(transform_choices)))
+    }
+
+    # check valid method option selected
+    if (! analysis_method %in% analysis_method_choices) {
+        stop(paste("Please select an analysis method from the list of available options:", toString(analysis_method_choices)))
     }
 
 }
