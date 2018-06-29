@@ -94,7 +94,7 @@ CLRnorm = function(features) {
 
 # Apply CSS Normalization To A Dataset
 
-CSSnorm = function(physeq) {
+CSSnorm = function(features) {
   
   # Convert to Matrix from Data Frame
   features_norm = as.matrix(features)
@@ -121,7 +121,7 @@ CSSnorm = function(physeq) {
 
 # Apply TMM Normalization To A Dataset
 
-TMMnorm = function(physeq) {
+TMMnorm = function(features) {
   
   # Convert to Matrix from Data Frame
   features_norm = as.matrix(features)
