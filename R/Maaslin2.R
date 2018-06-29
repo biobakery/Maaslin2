@@ -81,10 +81,26 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         stop(paste("Please select a transform from the list of available options:", toString(transform_choices)))
     }
 
-    # check valid method option selected
-    if (! analysis_method %in% analysis_method_choices) {
+    if (analysis_method == "LM") {
+        results <- fit.LM(data, metadata, normalization=normalization, transform=transform)
+    } else if (analysis_method == "CPLM") {
+        results <- fit.CPLM(data, metadata, normalization=normalization, transform=transform)
+    } else if (analysis_method == "ZICP") {
+        results <- fit.ZICP(data, metadata, normalization=normalization, transform=transform)
+    } else if (analysis_method == "NEGBIN") {
+        results <- fit.negbin(data, metadata, normalization=normalization, transform=transform)
+    } else if (analysis_method == "ZINB") {
+        results <- fit.ZINB(data, metadata, normalization=normalization, transform=transform)
+    } else {
         stop(paste("Please select an analysis method from the list of available options:", toString(analysis_method_choices)))
     }
+
+    # count the total values (non NA) for each feature
+    results$N <- apply(results, 1, FUN = function(x) length(data[,x[1]]))
+    results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(data[,x[1]] > 0)))
+
+    # write the results to a file
+    write.table(results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=file.path(output,"results.tsv"), sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
 }
 
