@@ -77,6 +77,14 @@ maaslin2_heatmap <- function(maaslin_output, title = "", cell_value = "Q.value",
   return(p)
 }
 
+save_heatmap <- function(results_file, heatmap_file, title = "", cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
+                            border_color = "grey93", format =  NA, color = colorRampPalette(c("blue","grey90", "red"))(50)) {
+  # generate a heatmap and save it to a pdf
+    heatmap <- maaslin2_heatmap(results_file, title, cell_value, data_label, metadata_label, border_color, color)
+
+    ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, width = 135, height = 100, units = "mm", dpi = 350)
+}
+
 maaslin2_association_plots <- function(metadata_path, features_path,
                                        output_path, write_to_file = F, write_to='./')
   { 
