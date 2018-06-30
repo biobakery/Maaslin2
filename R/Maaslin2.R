@@ -100,8 +100,14 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(data[,x[1]] > 0)))
 
     # write the results to a file
-    write.table(results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=file.path(output,"results.tsv"), sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
+    results_file <- file.path(output,"results.tsv")
+    write.table(results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
+    # write visualizations
+    heatmap_file <- file.path(output,"heatmap.pdf")
+    heatmap <- save_heatmap(results_file, heatmap_file)
+
+    plots <- maaslin2_association_plots(input_metadata, input_data, results_file, write_to_file = TRUE, write_to = output)
 }
 
 # this evaluates to true if script is being called directly as an executable
