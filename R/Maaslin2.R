@@ -39,6 +39,7 @@ args$input_metadata <- NULL
 args$output <- NULL
 args$min_abundance <- 0.0
 args$min_prevalence <- 0.1
+args$max_significance <- 0.25
 args$normalization <- normalization_choices[1]
 args$transform <- transform_choices[1]
 args$analysis_method <- analysis_method_choices[1]
@@ -49,6 +50,8 @@ options <- add_option(options, c("-a","--min_abundance"), type="double", dest="m
     default=args$min_abundance, help="The minimum abundance for each feature [ Default: %default ]")
 options <- add_option(options, c("-p","--min_prevalence"), type="double", dest="min_prevalence", 
     default=args$min_prevalence, help="The minimum percent of samples for which a feature is detected [ Default: %default ]")
+options <- add_option(options, c("-s","--max_significance"), type="double", dest="max_significance", 
+    default=args$max_significance, help="The q-value threshold for significance [ Default: %default ]")
 options <- add_option(options, c("-n","--normalization"), type="character", dest="normalization", 
     default=args$normalization, help=paste("The normalization method to apply [ Default: %default ] [ Choices:",toString(normalization_choices),"]"))
 options <- add_option(options, c("-t","--transform"), type="character", dest="transform", 
@@ -59,7 +62,7 @@ options <- add_option(options, c("-m","--analysis_method"), type="character", de
 # main maaslin2 function with defaults set to the same as those used on the command line
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
-    analysis_method=args$analysis_method)
+    analysis_method=args$analysis_method, max_significance=args$max_significance)
 {
     # read in the data and metadata
     data <- read.table(input_data, header=TRUE, sep = "\t", row.names = 1)
@@ -100,14 +103,19 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(data[,x[1]] > 0)))
 
     # write the results to a file
-    results_file <- file.path(output,"results.tsv")
+    results_file <- file.path(output,"all_results.tsv")
     write.table(results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
-    # write visualizations
-    heatmap_file <- file.path(output,"heatmap.pdf")
-    heatmap <- save_heatmap(results_file, heatmap_file)
+    # write results passing threshold to file
+    significant_results <- results[results$qval <= max_significance,]
+    significant_results_file <- file.path(output,"significant_results.tsv")
+    write.table(significant_results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=significant_results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
-    plots <- maaslin2_association_plots(input_metadata, input_data, results_file, write_to_file = TRUE, write_to = output)
+    # write visualizations for results passing threshold
+    heatmap_file <- file.path(output,"heatmap.pdf")
+    heatmap <- save_heatmap(significant_results_file, heatmap_file)
+
+    plots <- maaslin2_association_plots(input_metadata, input_data, significant_results_file, write_to_file = TRUE, write_to = output)
 }
 
 # this evaluates to true if script is being called directly as an executable
@@ -140,5 +148,5 @@ if(identical(environment(), globalenv()) &&
     Maaslin2(positional_args[1], positional_args[2], positional_args[3],
         current_args$min_abundance, current_args$min_prevalence, 
         current_args$normalization, current_args$transform,
-        current_args$analysis_method) 
+        current_args$analysis_method, current_args$max_significance) 
 }
