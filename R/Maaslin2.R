@@ -104,10 +104,11 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # write the results to a file
     results_file <- file.path(output,"all_results.tsv")
-    write.table(results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
+    ordered_results <- results[order(results$qval),]
+    write.table(ordered_results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
     # write results passing threshold to file
-    significant_results <- results[results$qval <= max_significance,]
+    significant_results <- ordered_results[results$qval <= max_significance,]
     significant_results_file <- file.path(output,"significant_results.tsv")
     write.table(significant_results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=significant_results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
