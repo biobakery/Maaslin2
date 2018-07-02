@@ -26,11 +26,19 @@
 
 # load in the required libraries, report an error if they are not installed
 library("optparse")
+library(hash)
 
 # set the default choices
-normalization_choices <- c("TSS","CLR","CSS","TSS","NONE","TMM")
+normalization_choices <- c("TSS","CLR","CSS","NONE","TMM")
 analysis_method_choices <- c("LM","CPLM","ZICP","NEGBIN","ZINB")
 transform_choices <- c("LOG","LOGIT","AST","NONE")
+valid_choice_combinations_method_norm <- hash::hash()
+valid_choice_combinations_method_norm[[analysis_method_choices[4]]] <- normalization_choices[2:5]
+valid_choice_combinations_method_norm[[analysis_method_choices[5]]] <- normalization_choices[2:5]
+valid_choice_combinations_transform_norm <- hash::hash()
+valid_choice_combinations_transform_norm[[transform_choices[2]]] <- normalization_choices[1]
+valid_choice_combinations_transform_norm[[transform_choices[3]]] <- normalization_choices[1]
+
 
 # set the default run options
 args <- list()
@@ -83,6 +91,23 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     if (! transform %in% transform_choices) {
         stop(paste("Please select a transform from the list of available options:", toString(transform_choices)))
     }
+
+    # check a valid choice combination is selected
+    for (limited_method in keys(valid_choice_combinations_method_norm)) {
+        if (analysis_method == limited_method) {
+            if (! normalization %in% valid_choice_combinations_method_norm[[limited_method]]) {
+                stop(paste("This method can only be used with a subset of normalizations. Please select from the following list:", toString(valid_choice_combinations_method_norm[[limited_method]])))
+            }
+        }
+    }
+    for (limited_transform in keys(valid_choice_combinations_transform_norm)) {
+        if (transform == limited_transform) {
+            if (! normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
+                stop(paste("This transform can only be used with a subset of normalizations. Please select from the following list:", toString(valid_choice_combinations_transform_norm[[limited_transform]])))
+            }
+        }
+    }
+
 
     if (analysis_method == "LM") {
         results <- fit.LM(data, metadata, normalization=normalization, transform=transform)
