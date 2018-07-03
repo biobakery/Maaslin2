@@ -26,6 +26,7 @@
 
 # load in the required libraries, report an error if they are not installed
 library("optparse")
+library(logging)
 library(hash)
 
 # set the default choices
@@ -67,6 +68,13 @@ options <- add_option(options, c("-t","--transform"), type="character", dest="tr
 options <- add_option(options, c("-m","--analysis_method"), type="character", dest="analysis_method", 
     default=args$analysis_method, help=paste("The analysis method to apply [ Default: %default ] [ Choices:",toString(analysis_method_choices),"]"))
 
+
+option_not_valid_error <- function(message, valid_options) {
+    logging::logerror(paste(message,": %s"), toString(valid_options))
+    stop("Option not valid", call.=FALSE)
+}
+
+
 # main maaslin2 function with defaults set to the same as those used on the command line
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
@@ -82,28 +90,51 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         dir.create(output)
     }
 
+    # create log file (write info to stdout and debug level to log file)
+    # set level to finest so all log levels are reviewed
+    logging::basicConfig(level='FINEST')
+    logging::addHandler(writeToFile,file=file.path(output,"maaslin2.log"),level="DEBUG")
+    logging::setLevel(20, getHandler('basic.stdout'))
+
+    # log the arguments
+    logging::logdebug("Function arguments")
+    logging::logdebug("Input data file: %s", input_data)
+    logging::logdebug("Input metadata file: %s", input_metadata)
+    logging::logdebug("Output folder: %s", output)
+    logging::logdebug("Min Abundance: %f", min_abundance)
+    logging::logdebug("Min Prevalence: %f", min_prevalence)
+    logging::logdebug("Normalization: %s", normalization)
+    logging::logdebug("Transform: %s", transform)
+    logging::logdebug("Analysis method: %s", analysis_method)
+    logging::logdebug("Max significance: %f", max_significance)
+
     # check valid normalization option selected
     if (! normalization %in% normalization_choices) {
-        stop(paste("Please select a normalization from the list of available options:", toString(normalization_choices)))
+        option_not_valid_error("Please select a normalization from the list of available options", toString(normalization_choices))
     }
 
     # check valid transform option selected
     if (! transform %in% transform_choices) {
-        stop(paste("Please select a transform from the list of available options:", toString(transform_choices)))
+        option_not_valid_error("Please select a transform from the list of available options", toString(transform_choices))
+    }
+
+    # check valid method option selected
+    if (! analysis_method %in% analysis_method_choices) {
+        option_not_valid_error("Please select an analysis method from the list of available options", toString(analysis_method_choices))
     }
 
     # check a valid choice combination is selected
     for (limited_method in keys(valid_choice_combinations_method_norm)) {
         if (analysis_method == limited_method) {
             if (! normalization %in% valid_choice_combinations_method_norm[[limited_method]]) {
-                stop(paste("This method can only be used with a subset of normalizations. Please select from the following list:", toString(valid_choice_combinations_method_norm[[limited_method]])))
+                option_not_valid_error("This method can only be used with a subset of normalizations. Please select from the following list", toString(valid_choice_combinations_method_norm[[limited_method]]))
             }
         }
     }
     for (limited_transform in keys(valid_choice_combinations_transform_norm)) {
         if (transform == limited_transform) {
             if (! normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
-                stop(paste("This transform can only be used with a subset of normalizations. Please select from the following list:", toString(valid_choice_combinations_transform_norm[[limited_transform]])))
+                option_not_valid_error("This transform can only be used with a subset of normalizations. Please select from the following list", toString(valid_choice_combinations_transform_norm[[limited_transform]]))
             }
         }
     }
@@ -111,9 +142,16 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     # filter data based on min abundance and min prevalence
     # require at least total samples * min prevalence values for each feature to be greater than min abundance
     total_samples <- nrow(data)
+    logging::loginfo("Total samples in data: %d", total_samples)
     min_samples <- total_samples * min_prevalence
+    logging::loginfo("Min samples required with min abundance for a feature not to be filtered: %d", min_samples)
     filtered_data <- data[,colSums(data >= min_abundance) > min_samples]
+    total_filtered_features <- ncol(data) - ncol(filtered_data)
+    logging::loginfo("Total filtered features: %d", total_filtered_features)
+    filtered_feature_names <- setdiff(names(data),names(filtered_data))
+    logging::loginfo("Filtered feature names: %s", toString(filtered_feature_names))
 
+    logging::loginfo("Running selected analysis method: %s", analysis_method)
     if (analysis_method == "LM") {
         results <- fit.LM(filtered_data, metadata, normalization=normalization, transform=transform)
     } else if (analysis_method == "CPLM") {
@@ -124,9 +162,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         results <- fit.negbin(filtered_data, metadata, normalization=normalization, transform=transform)
     } else if (analysis_method == "ZINB") {
         results <- fit.ZINB(filtered_data, metadata, normalization=normalization, transform=transform)
-    } else {
-        stop(paste("Please select an analysis method from the list of available options:", toString(analysis_method_choices)))
-    }
+    } 
 
     # count the total values for each feature
     results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
@@ -134,18 +170,22 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # write the results to a file
     results_file <- file.path(output,"all_results.tsv")
+    logging::loginfo("Writing all results to file (ordered by increasing q-values): %s", results_file)
     ordered_results <- results[order(results$qval),]
     write.table(ordered_results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
     # write results passing threshold to file
     significant_results <- ordered_results[results$qval <= max_significance,]
     significant_results_file <- file.path(output,"significant_results.tsv")
+    logging::loginfo("Writing the significant results (those which are less than or equal to the threshold of %f ) to file (ordered by increasing q-values): %s", max_significance, results_file)
     write.table(significant_results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=significant_results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
     # write visualizations for results passing threshold
     heatmap_file <- file.path(output,"heatmap.pdf")
+    logging::loginfo("Writing heatmap of significant results to file: %s", heatmap_file)
     heatmap <- save_heatmap(significant_results_file, heatmap_file)
 
+    logging::loginfo("Writing association plots (one for each significant association) to output folder: %s", output)
     plots <- maaslin2_association_plots(input_metadata, input_data, significant_results_file, write_to_file = TRUE, write_to = output)
 }
 

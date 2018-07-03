@@ -10,4 +10,4 @@ Description: MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivaria
 Depends: R (>= 3.4.0)
 License: MIT License
 LazyData: true
-Imports: edgeR, metagenomeSeq, pscl, pbapply, car, nlme, dplyr, vegan, chemometrics, ggplot2, pheatmap, cplm, hash
+Imports: edgeR, metagenomeSeq, pscl, pbapply, car, nlme, dplyr, vegan, chemometrics, ggplot2, pheatmap, cplm, hash, logging
