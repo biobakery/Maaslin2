@@ -29,13 +29,31 @@ library("optparse")
 library(logging)
 library(hash)
 
+# load in the maaslin2 R files if running from the command line
+# this evaluates to true if script is being called directly as an executable
+if(identical(environment(), globalenv()) &&
+    !length( grep( "^source\\(", sys.calls()))) {
+
+    # source all R in Maaslin2 package, relative to this folder (same method as original maaslin)
+    script_options <-commandArgs(trailingOnly = FALSE)
+    script_path <- sub("--file=","",script_options[grep("--file=", script_options)])
+    script_dir <- dirname(script_path)
+    script_name <- basename(script_path)
+
+    for(R_file in dir(script_dir, pattern = "*.R"))
+    {
+        if(! ( R_file == script_name )) source( file.path(script_dir, R_file) )
+    }
+}
+
 # set the default choices
 normalization_choices <- c("TSS","CLR","CSS","NONE","TMM")
-analysis_method_choices <- c("LM","CPLM","ZICP","NEGBIN","ZINB")
+analysis_method_choices <- hash::hash(c("LM","CPLM","ZICP","NEGBIN","ZINB"), c(fit.LM,fit.CPLM,fit.ZICP,fit.negbin,fit.ZINB))
+analysis_method_choices_names <- hash::keys(analysis_method_choices)
 transform_choices <- c("LOG","LOGIT","AST","NONE")
 valid_choice_combinations_method_norm <- hash::hash()
-valid_choice_combinations_method_norm[[analysis_method_choices[4]]] <- normalization_choices[2:5]
-valid_choice_combinations_method_norm[[analysis_method_choices[5]]] <- normalization_choices[2:5]
+valid_choice_combinations_method_norm[[analysis_method_choices_names[4]]] <- normalization_choices[2:5]
+valid_choice_combinations_method_norm[[analysis_method_choices_names[5]]] <- normalization_choices[2:5]
 valid_choice_combinations_transform_norm <- hash::hash()
 valid_choice_combinations_transform_norm[[transform_choices[2]]] <- normalization_choices[1]
 valid_choice_combinations_transform_norm[[transform_choices[3]]] <- normalization_choices[1]
@@ -51,7 +69,7 @@ args$min_prevalence <- 0.1
 args$max_significance <- 0.25
 args$normalization <- normalization_choices[1]
 args$transform <- transform_choices[1]
-args$analysis_method <- analysis_method_choices[1]
+args$analysis_method <- analysis_method_choices_names[1]
 
 # add command line arguments
 options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
@@ -66,7 +84,7 @@ options <- add_option(options, c("-n","--normalization"), type="character", dest
 options <- add_option(options, c("-t","--transform"), type="character", dest="transform", 
     default=args$transform, help=paste("The transform to apply [ Default: %default ] [ Choices:",toString(transform_choices),"]"))
 options <- add_option(options, c("-m","--analysis_method"), type="character", dest="analysis_method", 
-    default=args$analysis_method, help=paste("The analysis method to apply [ Default: %default ] [ Choices:",toString(analysis_method_choices),"]"))
+    default=args$analysis_method, help=paste("The analysis method to apply [ Default: %default ] [ Choices:",toString(analysis_method_choices_names),"]"))
 
 
 option_not_valid_error <- function(message, valid_options) {
@@ -119,8 +137,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     }
 
     # check valid method option selected
-    if (! analysis_method %in% analysis_method_choices) {
-        option_not_valid_error("Please select an analysis method from the list of available options", toString(analysis_method_choices))
+    if (! analysis_method %in% analysis_method_choices_names) {
+        option_not_valid_error("Please select an analysis method from the list of available options", toString(analysis_method_choices_names))
     }
 
     # check a valid choice combination is selected
@@ -151,18 +169,9 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     filtered_feature_names <- setdiff(names(data),names(filtered_data))
     logging::loginfo("Filtered feature names: %s", toString(filtered_feature_names))
 
+    # run the selected method looking up the function in the hash
     logging::loginfo("Running selected analysis method: %s", analysis_method)
-    if (analysis_method == "LM") {
-        results <- fit.LM(filtered_data, metadata, normalization=normalization, transform=transform)
-    } else if (analysis_method == "CPLM") {
-        results <- fit.CPLM(filtered_data, metadata, normalization=normalization, transform=transform)
-    } else if (analysis_method == "ZICP") {
-        results <- fit.ZICP(filtered_data, metadata, normalization=normalization, transform=transform)
-    } else if (analysis_method == "NEGBIN") {
-        results <- fit.negbin(filtered_data, metadata, normalization=normalization, transform=transform)
-    } else if (analysis_method == "ZINB") {
-        results <- fit.ZINB(filtered_data, metadata, normalization=normalization, transform=transform)
-    } 
+    results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform)
 
     # count the total values for each feature
     results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
@@ -189,21 +198,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     plots <- maaslin2_association_plots(input_metadata, input_data, significant_results_file, write_to_file = TRUE, write_to = output)
 }
 
+# if running on the command line, get arguments and call maaslin function
 # this evaluates to true if script is being called directly as an executable
 if(identical(environment(), globalenv()) &&
-    !length( grep( "^source\\(", sys.calls()))) 
-{
-
-    # source all R in Maaslin2 package, relative to this folder (same method as original maaslin)
-    script_options <-commandArgs(trailingOnly = FALSE)
-    script_path <- sub("--file=","",script_options[grep("--file=", script_options)])
-    script_dir <- dirname(script_path)
-    script_name <- basename(script_path)
-    
-    for(R_file in dir(script_dir, pattern = "*.R"))
-    {
-        if(! ( R_file == script_name )) source( file.path(script_dir, R_file) )
-    }
+    !length( grep( "^source\\(", sys.calls()))) {
 
     # get command line options and positional arguments
     parsed_arguments = parse_args(options,positional_arguments=TRUE)
