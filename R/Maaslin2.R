@@ -57,7 +57,7 @@ options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <outp
 options <- add_option(options, c("-a","--min_abundance"), type="double", dest="min_abundance", 
     default=args$min_abundance, help="The minimum abundance for each feature [ Default: %default ]")
 options <- add_option(options, c("-p","--min_prevalence"), type="double", dest="min_prevalence", 
-    default=args$min_prevalence, help="The minimum percent of samples for which a feature is detected [ Default: %default ]")
+    default=args$min_prevalence, help="The minimum percent of samples for which a feature is detected at minimum abundance [ Default: %default ]")
 options <- add_option(options, c("-s","--max_significance"), type="double", dest="max_significance", 
     default=args$max_significance, help="The q-value threshold for significance [ Default: %default ]")
 options <- add_option(options, c("-n","--normalization"), type="character", dest="normalization", 
@@ -108,24 +108,29 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         }
     }
 
+    # filter data based on min abundance and min prevalence
+    # require at least total samples * min prevalence values for each feature to be greater than min abundance
+    total_samples <- nrow(data)
+    min_samples <- total_samples * min_prevalence
+    filtered_data <- data[,colSums(data >= min_abundance) > min_samples]
 
     if (analysis_method == "LM") {
-        results <- fit.LM(data, metadata, normalization=normalization, transform=transform)
+        results <- fit.LM(filtered_data, metadata, normalization=normalization, transform=transform)
     } else if (analysis_method == "CPLM") {
-        results <- fit.CPLM(data, metadata, normalization=normalization, transform=transform)
+        results <- fit.CPLM(filtered_data, metadata, normalization=normalization, transform=transform)
     } else if (analysis_method == "ZICP") {
-        results <- fit.ZICP(data, metadata, normalization=normalization, transform=transform)
+        results <- fit.ZICP(filtered_data, metadata, normalization=normalization, transform=transform)
     } else if (analysis_method == "NEGBIN") {
-        results <- fit.negbin(data, metadata, normalization=normalization, transform=transform)
+        results <- fit.negbin(filtered_data, metadata, normalization=normalization, transform=transform)
     } else if (analysis_method == "ZINB") {
-        results <- fit.ZINB(data, metadata, normalization=normalization, transform=transform)
+        results <- fit.ZINB(filtered_data, metadata, normalization=normalization, transform=transform)
     } else {
         stop(paste("Please select an analysis method from the list of available options:", toString(analysis_method_choices)))
     }
 
-    # count the total values (non NA) for each feature
-    results$N <- apply(results, 1, FUN = function(x) length(data[,x[1]]))
-    results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(data[,x[1]] > 0)))
+    # count the total values for each feature
+    results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
+    results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(filtered_data[,x[1]] > 0)))
 
     # write the results to a file
     results_file <- file.path(output,"all_results.tsv")
