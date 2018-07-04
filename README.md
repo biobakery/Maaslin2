@@ -1,6 +1,8 @@
 # MaAsLin2 User Manual #
 
-*MaAsLin2 is the next generation of MaAsLin.* [MaAsLin](https://huttenhower.sph.harvard.edu/maaslin) is a multivariate statistical framework that finds associations between clinical metadata and potentially high-dimensional experimental data.
+MaAsLin2 is the next generation of MaAsLin.
+
+[MaAsLin](https://huttenhower.sph.harvard.edu/maaslin) is a multivariate statistical framework that finds associations between clinical metadata and potentially high-dimensional experimental data.
 
 If you use MaAsLin2, please cite the following: **TBD**
 
@@ -21,33 +23,30 @@ If you have questions, please email the [MaAsLin Users Google Group](https://gro
 
 ## Description ##
 
-MaAsLin2 is the next generation of MaAsLin. MaAsLin2 was developed to find associations between microbiom multi'omics features and complex metadata in population-scale epidemiological studies. The software includes multiple analysis methods, normalization, and transform options to customize analysis for your specific study. 
+MaAsLin2 was developed to find associations between microbiome multi'omics features and complex metadata in population-scale epidemiological studies. The software includes multiple analysis methods, normalization, and transform options to customize analysis for your specific study. 
 
 ## Requirements ##
 
 MaAsLin2 is an R package that can be run on the command line or as an R function. It requires the following R packages included in Biocondutor and CRAN (Comprehensive R Archive Network). Please install these packages before running MaAsLin2.
 
 * Bioconductor packages
-
-  * [edgeR: Empirical Analysis of Digital Gene Expression Data in R](https://bioconductor.org/packages/release/bioc/html/edgeR.html)
-  * [metagenomeSeq: Statistical analysis for sparse high-throughput sequencing](https://bioconductor.org/packages/release/bioc/html/metagenomeSeq.html)
-  * These packages can be installed through Bioconductor by first sourcing biocLite with ``source("https://bioconductor.org/biocLite.R")`` and then installing each package with ``biocLite("edgeR")``.
-
+    * [edgeR: Empirical Analysis of Digital Gene Expression Data in R](https://bioconductor.org/packages/release/bioc/html/edgeR.html)
+    * [metagenomeSeq: Statistical analysis for sparse high-throughput sequencing](https://bioconductor.org/packages/release/bioc/html/metagenomeSeq.html)
+    * These packages can be installed through Bioconductor by first sourcing biocLite with ``source("https://bioconductor.org/biocLite.R")`` and then installing each package with ``biocLite("edgeR")``.
 * CRAN packages
-
-  * [pscl: Political Science Computational Laboratory](https://cran.r-project.org/web/packages/pscl/pscl.pdf)
-  * [pbapply: Adding Progress Bar to '*apply' Functions](https://cran.rstudio.com/web/packages/pbapply/index.html)
-  * [car: Companion to Applied Regression](https://cran.rstudio.com/web/packages/car/index.html)
-  * [nlme: Linear and Nonlinear Mixed Effects Models](https://cran.rstudio.com/web/packages/nlme/index.html)
-  * [dplyr: A Grammer of Data Manipulation](https://cran.rstudio.com/web/packages/dplyr/index.html)
-  * [vegan: Community Ecology Package](https://cran.rstudio.com/web/packages/vegan/index.html)
-  * [chemometrics: Multivariate Statistical Analysis in Chemometrics](https://cran.rstudio.com/web/packages/chemometrics/index.html) 
-  * [ggplot2: Create Elegant Data Visualizations Using the Grammer of Graphics](https://cran.rstudio.com/web/packages/ggplot2/index.html)
-  * [pheatmap: Pretty Heatmaps](https://cran.rstudio.com/web/packages/pheatmap/index.html)
-  * [cplm: Compound Poisson Linear Models](https://cran.rstudio.com/web/packages/cplm/index.html)
-  * [hash: Full feature implementation of hash/associated arrays/dictionaries](https://cran.rstudio.com/web/packages/hash/index.html)
-  * [logging: R logging package](https://cran.rstudio.com/web/packages/logging/index.html)
-  * These packages can be installed in R with ``install.packages('pscl')`` or from the command line ``$ R -q -e "install.packages('pscl', repos='http://cran.r-project.org')"`` individually (for those packages which you do not yet have installed) or as a set by providing the complete list as a vector.
+    * [pscl: Political Science Computational Laboratory](https://cran.r-project.org/web/packages/pscl/pscl.pdf)
+    * [pbapply: Adding Progress Bar to '*apply' Functions](https://cran.rstudio.com/web/packages/pbapply/index.html)
+    * [car: Companion to Applied Regression](https://cran.rstudio.com/web/packages/car/index.html)
+    * [nlme: Linear and Nonlinear Mixed Effects Models](https://cran.rstudio.com/web/packages/nlme/index.html)
+    * [dplyr: A Grammer of Data Manipulation](https://cran.rstudio.com/web/packages/dplyr/index.html)
+    * [vegan: Community Ecology Package](https://cran.rstudio.com/web/packages/vegan/index.html)
+    * [chemometrics: Multivariate Statistical Analysis in Chemometrics](https://cran.rstudio.com/web/packages/chemometrics/index.html) 
+    * [ggplot2: Create Elegant Data Visualizations Using the Grammer of Graphics](https://cran.rstudio.com/web/packages/ggplot2/index.html)
+    * [pheatmap: Pretty Heatmaps](https://cran.rstudio.com/web/packages/pheatmap/index.html)
+    * [cplm: Compound Poisson Linear Models](https://cran.rstudio.com/web/packages/cplm/index.html)
+    * [hash: Full feature implementation of hash/associated arrays/dictionaries](https://cran.rstudio.com/web/packages/hash/index.html)
+    * [logging: R logging package](https://cran.rstudio.com/web/packages/logging/index.html)
+    * These packages can be installed in R with ``install.packages('pscl')`` or from the command line ``$ R -q -e "install.packages('pscl', repos='http://cran.r-project.org')"`` individually (for those packages which you do not yet have installed) or as a set by providing the complete list as a vector.
 
 ## Installation ##
 
@@ -81,14 +80,11 @@ $ R
 MaAsLin2 requires two input files.
 
 1. Data (or features) file
-
-  * This file is tab-delimited formatted with features as columns and samples as rows.
-  * Possible features in this file include data like taxonomic or gene abundances.
-
+    * This file is tab-delimited formatted with features as columns and samples as rows.
+    * Possible features in this file include data like taxonomic or gene abundances.
 2. Metadata file
-
-  * This file is tab-delimited formatted with metadata as columns and samples as rows.
-  * Possible metadata in this file include gender or age.
+    * This file is tab-delimited formatted with metadata as columns and samples as rows.
+    * Possible metadata in this file include gender or age.
 
 Please note the same samples must be included in both files. Also these samples must be in the same order in both files.
 
@@ -97,15 +93,12 @@ Please note the same samples must be included in both files. Also these samples 
 MaAsLin2 generates two types of output files: data and visualization.
 
 1. Data output files
-
-  * all_results.tsv : This file contains all of the association results ordered by increasing q-value.
-  * significant_results.tsv : This file is a subset of the data in the first file. It only includes those associations with q-values less than or equal to the significance threshold.
-  * maaslin2.log : This file contains all of the debug information for the run. It includes all settings, warnings, errors, and steps run.
-
+    * all_results.tsv : This file contains all of the association results ordered by increasing q-value.
+    * significant_results.tsv : This file is a subset of the data in the first file. It only includes those associations with q-values less than or equal to the significance threshold.
+    * maaslin2.log : This file contains all of the debug information for the run. It includes all settings, warnings, errors, and steps run.
 2. Visualization output files
-
-  * heatmap.pdf : This file contains a heatmap of the significant associations.
-  * 1*.pdf : These files are scatter plots with one generated for each significant association.
+    * heatmap.pdf : This file contains a heatmap of the significant associations.
+    * 1*.pdf : These files are scatter plots with one generated for each significant association.
 
 ### Run a Demo ###
 
@@ -118,6 +111,7 @@ When running this command, all output files will be written to a folder named ``
 ### Options ###
 
 Run MaAsLin2 help to print a list of the options and the default settings.
+
 
 ```
 $ Maaslin2.R --help
@@ -150,14 +144,9 @@ Options:
 ## Troubleshooting ##
 
 1. Question: When I run from the command line I see the error ``Maaslin2.R: command not found``. How do I fix this? 
-
-  * Answer: Provide the full path to the executable when running Maaslin2.R.
-
+    * Answer: Provide the full path to the executable when running Maaslin2.R.
 2. Question: When I run as a function I see the error ``Error in library(Maaslin2): there is no package called 'Maaslin2'``. How do I fix this? 
-  
-  * Answer: Install the R package and then try loading the library again.
-
+    * Answer: Install the R package and then try loading the library again.
 3. Question: When I try to install the R package I see errors about dependencies not being installed. Why is this?
-
-  * Answer: Installing the R package will not automatically install the packages MaAsLin2 requires. Please install the dependencies and then install the MaAsLin2 R package.
+    * Answer: Installing the R package will not automatically install the packages MaAsLin2 requires. Please install the dependencies and then install the MaAsLin2 R package.
 
