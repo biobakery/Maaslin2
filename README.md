@@ -4,7 +4,7 @@ MaAsLin2 is the next generation of MaAsLin.
 
 [MaAsLin](https://huttenhower.sph.harvard.edu/maaslin) is a multivariate statistical framework that finds associations between clinical metadata and potentially high-dimensional experimental data.
 
-If you use MaAsLin2, please cite the following: **TBD**
+If you use the MaAsLin2 software, please cite our manuscript: Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Gholamali Rahnavard, George Weingart, Joseph N. Paulson, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. "Multivariable Association in Population-scale Meta'omic Surveys" (In Preparation).
 
 If you have questions, please email the [MaAsLin Users Google Group](https://groups.google.com/forum/#!forum/maaslin-users).
 
