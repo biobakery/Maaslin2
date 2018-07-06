@@ -183,8 +183,9 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     ordered_results <- results[order(results$qval),]
     write.table(ordered_results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
 
-    # write results passing threshold to file
-    significant_results <- ordered_results[results$qval <= max_significance,]
+    # write results passing threshold to file (removing any that are NA for the q-value)
+    significant_results <- ordered_results[!is.na(ordered_results$qval),]
+    significant_results <- significant_results[significant_results$qval <= max_significance,]
     significant_results_file <- file.path(output,"significant_results.tsv")
     logging::loginfo("Writing the significant results (those which are less than or equal to the threshold of %f ) to file (ordered by increasing q-values): %s", max_significance, results_file)
     write.table(significant_results[c("metadata","feature","metadata","coef","N","N.not.zero","pval","qval")], file=significant_results_file, sep="\t", quote=FALSE, col.names=c("Variable","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"))
