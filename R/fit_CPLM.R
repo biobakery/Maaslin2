@@ -43,7 +43,7 @@ fit.CPLM <- function(features,
     
     # Gather Output
     if (all(class(fit) != "try-error")){
-          para<-as.data.frame(summary(fit)$coefficients)[-1,-c(2:3)]
+          para<-as.data.frame(cplm::summary(fit)$coefficients)[-1,-c(2:3)]
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
