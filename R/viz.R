@@ -57,7 +57,7 @@ maaslin2_heatmap <- function(maaslin_output, title = "", cell_value = "Q.value",
   
   #colnames(a) <-  sapply(colnames(a), pcl.sub )
   
-  p <- pheatmap(a, cellwidth = 7, cellheight = 7,   # changed to 3
+  p <- pheatmap::pheatmap(a, cellwidth = 7, cellheight = 7,   # changed to 3
                 main = title,
                 fontsize = 6,
                 kmeans_k = NA,
@@ -116,19 +116,19 @@ maaslin2_association_plots <- function(metadata_path, features_path,
     # if Variable is continuous generate a scatter plo
     temp_plot <- NULL
     if (is.numeric(input_df[1,'x'])){
-      temp_plot <- ggplot(data=input_df, aes(x, y)) +
-        geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
-        scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
-        scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
-        stat_smooth(method = "glm", color ='blue')+ 
-        guides(alpha='none')+labs("")+
-        xlab(x_label) +  ylab(y_label) + nature_theme
+      temp_plot <- ggplot2::ggplot(data=input_df, ggplot2::aes(x, y)) +
+        ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
+        ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
+        ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
+        ggplot2::stat_smooth(method = "glm", color ='blue')+ 
+        ggplot2::guides(alpha='none')+ggplot2::labs("")+
+        ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme
     }else{
       # if Variable is categorical generate a Jitter plot with boxplot
       ### check if the variable is categorical
-      temp_plot <- ggplot(data=input_df, aes(x, y)) + 
-        geom_boxplot(notch = TRUE) +
-        geom_jitter(position = position_jitter(0.5), aes(colour = x))
+      temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
+        ggplot2::geom_boxplot(notch = TRUE) +
+        ggplot2::geom_jitter(position = position_jitter(0.5), ggplot2::aes(colour = x))
       
       # fomrat the figure to defualt nature format and add some 
       # statistics (Q.value and Coefficient) to the plot 
@@ -139,13 +139,13 @@ maaslin2_association_plots <- function(metadata_path, features_path,
                                                 y=max(input_df['y'], na.rm = T) -0.012, 
                                    label=paste("Spearman correlation: ", str(output_df[i, 'Coefficient']),"q-value = ",
                                    str(output_df[i, 'Q.value'])), color="black", size=rel(2), fontface="italic")+
-                           guides(legend.position=NULL)+
+                           ggplot2::guides(legend.position=NULL)+
                            theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
                                  panel.background = element_blank(), axis.line = element_line(colour = "black"))
     }
     association_plot[[i]] <- temp_plot 
       if (write_to_file){
-        ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot,
+        ggplot2::ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot,
                width = 6.5, height = 5, units = "cm", dpi = 300)
         #dev.off()
       }
