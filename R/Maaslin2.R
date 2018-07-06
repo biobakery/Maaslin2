@@ -111,8 +111,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     # create log file (write info to stdout and debug level to log file)
     # set level to finest so all log levels are reviewed
     logging::basicConfig(level='FINEST')
-    logging::addHandler(writeToFile,file=file.path(output,"maaslin2.log"),level="DEBUG")
-    logging::setLevel(20, getHandler('basic.stdout'))
+    logging::addHandler(logging::writeToFile,file=file.path(output,"maaslin2.log"),level="DEBUG")
+    logging::setLevel(20, logging::getHandler('basic.stdout'))
 
     # log the arguments
     logging::logdebug("Function arguments")
@@ -142,14 +142,14 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     }
 
     # check a valid choice combination is selected
-    for (limited_method in keys(valid_choice_combinations_method_norm)) {
+    for (limited_method in hash::keys(valid_choice_combinations_method_norm)) {
         if (analysis_method == limited_method) {
             if (! normalization %in% valid_choice_combinations_method_norm[[limited_method]]) {
                 option_not_valid_error("This method can only be used with a subset of normalizations. Please select from the following list", toString(valid_choice_combinations_method_norm[[limited_method]]))
             }
         }
     }
-    for (limited_transform in keys(valid_choice_combinations_transform_norm)) {
+    for (limited_transform in hash::keys(valid_choice_combinations_transform_norm)) {
         if (transform == limited_transform) {
             if (! normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
                 option_not_valid_error("This transform can only be used with a subset of normalizations. Please select from the following list", toString(valid_choice_combinations_transform_norm[[limited_transform]]))
