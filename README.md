@@ -144,21 +144,34 @@ Options:
 
 ## Visualization ##
 
-There are two functions in MaAsLin2 which visualize the outputs and provid ggplot2 plots that can be used to generate manuscript/report quality figures. 
-* ``maaslin2_heatmap``: this function generates a overviwe of all associations reported by MaAsLin2 and have the following paremeter:
+There are two functions in MaAsLin2 which visualize the outputs and provide ggplot2 plots that can be used to generate manuscript/report quality figures. 
+
+* ``maaslin2_heatmap``: this function generates a overview of all associations reported by MaAsLin2 and have the following parameters:
+
 ``output_path`` : the path to the MaAsLin2 output
+
 ``title``: a title for the plot
+
 ``cell_value``: default 'Q.value' 
+
 ``data_label``: default 'Data'
+
 ``metadata_label``: default 'Metadata'
+
 ``border_color``: default "grey93"
+
 ``color``: default colorRampPalette(c("blue","grey90", "red"))(500) 
 
 * ``maaslin2_association_plots``: this function produces plots (ggplot2) for each association and depends on the data types can be a scatter plot and boxplot. This function returns a vector of ``ggplot2`` plots. The parameters for this function are as follow:
+
 ``metadata_path``: '/path-to-metadata-file/'
+
 ``features_path``: '/path-to-features-file/'
+
 ``output_path``: 'the path to the MaAsLin2 output'
+
 ``write_to_file``: default True
+
 ``write_to``: '~/path-to-output/' 
 
 ## Troubleshooting ##
