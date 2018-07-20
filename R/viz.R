@@ -25,11 +25,15 @@ nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 
                                    panel.grid.minor = element_blank())
 
 # MaAsLin2 heatmap function for overall view of associations 
-maaslin2_heatmap <- function(maaslin_output, title = "", cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
+maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
                             border_color = "grey93", format =  NA, color = colorRampPalette(c("blue","grey90", "red"))(50)) {#)
   # read MaAsLin output
-  df <- read.table( maaslin_output,
+  df <- read.table( output_results,
                     header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
+  if (dim(df)[1] < 1){
+    print('There is no association to plot!')
+    return (NULL)
+  }
   metadata <- df$Variable
   data <- df$Feature
   value <- NA
@@ -86,7 +90,7 @@ save_heatmap <- function(results_file, heatmap_file, title = "", cell_value = "Q
 }
 
 maaslin2_association_plots <- function(metadata_path, features_path,
-                                       output_path, write_to_file = F, write_to='./')
+                                       output_results, write_to_file = F, write_to='./')
   { 
   #MaAslin2 scatter plot function and theme
   
@@ -100,9 +104,13 @@ maaslin2_association_plots <- function(metadata_path, features_path,
   input_df_all <- cbind(features[common_rows,], metadata[common_rows,])
   
   # read MaAsLin output
-  output_df_all <- read.table( output_path, header = TRUE,
+  output_df_all <- read.table( output_results, header = TRUE,
                            row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   
+  if (dim(output_df_all)[1] < 1){
+    print('There is no association to plot!')
+    return (NULL)
+  }
   # a list to store association(scatter or boxplot) plot of all associations 
   association_plot <- vector(mode="list", length=dim(output_df_all)[1])
   
@@ -120,7 +128,7 @@ maaslin2_association_plots <- function(metadata_path, features_path,
         ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
         ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
         ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
-        ggplot2::stat_smooth(method = "glm", color ='blue')+ 
+        ggplot2::stat_smooth(method = "glm", color ='blue', na.rm = T)+ 
         ggplot2::guides(alpha='none')+ggplot2::labs("")+
         ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme
     }else{
