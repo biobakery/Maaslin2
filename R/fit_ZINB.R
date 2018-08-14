@@ -9,7 +9,8 @@ fit.ZINB <- function(features,
                    metadata, 
                    normalization ='NONE', 
                    transformation ='NONE', 
-                   randomEffect = FALSE){
+                   randomEffect = FALSE,
+                   formula = NULL){
   
   #######################################
   # Apply Normalization to the Features #
@@ -27,7 +28,7 @@ fit.ZINB <- function(features,
     
     # Fit Model
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
-    formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
+    if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
     fit <- tryCatch({
       fit1 <- pscl::zeroinfl(formula, data = dat_sub, dist = "negbin")
     }, error=function(err){

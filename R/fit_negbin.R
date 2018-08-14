@@ -10,7 +10,8 @@ fit.negbin <- function(features,
                    metadata, 
                    normalization ='NONE', 
                    transformation ='NONE', 
-                   randomEffect = FALSE){
+                   randomEffect = FALSE,
+                   forumla = NULL){
   
   #######################################
   # Apply Normalization to the Features #
@@ -28,7 +29,7 @@ fit.negbin <- function(features,
     
     # Fit Model
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
-    formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
+    if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
     fit <- tryCatch({
       fit1 <- MASS::glm.nb(formula, data = dat_sub)
     }, error=function(err){

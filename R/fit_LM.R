@@ -9,7 +9,8 @@ fit.LM <- function(features,
                    metadata, 
                    normalization ='TSS', 
                    transformation ='LOG', 
-                   randomEffect = FALSE){
+                   randomEffect = FALSE,
+                   formula = NULL){
   
   #######################################
   # Apply Normalization to the Features #
@@ -32,7 +33,7 @@ fit.LM <- function(features,
     
     # Fit Model
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
-    formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
+    if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
     fit <- tryCatch({
           fit1 <- glm(formula, data = dat_sub, family='gaussian')
         }, error=function(err){

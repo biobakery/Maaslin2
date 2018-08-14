@@ -70,6 +70,7 @@ args$max_significance <- 0.25
 args$normalization <- normalization_choices[1]
 args$transform <- transform_choices[1]
 args$analysis_method <- analysis_method_choices_names[1]
+args$random_effects <- ""
 
 # add command line arguments
 options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
@@ -85,7 +86,8 @@ options <- add_option(options, c("-t","--transform"), type="character", dest="tr
     default=args$transform, help=paste("The transform to apply [ Default: %default ] [ Choices:",toString(transform_choices),"]"))
 options <- add_option(options, c("-m","--analysis_method"), type="character", dest="analysis_method", 
     default=args$analysis_method, help=paste("The analysis method to apply [ Default: %default ] [ Choices:",toString(analysis_method_choices_names),"]"))
-
+options <- add_option(options, c("-r","--random_effects"), type="character", dest="random_effects",
+    default=args$random_effects, help="The random effects for the model, comma-delimited for multiple effects [ Default: %default ]")
 
 option_not_valid_error <- function(message, valid_options) {
     logging::logerror(paste(message,": %s"), toString(valid_options))
@@ -96,7 +98,8 @@ option_not_valid_error <- function(message, valid_options) {
 # main maaslin2 function with defaults set to the same as those used on the command line
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
-    analysis_method=args$analysis_method, max_significance=args$max_significance)
+    analysis_method=args$analysis_method, max_significance=args$max_significance,
+    random_effects=args$random_effects)
 {
     # read in the data and metadata
     data <- read.table(input_data, header=TRUE, sep = "\t", row.names = 1)
@@ -157,6 +160,19 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         }
     }
 
+    # get the formula based on user input
+    formula_text<-paste("expr ~ ", paste(colnames(metadata), collapse= " + "))
+    # add random effects
+    if (random_effects!="") {
+        for (effect in unlist(strsplit(random_effects,",", fixed=TRUE))) {
+            formula_text_new<-sub(effect,paste("( 1 |",effect,")"),formula_text)
+            if (formula_text == formula_text_new) logging::logwarn("Feature name not found in metadata so not applied to formula as random effect: %s",effect)
+            formula_text<-formula_text_new
+        }
+    }
+    logging::loginfo("Formula with random effects applied: %s", formula_text)
+    formula<-tryCatch(as.formula(formula_text), error=function(e) stop(paste("Invalid formula. Please provide a different formula: ",formula_text)))
+
     # filter data based on min abundance and min prevalence
     # require at least total samples * min prevalence values for each feature to be greater than min abundance
     total_samples <- nrow(data)
@@ -171,7 +187,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # run the selected method looking up the function in the hash
     logging::loginfo("Running selected analysis method: %s", analysis_method)
-    results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform)
+    results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform, formula=formula)
 
     # count the total values for each feature
     results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
@@ -218,5 +234,6 @@ if(identical(environment(), globalenv()) &&
     Maaslin2(positional_args[1], positional_args[2], positional_args[3],
         current_args$min_abundance, current_args$min_prevalence, 
         current_args$normalization, current_args$transform,
-        current_args$analysis_method, current_args$max_significance) 
+        current_args$analysis_method, current_args$max_significance,
+        current_args$random_effects) 
 }
