@@ -131,6 +131,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::logdebug("Transform: %s", transform)
     logging::logdebug("Analysis method: %s", analysis_method)
     logging::logdebug("Max significance: %f", max_significance)
+    logging::logdebug("Random effects: %s", random_effects)
+    logging::logdebug("Formula: %s", formula)
 
     # check valid normalization option selected
     if (! normalization %in% normalization_choices) {
@@ -164,19 +166,49 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     }
 
     # get the formula based on user input
+    randomEffect<-NULL
     if (formula=="") {
-        formula_text<-paste("expr ~ ", paste(colnames(metadata), collapse= " + "))
+        fixed_effects<-colnames(metadata)
+        # create the formula text
+        formula_text<-paste("expr ~ ", paste(fixed_effects, collapse= " + "))
         # add random effects
         if (random_effects!="") {
+            # check random effects are only used with LM formula
+            if (analysis_method!="LM") option_not_valid_error("Random effects can only be used with the following analysis methods","LM")
+    
+            # generate random_effects_formula
+            random_effects_formula_text<-""
+            random_effects_names<-list()
             for (effect in unlist(strsplit(random_effects,",", fixed=TRUE))) {
-                formula_text_new<-sub(effect,paste("( 1 |",effect,")"),formula_text)
-                if (formula_text == formula_text_new) logging::logwarn("Feature name not found in metadata so not applied to formula as random effect: %s",effect)
-                formula_text<-formula_text_new
+                fixed_effects_new<-setdiff(fixed_effects,c(effect))
+                if (length(fixed_effects) == length(fixed_effects_new)) {
+                    logging::logwarn("Feature name not found in metadata so not applied to formula as random effect: %s",effect)
+                }
+                else {
+                    if (random_effects_formula_text!="") {
+                        random_effects_formula_text<-paste(random_effects_formula_text,"+ 1 |",effect)
+                    }
+                    else {
+                        random_effects_formula_text<-paste(" 1 |",effect)
+                    }
+                    random_effects_names<-union(random_effects_names,c(effect))
+                    fixed_effects<-fixed_effects_new
+                }
+            }
+            # create the formula text
+            formula_text<-paste("expr ~ ", paste(fixed_effects, collapse= " + "))
+            # only generate formula if random effects match metadata names
+            if (random_effects_formula_text!=""){
+                random_effects_formula_text<-paste(" ~ ",random_effects_formula_text)
+                logging::loginfo("Formula for random effects: %s", random_effects_formula_text)
+                random_effects_formula<-tryCatch(as.formula(random_effects_formula_text), error=function(e) stop(paste("Invalid formula for random effects: ",random_effects_formula_text)))
+                randomEffect<-c("formula"=random_effects_formula,"names"=random_effects_names)
             }
         }
-        logging::loginfo("Formula with random effects applied: %s", formula_text)
+        logging::loginfo("Formula for fixed effects: %s", formula_text)
     } else {
         formula_text <- formula
+        logging::loginfo("Formula from user: %s", formula_text)
     }
     formula<-tryCatch(as.formula(formula_text), error=function(e) stop(paste("Invalid formula. Please provide a different formula: ",formula_text)))
 
@@ -194,7 +226,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # run the selected method looking up the function in the hash
     logging::loginfo("Running selected analysis method: %s", analysis_method)
-    results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform, formula=formula)
+    results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
+        randomEffect=randomEffect,formula=formula)
 
     # count the total values for each feature
     results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
