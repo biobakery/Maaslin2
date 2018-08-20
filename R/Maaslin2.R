@@ -25,9 +25,10 @@
 ##########
 
 # load in the required libraries, report an error if they are not installed
-library("optparse")
-library(logging)
-library(hash)
+
+for( lib in c('optparse','logging','hash')) {
+  if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
+}
 
 # load in the maaslin2 R files if running from the command line
 # this evaluates to true if script is being called directly as an executable
@@ -121,6 +122,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::setLevel(20, logging::getHandler('basic.stdout'))
 
     # log the arguments
+    logging::loginfo("Writing function arguments to log file")
     logging::logdebug("Function arguments")
     logging::logdebug("Input data file: %s", input_data)
     logging::logdebug("Input metadata file: %s", input_metadata)
@@ -135,6 +137,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::logdebug("Formula: %s", formula)
 
     # check valid normalization option selected
+    logging::loginfo("Verifying options selected are valid")
     if (! normalization %in% normalization_choices) {
         option_not_valid_error("Please select a normalization from the list of available options", toString(normalization_choices))
     }
@@ -172,6 +175,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         # create the formula text
         formula_text<-paste("expr ~ ", paste(fixed_effects, collapse= " + "))
         # add random effects
+        logging::loginfo("Computing random effects formula")
         if (random_effects!="") {
             # check random effects are only used with LM formula
             if (analysis_method!="LM") option_not_valid_error("Random effects can only be used with the following analysis methods","LM")
@@ -214,6 +218,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # filter data based on min abundance and min prevalence
     # require at least total samples * min prevalence values for each feature to be greater than min abundance
+    logging::loginfo("Filter data based on min abundance and min prevalence")
     total_samples <- nrow(data)
     logging::loginfo("Total samples in data: %d", total_samples)
     min_samples <- total_samples * min_prevalence
@@ -230,6 +235,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         randomEffect=randomEffect,formula=formula)
 
     # count the total values for each feature
+    logging::loginfo("Counting total values for each feature")
     results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
     results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(filtered_data[,x[1]] > 0)))
 

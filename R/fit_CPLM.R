@@ -1,6 +1,6 @@
 # Load Required Packages
 for( lib in c('car', 'dplyr', 'pbapply', 'cplm')) {
-  if(! require(lib, character.only=TRUE) ) stop(paste("Please install the R package: ",lib))
+  if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
 
