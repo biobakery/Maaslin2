@@ -81,10 +81,10 @@ $ R
 MaAsLin2 requires two input files.
 
 1. Data (or features) file
-    * This file is tab-delimited formatted with features as columns and samples as rows.
+    * This file is tab-delimited formatted with features as columns and samples as rows (the transpose is also okay).
     * Possible features in this file include data like taxonomic or gene abundances.
 2. Metadata file
-    * This file is tab-delimited formatted with metadata as columns and samples as rows.
+    * This file is tab-delimited formatted with metadata as columns and samples as rows (the transpose is also okay).
     * Possible metadata in this file include gender or age.
 
 Please note the same samples must be included in both files. Also these samples must be in the same order in both files.

@@ -89,16 +89,11 @@ save_heatmap <- function(results_file, heatmap_file, title = "", cell_value = "Q
     ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, width = 135, height = 100, units = "mm", dpi = 350)
 }
 
-maaslin2_association_plots <- function(metadata_path, features_path,
+maaslin2_association_plots <- function(metadata, features,
                                        output_results, write_to_file = F, write_to='./')
   { 
   #MaAslin2 scatter plot function and theme
   
-  # read the masslin2 input
-  features <- read.table(features_path, header = TRUE,
-                        row.names = 1,   sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
-  metadata <- read.table(metadata_path, header = TRUE,
-                       row.names = 1,   sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   # combine the data and metadata to one datframe using common rows
   common_rows <- intersect(rownames(features), rownames(metadata))
   input_df_all <- cbind(features[common_rows,], metadata[common_rows,])

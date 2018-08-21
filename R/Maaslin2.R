@@ -98,7 +98,6 @@ option_not_valid_error <- function(message, valid_options) {
     stop("Option not valid", call.=FALSE)
 }
 
-
 # main maaslin2 function with defaults set to the same as those used on the command line
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
@@ -168,6 +167,44 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         }
     }
 
+    # determine orientation of samples/features in input files
+    logging::loginfo("Determining format of input files")
+    samples_row_row<-intersect(rownames(data),rownames(metadata))
+    if(length(samples_row_row)>0) {
+        # this is the expected formatting so do not modify data frames
+        logging::loginfo("Input format is data samples as rows and metadata samples as rows")
+    } else {
+        samples_column_row<-intersect(colnames(data),rownames(metadata))
+        if(length(samples_column_row)>0) { 
+            logging::loginfo("Input format is data samples as columns and metadata samples as rows")
+            # transpose data frame so samples are rows
+            data<-as.data.frame(t(data))
+            logging::logdebug("Transformed data so samples are rows")
+        } else {
+            samples_column_column<-intersect(colnames(data),colnames(metadata))
+            if(length(samples_column_column)>0) {
+                logging::loginfo("Input format is data samples as columns and metadata samples as columns")
+                data<-as.data.frame(t(data))
+                metadata<-as.data.frame(t(metadata))
+                logging::logdebug("Transformed data and metadata so samples are rows")
+            } else {
+                samples_row_column<-intersect(rownames(data),colnames(metadata))
+                if(length(samples_row_column)>0) {
+                    logging::loginfo("Input format is data samples as rows and metadata samples as columns")
+                    metadata<-as.data.frame(t(metadata))
+                    logging::logdebug("Transformed metadata so samples are rows")
+                } else {
+                    logging::logerror("Unable to find samples in data and metadata files. Rows/columns do not match.")
+                    logging::logdebug("Data rows: %s",paste(rownames(data), collapse= " + "))
+                    logging::logdebug("Data columns: %s",paste(colnames(data), collapse= " + "))
+                    logging::logdebug("Metadata rows: %s",paste(rownames(metadata), collapse= " + "))
+                    logging::logdebug("Metadata columns: %s",paste(colnames(data), collapse= " + "))
+                    stop()
+                }
+            }
+        }
+    }
+
     # get the formula based on user input
     randomEffect<-NULL
     if (formula=="") {
@@ -217,6 +254,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     formula<-tryCatch(as.formula(formula_text), error=function(e) stop(paste("Invalid formula. Please provide a different formula: ",formula_text)))
 
     # filter data based on min abundance and min prevalence
+    unfiltered_data <- data
+    unfiltered_metadata <- metadata
     # require at least total samples * min prevalence values for each feature to be greater than min abundance
     logging::loginfo("Filter data based on min abundance and min prevalence")
     total_samples <- nrow(data)
@@ -258,7 +297,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     heatmap <- save_heatmap(significant_results_file, heatmap_file)
 
     logging::loginfo("Writing association plots (one for each significant association) to output folder: %s", output)
-    plots <- maaslin2_association_plots(input_metadata, input_data, significant_results_file, write_to_file = TRUE, write_to = output)
+    plots <- maaslin2_association_plots(unfiltered_metadata, unfiltered_data, significant_results_file, write_to_file = TRUE, write_to = output)
 }
 
 # if running on the command line, get arguments and call maaslin function
