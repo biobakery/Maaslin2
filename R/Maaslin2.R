@@ -195,15 +195,32 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
                     logging::logdebug("Transformed metadata so samples are rows")
                 } else {
                     logging::logerror("Unable to find samples in data and metadata files. Rows/columns do not match.")
-                    logging::logdebug("Data rows: %s",paste(rownames(data), collapse= " + "))
-                    logging::logdebug("Data columns: %s",paste(colnames(data), collapse= " + "))
-                    logging::logdebug("Metadata rows: %s",paste(rownames(metadata), collapse= " + "))
-                    logging::logdebug("Metadata columns: %s",paste(colnames(data), collapse= " + "))
+                    logging::logdebug("Data rows: %s",paste(rownames(data), collapse= ","))
+                    logging::logdebug("Data columns: %s",paste(colnames(data), collapse= ","))
+                    logging::logdebug("Metadata rows: %s",paste(rownames(metadata), collapse= ","))
+                    logging::logdebug("Metadata columns: %s",paste(colnames(data), collapse= ","))
                     stop()
                 }
             }
         }
     }
+
+    # check for samples without metadata
+    extra_feature_samples <- setdiff(rownames(data),rownames(metadata))
+    logging::logdebug("The following samples were found to have features but no metadata. They will be removed. %s",paste(extra_feature_samples, collapse= ","))
+
+    # check for metadata samples without features
+    extra_metadata_samples <- setdiff(rownames(metadata),rownames(data))
+    logging::logdebug("The following samples were found to have metadata but no features. They will be removed. %s",paste(extra_metadata_samples, collapse= ","))
+
+    # get a set of the samples with both metadata and features
+    intersect_samples <- intersect(rownames(data),rownames(metadata))
+    logging::logdebug("A total of %s samples were found in both the data and metadata", length(intersect_samples))
+
+    # now order both data and metadata with the same sample ordering
+    logging::logdebug("Reordering data/metadata to use same sample ordering")
+    data <- data[intersect_samples,]
+    metadata <- metadata[intersect_samples,]
 
     # get the formula based on user input
     randomEffect<-NULL
