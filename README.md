@@ -87,7 +87,9 @@ MaAsLin2 requires two input files.
     * This file is tab-delimited formatted with metadata as columns and samples as rows (the transpose is also okay).
     * Possible metadata in this file include gender or age.
 
-Please note the same samples must be included in both files. Also these samples must be in the same order in both files.
+The data file can contain samples not included in the metadata file (along with the reverse case). For both cases,
+those samples not included in both files will be removed from the analysis. Also the samples do not
+need to be in the same order in the two files.
 
 ### Output Files ###
 
