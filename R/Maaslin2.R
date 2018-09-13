@@ -278,7 +278,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     total_samples <- nrow(data)
     logging::loginfo("Total samples in data: %d", total_samples)
     min_samples <- total_samples * min_prevalence
-    logging::loginfo("Min samples required with min abundance for a feature not to be filtered: %d", min_samples)
+    logging::loginfo("Min samples required with min abundance for a feature not to be filtered: %f", min_samples)
     filtered_data <- data[,colSums(data >= min_abundance) > min_samples]
     total_filtered_features <- ncol(data) - ncol(filtered_data)
     logging::loginfo("Total filtered features: %d", total_filtered_features)
