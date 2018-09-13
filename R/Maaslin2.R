@@ -49,8 +49,8 @@ if(identical(environment(), globalenv()) &&
 
 # set the default choices
 normalization_choices <- c("TSS","CLR","CSS","NONE","TMM")
-analysis_method_choices <- hash::hash(c("LM","CPLM","ZICP","NEGBIN","ZINB"), c(fit.LM,fit.CPLM,fit.ZICP,fit.negbin,fit.ZINB))
-analysis_method_choices_names <- hash::keys(analysis_method_choices)
+analysis_method_choices_names <- c("LM","CPLM","ZICP","NEGBIN","ZINB")
+analysis_method_choices <- hash::hash(analysis_method_choices_names, c(fit.LM,fit.CPLM,fit.ZICP,fit.negbin,fit.ZINB))
 transform_choices <- c("LOG","LOGIT","AST","NONE")
 valid_choice_combinations_method_norm <- hash::hash()
 valid_choice_combinations_method_norm[[analysis_method_choices_names[4]]] <- normalization_choices[2:5]
