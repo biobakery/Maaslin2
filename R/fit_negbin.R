@@ -60,7 +60,6 @@ fit.negbin <- function(features,
   paras$qval<-as.numeric(p.adjust(paras$pval, method = "fdr"))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
   paras<-dplyr::select(paras, c('feature', 'metadata'), dplyr::everything())
-  rownames(paras)<-NULL
   return(paras)  
 }
 

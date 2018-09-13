@@ -100,7 +100,7 @@ maaslin2_association_plots <- function(metadata, features,
   
   # read MaAsLin output
   output_df_all <- read.table( output_results, header = TRUE,
-                           row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+                           row.names = NULL, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   
   if (dim(output_df_all)[1] < 1){
     print('There is no association to plot!')
