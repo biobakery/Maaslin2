@@ -116,8 +116,14 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # create log file (write info to stdout and debug level to log file)
     # set level to finest so all log levels are reviewed
+    log_file<-file.path(output,"maaslin2.log")
+    # remove log file if already exists (to avoid append)
+    if(file.exists(log_file)) {
+        print(paste("Warning: Deleting existing log file:", log_file))
+        unlink(log_file)
+    }
     logging::basicConfig(level='FINEST')
-    logging::addHandler(logging::writeToFile,file=file.path(output,"maaslin2.log"),level="DEBUG")
+    logging::addHandler(logging::writeToFile,file=log_file,level="DEBUG")
     logging::setLevel(20, logging::getHandler('basic.stdout'))
 
     # log the arguments
