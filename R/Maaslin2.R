@@ -71,8 +71,8 @@ args$max_significance <- 0.25
 args$normalization <- normalization_choices[1]
 args$transform <- transform_choices[1]
 args$analysis_method <- analysis_method_choices_names[1]
-args$random_effects <- ""
-args$formula <- ""
+args$random_effects <- NULL
+args$fixed_effects <- NULL
 
 # add command line arguments
 options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
@@ -89,9 +89,9 @@ options <- add_option(options, c("-t","--transform"), type="character", dest="tr
 options <- add_option(options, c("-m","--analysis_method"), type="character", dest="analysis_method", 
     default=args$analysis_method, help=paste("The analysis method to apply [ Default: %default ] [ Choices:",toString(analysis_method_choices_names),"]"))
 options <- add_option(options, c("-r","--random_effects"), type="character", dest="random_effects",
-    default=args$random_effects, help="The random effects for the model, comma-delimited for multiple effects [ Default: %default (none, all fixed effects) ]")
-options <- add_option(options, c("-f","--formula"), type="character", dest="formula",
-    default=args$formula, help="The formula for the model [ Default: %default (formula automatically calculated based on metadata, all fixed effects)]")
+    default=args$random_effects, help="The random effects for the model, comma-delimited for multiple effects [ Default: none ]")
+options <- add_option(options, c("-f","--fixed_effects"), type="character", dest="fixed_effects",
+    default=args$fixed_effects, help="The fixed effects for the model, comma-delimited for multiple effects [ Default: all ]")
 
 option_not_valid_error <- function(message, valid_options) {
     logging::logerror(paste(message,": %s"), toString(valid_options))
@@ -102,7 +102,7 @@ option_not_valid_error <- function(message, valid_options) {
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
     analysis_method=args$analysis_method, max_significance=args$max_significance,
-    random_effects=args$random_effects, formula=args$formula)
+    random_effects=args$random_effects, fixed_effects=args$fixed_effects)
 {
     # read in the data and metadata
     data <- read.table(input_data, header=TRUE, sep = "\t", row.names = 1)
@@ -133,7 +133,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::logdebug("Analysis method: %s", analysis_method)
     logging::logdebug("Max significance: %f", max_significance)
     logging::logdebug("Random effects: %s", random_effects)
-    logging::logdebug("Formula: %s", formula)
+    logging::logdebug("Fixed effects: %s", fixed_effects)
 
     # check valid normalization option selected
     logging::loginfo("Verifying options selected are valid")
@@ -223,51 +223,49 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     metadata <- metadata[intersect_samples,]
 
     # get the formula based on user input
-    randomEffect<-NULL
-    if (formula=="") {
+    random_effects_formula<-NULL
+    # use all metadata if no fixed effects are provided
+    if (is.null(fixed_effects)) {
         fixed_effects<-colnames(metadata)
-        # create the formula text
-        formula_text<-paste("expr ~ ", paste(fixed_effects, collapse= " + "))
-        # add random effects
-        logging::loginfo("Computing random effects formula")
-        if (random_effects!="") {
-            # check random effects are only used with LM formula
-            if (analysis_method!="LM") option_not_valid_error("Random effects can only be used with the following analysis methods","LM")
-    
-            # generate random_effects_formula
-            random_effects_formula_text<-""
-            random_effects_names<-list()
-            for (effect in unlist(strsplit(random_effects,",", fixed=TRUE))) {
-                fixed_effects_new<-setdiff(fixed_effects,c(effect))
-                if (length(fixed_effects) == length(fixed_effects_new)) {
-                    logging::logwarn("Feature name not found in metadata so not applied to formula as random effect: %s",effect)
-                }
-                else {
-                    if (random_effects_formula_text!="") {
-                        random_effects_formula_text<-paste(random_effects_formula_text,"+ 1 |",effect)
-                    }
-                    else {
-                        random_effects_formula_text<-paste(" 1 |",effect)
-                    }
-                    random_effects_names<-union(random_effects_names,c(effect))
-                    fixed_effects<-fixed_effects_new
-                }
-            }
-            # create the formula text
-            formula_text<-paste("expr ~ ", paste(fixed_effects, collapse= " + "))
-            # only generate formula if random effects match metadata names
-            if (random_effects_formula_text!=""){
-                random_effects_formula_text<-paste(" ~ ",random_effects_formula_text)
-                logging::loginfo("Formula for random effects: %s", random_effects_formula_text)
-                random_effects_formula<-tryCatch(as.formula(random_effects_formula_text), error=function(e) stop(paste("Invalid formula for random effects: ",random_effects_formula_text)))
-                randomEffect<-c("formula"=random_effects_formula,"names"=random_effects_names)
-            }
-        }
-        logging::loginfo("Formula for fixed effects: %s", formula_text)
     } else {
-        formula_text <- formula
-        logging::loginfo("Formula from user: %s", formula_text)
+        fixed_effects<-unlist(strsplit(fixed_effects,",", fixed=TRUE))
+        # remove any fixed effects not found in metadata names
+        to_remove<-setdiff(fixed_effects,colnames(metadata))
+        logging::logwarn("Feature name not found in metadata so not applied to formula as fixed effect: %s",paste(to_remove, collapse= " , "))
+        fixed_effects<-setdiff(fixed_effects,to_remove)
+        if(length(fixed_effects)==0) {
+            logging::logerror("No fixed effects included in formula.")
+            stop()
+        }
     }
+
+    if (!is.null(random_effects)) {
+        # check random effects are only used with LM formula
+        if (analysis_method!="LM") option_not_valid_error("Random effects can only be used with the following analysis methods","LM")
+   
+        random_effects<-unlist(strsplit(random_effects,",", fixed=TRUE))  
+        # subtract random effects from fixed effects
+        fixed_effects<-setdiff(fixed_effects,random_effects)
+        # remove any random effects not found in metadata
+        to_remove<-setdiff(random_effects,colnames(metadata))
+        logging::logwarn("Feature name not found in metadata so not applied to formula as random effect: %s",paste(to_remove, collapse= " , "))
+        random_effects<-setdiff(random_effects,to_remove)
+
+        # create formula
+        if(length(random_effects)>0) {
+            random_effects_formula_text <- paste("expr ~ 1 |",paste(random_effects,collapse= " + 1 | "))
+            logging::loginfo("Formula for random effects: %s", random_effects_formula_text)
+            random_effects_formula<-tryCatch(as.formula(random_effects_formula_text), error=function(e) stop(paste("Invalid formula for random effects: ",random_effects_formula_text)))
+        }
+    } 
+
+    # reduce metadata to only include fixed/random effects in formula
+    effects_names <- union(fixed_effects,random_effects)
+    metadata <- metadata[,effects_names]
+
+    # create the fixed effects formula text
+    formula_text<-paste("expr ~ ", paste(fixed_effects, collapse= " + "))
+    logging::loginfo("Formula for fixed effects: %s", formula_text)
     formula<-tryCatch(as.formula(formula_text), error=function(e) stop(paste("Invalid formula. Please provide a different formula: ",formula_text)))
 
     # filter data based on min abundance and min prevalence
@@ -287,9 +285,12 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # run the selected method looking up the function in the hash
     logging::loginfo("Running selected analysis method: %s", analysis_method)
-    results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
-        randomEffect=randomEffect,formula=formula)
-
+    if(analysis_method=="LM") {
+        results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
+            random_effects=random_effects, random_effects_formula=random_effects_formula, formula=formula)
+    } else {
+        results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,formula=formula)
+    }
     # count the total values for each feature
     logging::loginfo("Counting total values for each feature")
     results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
@@ -337,5 +338,5 @@ if(identical(environment(), globalenv()) &&
         current_args$min_abundance, current_args$min_prevalence, 
         current_args$normalization, current_args$transform,
         current_args$analysis_method, current_args$max_significance,
-        current_args$random_effects, current_args$formula) 
+        current_args$random_effects, current_args$fixed_effects) 
 }

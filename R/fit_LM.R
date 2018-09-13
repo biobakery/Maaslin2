@@ -9,7 +9,8 @@ fit.LM <- function(features,
                    metadata, 
                    normalization ='TSS', 
                    transformation ='LOG', 
-                   randomEffect = NULL,
+                   random_effects = NULL,
+                   random_effects_formula = NULL,
                    formula = NULL){
   
   #######################################
@@ -34,11 +35,11 @@ fit.LM <- function(features,
     # Fit Model
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
     if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
-    if (!is.null(randomEffect)) {
+    if (!is.null(random_effects)) {
         fit <- tryCatch({
-              fit1 <- nlme::lme(fixed=formula, random=randomEffect[["formula"]], data = dat_sub)
+              fit1 <- nlme::lme(fixed=formula, random=random_effects_formula, data = dat_sub)
             }, error=function(err){
-              fit1 <- try({nlme::lme(fixed=formula, random=randomEffect[["formula"]], data = dat_sub)}) 
+              fit1 <- try({nlme::lme(fixed=formula, random=random_effects_formula, data = dat_sub)}) 
               return(fit1)
             })
         # Gather Output
@@ -50,7 +51,7 @@ fit.LM <- function(features,
               para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
             }
         colnames(para)<-c('coef', 'pval')
-        para$metadata<-setdiff(colnames(metadata),randomEffect[["names"]])
+        para$metadata<-setdiff(colnames(metadata),random_effects)
     } 
     else {
         fit <- tryCatch({
@@ -76,7 +77,7 @@ fit.LM <- function(features,
 
     return(para)
   })    
-   
+  
   paras<-do.call(rbind, paras)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = "fdr"))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
