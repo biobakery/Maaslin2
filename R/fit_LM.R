@@ -48,7 +48,7 @@ fit.LM <- function(features,
               para<-as.data.frame(coef(summary(fit)))[-1,-c(2:4)]
               } 
         else{
-              print(paste("Fitting problem for feature", x, "returning NA"))
+              logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
               para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
             }
         colnames(para)<-c('coef', 'pval')
@@ -66,7 +66,7 @@ fit.LM <- function(features,
               para<-as.data.frame(summary(fit)$coefficients)[-1,-c(2:3)]
               } 
         else{
-              print(paste("Fitting problem for feature", x, "returning NA"))
+              logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
               para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
             }
         colnames(para)<-c('coef', 'pval')

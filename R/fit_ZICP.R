@@ -44,14 +44,15 @@ fit.ZICP <- function(features,
     
     # Gather Output
     if (all(class(fit) != "try-error")){
-          para<-as.data.frame(summary(fit)$coefficients$tweedie)[-1,-c(2:3)]
+          cplm_out<-capture.output( para<-as.data.frame(summary(fit)$coefficients$tweedie)[-1,-c(2:3)] )
+          logging::logdebug("Summary output\n%s", paste(cplm_out, collapse="\n"))
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
           } 
     else{
-          print(paste("Fitting problem for feature", x, "returning NA"))
+          logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
           para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)

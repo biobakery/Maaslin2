@@ -45,7 +45,7 @@ fit.ZINB <- function(features,
           rownames(para)<-NULL
           } 
     else{
-          print(paste("Fitting problem for feature", x, "returning NA"))
+          logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
           para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)
