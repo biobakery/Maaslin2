@@ -58,7 +58,7 @@ valid_choice_combinations_method_norm[[analysis_method_choices_names[5]]] <- nor
 valid_choice_combinations_transform_norm <- hash::hash()
 valid_choice_combinations_transform_norm[[transform_choices[2]]] <- normalization_choices[1]
 valid_choice_combinations_transform_norm[[transform_choices[3]]] <- normalization_choices[1]
-
+correction_choices <- c("BH", "holm", "hochberg", "hommel", "bonferroni", "BY")
 
 # set the default run options
 args <- list()
@@ -73,6 +73,7 @@ args$transform <- transform_choices[1]
 args$analysis_method <- analysis_method_choices_names[1]
 args$random_effects <- NULL
 args$fixed_effects <- NULL
+args$correction <- correction_choices[1]
 
 # add command line arguments
 options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
@@ -92,6 +93,8 @@ options <- add_option(options, c("-r","--random_effects"), type="character", des
     default=args$random_effects, help="The random effects for the model, comma-delimited for multiple effects [ Default: none ]")
 options <- add_option(options, c("-f","--fixed_effects"), type="character", dest="fixed_effects",
     default=args$fixed_effects, help="The fixed effects for the model, comma-delimited for multiple effects [ Default: all ]")
+options <- add_option(options, c("-c","--correction"), type="character", dest="correction",
+    default=args$correction, help="The correction method for computing the q-value [ Default: %default ]")
 
 option_not_valid_error <- function(message, valid_options) {
     logging::logerror(paste(message,": %s"), toString(valid_options))
@@ -102,7 +105,7 @@ option_not_valid_error <- function(message, valid_options) {
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
     analysis_method=args$analysis_method, max_significance=args$max_significance,
-    random_effects=args$random_effects, fixed_effects=args$fixed_effects)
+    random_effects=args$random_effects, fixed_effects=args$fixed_effects, correction=args$correction)
 {
     # read in the data and metadata
     data <- read.table(input_data, header=TRUE, sep = "\t", row.names = 1)
@@ -140,6 +143,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::logdebug("Max significance: %f", max_significance)
     logging::logdebug("Random effects: %s", random_effects)
     logging::logdebug("Fixed effects: %s", fixed_effects)
+    logging::logdebug("Correction method: %s", correction)
 
     # check valid normalization option selected
     logging::loginfo("Verifying options selected are valid")
@@ -156,6 +160,12 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     if (! analysis_method %in% analysis_method_choices_names) {
         option_not_valid_error("Please select an analysis method from the list of available options", toString(analysis_method_choices_names))
     }
+
+    # check valid correction method selected
+    if (! correction %in% correction_choices) {
+        option_not_valid_error("Please select a correction method from the list of available options", toString(correction_choices))
+    }
+    
 
     # check a valid choice combination is selected
     for (limited_method in hash::keys(valid_choice_combinations_method_norm)) {
@@ -213,11 +223,11 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # check for samples without metadata
     extra_feature_samples <- setdiff(rownames(data),rownames(metadata))
-    logging::logdebug("The following samples were found to have features but no metadata. They will be removed. %s",paste(extra_feature_samples, collapse= ","))
+    if (length(extra_feature_samples)>0) logging::logdebug("The following samples were found to have features but no metadata. They will be removed. %s",paste(extra_feature_samples, collapse= ","))
 
     # check for metadata samples without features
     extra_metadata_samples <- setdiff(rownames(metadata),rownames(data))
-    logging::logdebug("The following samples were found to have metadata but no features. They will be removed. %s",paste(extra_metadata_samples, collapse= ","))
+    if (length(extra_metadata_samples)>0) logging::logdebug("The following samples were found to have metadata but no features. They will be removed. %s",paste(extra_metadata_samples, collapse= ","))
 
     # get a set of the samples with both metadata and features
     intersect_samples <- intersect(rownames(data),rownames(metadata))
@@ -293,9 +303,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::loginfo("Running selected analysis method: %s", analysis_method)
     if(analysis_method=="LM") {
         results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
-            random_effects=random_effects, random_effects_formula=random_effects_formula, formula=formula)
+            random_effects=random_effects, random_effects_formula=random_effects_formula, formula=formula, correction=correction)
     } else {
-        results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,formula=formula)
+        results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
+            formula=formula, correction=correction)
     }
     # count the total values for each feature
     logging::loginfo("Counting total values for each feature")
@@ -344,5 +355,6 @@ if(identical(environment(), globalenv()) &&
         current_args$min_abundance, current_args$min_prevalence, 
         current_args$normalization, current_args$transform,
         current_args$analysis_method, current_args$max_significance,
-        current_args$random_effects, current_args$fixed_effects) 
+        current_args$random_effects, current_args$fixed_effects,
+        current_args$correction) 
 }

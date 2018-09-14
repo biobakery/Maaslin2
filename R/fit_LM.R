@@ -11,7 +11,8 @@ fit.LM <- function(features,
                    transformation ='LOG', 
                    random_effects = NULL,
                    random_effects_formula = NULL,
-                   formula = NULL){
+                   formula = NULL,
+                   correction = "BH"){
   
   #######################################
   # Apply Normalization to the Features #
@@ -79,7 +80,7 @@ fit.LM <- function(features,
   })    
   
   paras<-do.call(rbind, paras)
-  paras$qval<-as.numeric(p.adjust(paras$pval, method = "fdr"))
+  paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
   paras<-dplyr::select(paras, c('feature', 'metadata'), dplyr::everything())
   return(paras)  
