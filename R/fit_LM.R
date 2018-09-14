@@ -12,7 +12,8 @@ fit.LM <- function(features,
                    random_effects = NULL,
                    random_effects_formula = NULL,
                    formula = NULL,
-                   correction = "BH"){
+                   correction = "BH",
+                   residuals_file = NULL){
   
   #######################################
   # Apply Normalization to the Features #
@@ -46,6 +47,7 @@ fit.LM <- function(features,
         # Gather Output
         if (all(class(fit) != "try-error")){
               para<-as.data.frame(coef(summary(fit)))[-1,-c(2:4)]
+              if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
               } 
         else{
               logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
@@ -64,6 +66,7 @@ fit.LM <- function(features,
         # Gather Output
         if (all(class(fit) != "try-error")){
               para<-as.data.frame(summary(fit)$coefficients)[-1,-c(2:3)]
+              if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
               } 
         else{
               logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))

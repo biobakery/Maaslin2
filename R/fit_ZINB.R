@@ -10,7 +10,8 @@ fit.ZINB <- function(features,
                    normalization ='NONE', 
                    transformation ='NONE', 
                    formula = NULL,
-                   correction = "BH"){
+                   correction = "BH",
+                   residuals_file = NULL){
   
   #######################################
   # Apply Normalization to the Features #
@@ -39,6 +40,7 @@ fit.ZINB <- function(features,
     # Gather Output
     if (all(class(fit) != "try-error")){
           para<-as.data.frame(summary(fit)$coefficients$count)[-c(1, (ncol(metadata)+2)),-c(2:3)]
+          if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
           colnames(para)<-c('coef', 'pval')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]

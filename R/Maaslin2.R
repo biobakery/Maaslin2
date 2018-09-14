@@ -301,12 +301,20 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # run the selected method looking up the function in the hash
     logging::loginfo("Running selected analysis method: %s", analysis_method)
+    residuals_file = file.path(output, "residuals.txt")
+    # remove residuals file if already exists (since residuals append)
+    if(file.exists(residuals_file)) {
+        logging::logwarn("Deleting existing residuals file: %s", residuals_file)
+        unlink(residuals_file)
+    }
+    logging::loginfo("Writing residuals to file %s", residuals_file)
     if(analysis_method=="LM") {
         results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
-            random_effects=random_effects, random_effects_formula=random_effects_formula, formula=formula, correction=correction)
+            random_effects=random_effects, random_effects_formula=random_effects_formula, formula=formula, correction=correction,
+            residuals_file=residuals_file)
     } else {
         results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
-            formula=formula, correction=correction)
+            formula=formula, correction=correction, residuals_file=residuals_file)
     }
     # count the total values for each feature
     logging::loginfo("Counting total values for each feature")
