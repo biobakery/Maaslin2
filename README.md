@@ -4,7 +4,7 @@ MaAsLin2 is the next generation of MaAsLin.
 
 [MaAsLin](https://huttenhower.sph.harvard.edu/maaslin) is a multivariate statistical framework that finds associations between clinical metadata and potentially high-dimensional experimental data.
 
-If you use the MaAsLin2 software, please cite our manuscript: Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Gholamali Rahnavard, George Weingart, Joseph N. Paulson, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. "Multivariable Association in Population-scale Meta'omic Surveys"Â (In Preparation).
+If you use the MaAsLin2 software, please cite our manuscript: Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Gholamali Rahnavard, George Weingart, Joseph N. Paulson, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. "Multivariable Association in Population-scale Meta'omic Surveys" (In Preparation).
 
 If you have questions, please email the [MaAsLin Users Google Group](https://groups.google.com/forum/#!forum/maaslin-users).
 
@@ -51,11 +51,22 @@ MaAsLin2 is an R package that can be run on the command line or as an R function
 
 ## Installation ##
 
-MaAsLin2 can be run from the command line or as an R function. If only running from the command line, you do not need to install the MaAsLin2 package.
+MaAsLin2 can be run from the command line or as an R function. If only running from the command line, you do not need to install the MaAsLin2 package
+but you will need to install the MaAsLin2 dependencies.
+
+### From command line ###
 
 1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/tip.tar.gz)
 2. Decompress the download: ``$ tar xzvf maaslin2.tar.gz``
-3. Install the package (only required if running as an R function): ``$ R CMD INSTALL maaslin2``
+3. Install the Bioconductor dependencies: ``$ R -q -e "source('https://bioconductor.org/biocLite.R'); biocLite('edgeR'); biocLite('metagenomeSeq')"``
+4. Install the CRAN dependencies: ``$ R -q -e "install.packages(c('pscl','pbapply','car','nlme','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging'), repos='http://cran.r-project.org')"``
+5. Install the MaAsLin2 package (only required if running as an R function): ``$ R CMD INSTALL maaslin2``
+
+### From R ###
+
+1. Install devtools : ``> install.packages('devtools')``
+2. Install the Bioconuctor dependencies: ``> source('https://bioconductor.org/biocLite.R'); biocLite('edgeR'); biocLite('metagenomeSeq')``
+3. Install MaAsLin2 (and also all dependencies from CRAN): ``> devtools::install_bitbucket("biobakery/maaslin2@default")``
 
 ## How to Run ##
 
