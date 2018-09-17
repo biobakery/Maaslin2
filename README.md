@@ -160,7 +160,17 @@ Options:
 		The transform to apply [ Default: LOG ] [ Choices: LOG, LOGIT, AST, NONE ]
 
 	-m ANALYSIS_METHOD, --analysis_method=ANALYSIS_METHOD
-		The analysis method to apply [ Default: CPLM ] [ Choices: CPLM, LM, NEGBIN, ZICP, ZINB ]
+		The analysis method to apply [ Default: LM ] [ Choices: LM, CPLM, ZICP, NEGBIN, ZINB ]
+
+	-r RANDOM_EFFECTS, --random_effects=RANDOM_EFFECTS
+		The random effects for the model, comma-delimited for multiple effects [ Default: none ]
+
+	-f FIXED_EFFECTS, --fixed_effects=FIXED_EFFECTS
+		The fixed effects for the model, comma-delimited for multiple effects [ Default: all ]
+
+	-c CORRECTION, --correction=CORRECTION
+		The correction method for computing the q-value [ Default: BH ]
+
 ```
 
 ## Visualization ##
