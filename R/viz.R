@@ -34,7 +34,7 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
     print('There is no association to plot!')
     return (NULL)
   }
-  metadata <- df$Variable
+  metadata <- df$Metadata
   data <- df$Feature
   value <- NA
   # values to use for coloring the heatmap
@@ -112,11 +112,11 @@ maaslin2_association_plots <- function(metadata, features,
   for (i in 1:dim(output_df_all)[1]){
     #print(i)
     #i <- 1
-    x_label <- as.character(output_df_all[i, 'Variable'])
+    x_label <- as.character(output_df_all[i, 'Metadata'])
     y_label <- as.character(output_df_all[i, 'Feature'])
     input_df <- input_df_all[c(x_label,y_label)]
     colnames(input_df) <- c("x", "y")
-    # if Variable is continuous generate a scatter plo
+    # if Metadata is continuous generate a scatter plot
     temp_plot <- NULL
     if (is.numeric(input_df[1,'x'])){
       temp_plot <- ggplot2::ggplot(data=input_df, ggplot2::aes(x, y)) +
@@ -127,7 +127,7 @@ maaslin2_association_plots <- function(metadata, features,
         ggplot2::guides(alpha='none')+ggplot2::labs("")+
         ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme
     }else{
-      # if Variable is categorical generate a Jitter plot with boxplot
+      # if Metadata is categorical generate a Jitter plot with boxplot
       ### check if the variable is categorical
       temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
         ggplot2::geom_boxplot(notch = TRUE) +
