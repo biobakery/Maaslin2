@@ -39,9 +39,11 @@ fit.ZINB <- function(features,
     
     # Gather Output
     if (all(class(fit) != "try-error")){
-          para<-as.data.frame(summary(fit)$coefficients$count)[-c(1, (ncol(metadata)+2)),-c(2:3)]
+          pscl_summary <- summary(fit)$coefficients$count
+          para<-as.data.frame(pscl_summary)[-c(1, (ncol(metadata)+2)),-c(2:3)]
+          para$name<-rownames(pscl_summary)[c(2:11)]
           if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
-          colnames(para)<-c('coef', 'pval')
+          colnames(para)<-c('coef', 'pval', 'name')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
@@ -49,7 +51,8 @@ fit.ZINB <- function(features,
     else{
           logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
           para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
-          colnames(para)<-c('coef', 'pval')
+          para$name<-colnames(metadata)
+          colnames(para)<-c('coef', 'pval', 'name')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
@@ -60,7 +63,7 @@ fit.ZINB <- function(features,
   paras<-do.call(rbind, paras)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
-  paras<-dplyr::select(paras, c('feature', 'metadata'), dplyr::everything())
+  paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
   return(paras)  
 }
 

@@ -40,9 +40,11 @@ fit.negbin <- function(features,
     
     # Gather Output
     if (all(class(fit) != "try-error")){
-          para<-as.data.frame(summary(fit)$coefficients)[-1,-c(2:3)]
+          glm_summary <- summary(fit)$coefficients
+          para<-as.data.frame(glm_summary)[-1,-c(2:3)]
+          para$name<-rownames(glm_summary)[-1]
           if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
-          colnames(para)<-c('coef', 'pval')
+          colnames(para)<-c('coef', 'pval', 'name')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
@@ -50,7 +52,8 @@ fit.negbin <- function(features,
     else{
           logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
           para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
-          colnames(para)<-c('coef', 'pval')
+          para$name<-colnames(metadata)
+          colnames(para)<-c('coef', 'pval', 'name')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
@@ -61,7 +64,7 @@ fit.negbin <- function(features,
   paras<-do.call(rbind, paras)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
-  paras<-dplyr::select(paras, c('feature', 'metadata'), dplyr::everything())
+  paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
   return(paras)  
 }
 

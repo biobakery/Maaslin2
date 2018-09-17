@@ -45,10 +45,12 @@ fit.ZICP <- function(features,
     
     # Gather Output
     if (all(class(fit) != "try-error")){
-          cplm_out<-capture.output( para<-as.data.frame(summary(fit)$coefficients$tweedie)[-1,-c(2:3)] )
+          cplm_out<-capture.output( cplm_summary <- summary(fit)$coefficients$tweedie )
+          para<-as.data.frame(cplm_summary)[-1,-c(2:3)]
+          para$name<-rownames(cplm_summary)[-1]
           logging::logdebug("Summary output\n%s", paste(cplm_out, collapse="\n"))
           if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
-          colnames(para)<-c('coef', 'pval')
+          colnames(para)<-c('coef', 'pval', 'name')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
@@ -56,7 +58,8 @@ fit.ZICP <- function(features,
     else{
           logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
           para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
-          colnames(para)<-c('coef', 'pval')
+          para$name<-colnames(metadata)
+          colnames(para)<-c('coef', 'pval', 'name')
           para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
@@ -67,7 +70,7 @@ fit.ZICP <- function(features,
   paras<-do.call(rbind, paras)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
-  paras<-dplyr::select(paras, c('feature', 'metadata'), dplyr::everything())
+  paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
   return(paras)  
 }
 

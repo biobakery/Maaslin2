@@ -46,14 +46,17 @@ fit.LM <- function(features,
             })
         # Gather Output
         if (all(class(fit) != "try-error")){
-              para<-as.data.frame(coef(summary(fit)))[-1,-c(2:4)]
+              lm_summary<-coef(summary(fit))
+              para<-as.data.frame(lm_summary)[-1,-c(2:4)]
+              para$name<-rownames(lm_summary)[-1]
               if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
               } 
         else{
               logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
               para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
+              para$name<-setdiff(colnames(metadata),random_effects)
             }
-        colnames(para)<-c('coef', 'pval')
+        colnames(para)<-c('coef', 'pval', 'name')
         para$metadata<-setdiff(colnames(metadata),random_effects)
     } 
     else {
@@ -65,14 +68,17 @@ fit.LM <- function(features,
             })
         # Gather Output
         if (all(class(fit) != "try-error")){
-              para<-as.data.frame(summary(fit)$coefficients)[-1,-c(2:3)]
+              lm_summary <- summary(fit)$coefficients
+              para<-as.data.frame(lm_summary)[-1,-c(2:3)]
+              para$name<-rownames(lm_summary)[-1]
               if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
               } 
         else{
               logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
               para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
+              para$name<-colnames(metadata)
             }
-        colnames(para)<-c('coef', 'pval')
+        colnames(para)<-c('coef', 'pval', 'name')
         para$metadata<-colnames(metadata)
     }
 
@@ -85,7 +91,7 @@ fit.LM <- function(features,
   paras<-do.call(rbind, paras)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
-  paras<-dplyr::select(paras, c('feature', 'metadata'), dplyr::everything())
+  paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
   return(paras)  
 }
 
