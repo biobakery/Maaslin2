@@ -172,6 +172,9 @@ Options:
 	-c CORRECTION, --correction=CORRECTION
 		The correction method for computing the q-value [ Default: BH ]
 
+	-z STANDARDIZE, --standardize=STANDARDIZE
+		Apply z-score so continuous metadata are on the same scale [ Default: TRUE ]
+
 ```
 
 ## Visualization ##

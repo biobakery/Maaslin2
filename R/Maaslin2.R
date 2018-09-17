@@ -26,7 +26,7 @@
 
 # load in the required libraries, report an error if they are not installed
 
-for( lib in c('optparse','logging','hash','data.table')) {
+for( lib in c('optparse','logging','hash','data.table','dplyr')) {
   if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
@@ -74,6 +74,7 @@ args$analysis_method <- analysis_method_choices_names[1]
 args$random_effects <- NULL
 args$fixed_effects <- NULL
 args$correction <- correction_choices[1]
+args$standardize <- TRUE
 
 # add command line arguments
 options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
@@ -95,6 +96,8 @@ options <- add_option(options, c("-f","--fixed_effects"), type="character", dest
     default=args$fixed_effects, help="The fixed effects for the model, comma-delimited for multiple effects [ Default: all ]")
 options <- add_option(options, c("-c","--correction"), type="character", dest="correction",
     default=args$correction, help="The correction method for computing the q-value [ Default: %default ]")
+options <- add_option(options, c("-z","--standardize"), type="logical", dest="standardize",
+    default=args$standardize, help="Apply z-score so continuous metadata are on the same scale [ Default: %default ]")
 
 option_not_valid_error <- function(message, valid_options) {
     logging::logerror(paste(message,": %s"), toString(valid_options))
@@ -105,7 +108,8 @@ option_not_valid_error <- function(message, valid_options) {
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
     analysis_method=args$analysis_method, max_significance=args$max_significance,
-    random_effects=args$random_effects, fixed_effects=args$fixed_effects, correction=args$correction)
+    random_effects=args$random_effects, fixed_effects=args$fixed_effects, correction=args$correction,
+    standardize=args$standardize)
 {
     # read in the data and metadata
     data <- data.frame(data.table::fread(input_data, header=TRUE, sep = "\t"), row.names=1)
@@ -144,6 +148,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::logdebug("Random effects: %s", random_effects)
     logging::logdebug("Fixed effects: %s", fixed_effects)
     logging::logdebug("Correction method: %s", correction)
+    logging::logdebug("Standardize: %s", standardize)
 
     # check valid normalization option selected
     logging::loginfo("Verifying options selected are valid")
@@ -299,6 +304,14 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     filtered_feature_names <- setdiff(names(data),names(filtered_data))
     logging::loginfo("Filtered feature names: %s", toString(filtered_feature_names))
 
+    # standardize metadata, if set
+    if (standardize) { 
+        logging::loginfo("Applying z-score to standardize continuous metadata")
+        metadata <- metadata %>% dplyr::mutate_if(is.numeric, scale)
+    } else {
+        logging::loginfo("Bypass z-score application to metadata")
+    }
+
     # run the selected method looking up the function in the hash
     logging::loginfo("Running selected analysis method: %s", analysis_method)
     residuals_file = file.path(output, "residuals.txt")
@@ -364,5 +377,5 @@ if(identical(environment(), globalenv()) &&
         current_args$normalization, current_args$transform,
         current_args$analysis_method, current_args$max_significance,
         current_args$random_effects, current_args$fixed_effects,
-        current_args$correction) 
+        current_args$correction, current_args$standardize) 
 }
