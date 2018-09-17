@@ -106,7 +106,7 @@ CSSnorm = function(features) {
   # Trigger metagenomeSeq to calculate its Cumulative Sum scaling factor.
   MGS = cumNorm(MGS, p=cumNormStat(MGS))
   # Save the normalized data as data.frame
-  features_CSS = as.data.frame(t(MRcounts(MGS, norm=TRUE, log=TRUE))) 
+  features_CSS = as.data.frame(t(MRcounts(MGS, norm=TRUE, log=FALSE))) 
   
   # Rename the True Positive Features - Same Format as Before
   colnames(features_CSS) <- dd;
