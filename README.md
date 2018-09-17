@@ -47,6 +47,7 @@ MaAsLin2 is an R package that can be run on the command line or as an R function
     * [cplm: Compound Poisson Linear Models](https://cran.rstudio.com/web/packages/cplm/index.html)
     * [hash: Full feature implementation of hash/associated arrays/dictionaries](https://cran.rstudio.com/web/packages/hash/index.html)
     * [logging: R logging package](https://cran.rstudio.com/web/packages/logging/index.html)
+    * [data.table: Fast aggregation of large data](https://cran.rstudio.com/web/packages/data.table/index.html)
     * These packages can be installed in R with ``install.packages('pscl')`` or from the command line ``$ R -q -e "install.packages('pscl', repos='http://cran.r-project.org')"`` individually (for those packages which you do not yet have installed) or as a set by providing the complete list as a vector.
 
 ## Installation ##
@@ -62,7 +63,7 @@ but you will need to install the MaAsLin2 dependencies.
 3. Install the Bioconductor dependencies: 
     * ``$ R -q -e "source('https://bioconductor.org/biocLite.R'); biocLite('edgeR'); biocLite('metagenomeSeq')"``
 4. Install the CRAN dependencies:
-    * ``$ R -q -e "install.packages(c('pscl','pbapply','car','nlme','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging'), repos='http://cran.r-project.org')"``
+    * ``$ R -q -e "install.packages(c('pscl','pbapply','car','nlme','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging','data.table'), repos='http://cran.r-project.org')"``
 5. Install the MaAsLin2 package (only required if running as an R function): 
     * ``$ R CMD INSTALL maaslin2``
 

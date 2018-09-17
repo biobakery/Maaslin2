@@ -26,7 +26,7 @@
 
 # load in the required libraries, report an error if they are not installed
 
-for( lib in c('optparse','logging','hash')) {
+for( lib in c('optparse','logging','hash','data.table')) {
   if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
@@ -108,8 +108,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     random_effects=args$random_effects, fixed_effects=args$fixed_effects, correction=args$correction)
 {
     # read in the data and metadata
-    data <- read.table(input_data, header=TRUE, sep = "\t", row.names = 1)
-    metadata <- read.table(input_metadata, header=TRUE, sep = "\t", row.names = 1)
+    data <- data.frame(data.table::fread(input_data, header=TRUE, sep = "\t"), row.names=1)
+    metadata <- data.frame(data.table::fread(input_metadata, header=TRUE, sep = "\t"), row.names=1)
 
     # create an output folder if it does not exist
     if (!file.exists(output)) {
