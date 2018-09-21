@@ -101,7 +101,7 @@ fit.LM <- function(features,
   
   paras<-do.call(rbind, paras)
   paras$metdata<-sapply(strsplit(paras$name, '_'), '[', 1) 
-  paras$name<-sub("_", "", paras$name))
+  paras$name<-sub("_", "", paras$name)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
   paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
