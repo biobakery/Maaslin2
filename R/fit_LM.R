@@ -15,6 +15,12 @@ fit.LM <- function(features,
                    correction = "BH",
                    residuals_file = NULL){
   
+  
+  #######################################################
+  # Add Artificial Delimiter to the Colnames of Metdata #
+  #######################################################
+  colnames(metdata)<-paste(colnames(metdata), '_', sep ='')
+  
   ##########################################################
   # Apply Normalization and Transformation to the Features #
   ##########################################################
@@ -65,7 +71,6 @@ fit.LM <- function(features,
               para$name<-setdiff(colnames(metadata),random_effects)
             }
         colnames(para)<-c('coef', 'pval', 'name')
-        para$metadata<-setdiff(colnames(metadata),random_effects)
     } 
     else {
         fit <- tryCatch({
@@ -87,16 +92,16 @@ fit.LM <- function(features,
               para$name<-colnames(metadata)
             }
         colnames(para)<-c('coef', 'pval', 'name')
-        para$metadata<-colnames(metadata)
     }
 
     para$feature<-colnames(features)[x]
     rownames(para)<-NULL
-
     return(para)
   })    
   
   paras<-do.call(rbind, paras)
+  paras$metdata<-sapply(strsplit(paras$name, '_'), '[', 1) 
+  paras$name<-sub("_", "", paras$name))
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
   paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
