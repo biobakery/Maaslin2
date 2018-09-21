@@ -345,7 +345,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     significant_results <- significant_results[significant_results$qval <= max_significance,]
     significant_results_file <- file.path(output,"significant_results.tsv")
     logging::loginfo("Writing the significant results (those which are less than or equal to the threshold of %f ) to file (ordered by increasing q-values): %s", max_significance, significant_results_file)
-    write.table(significant_results[c("metadata","feature","coef","N","N.not.zero","pval","qval")], file=significant_results_file, sep="\t", quote=FALSE, col.names=c("Metadata","Feature","Coefficient","N","N.not.0","P.value","Q.value"), row.names=FALSE)
+    write.table(significant_results[c("feature","metadata","coef","N","N.not.zero","pval","qval")], file=significant_results_file, sep="\t", quote=FALSE, col.names=c("Feature","Metadata","Coefficient","N","N.not.0","P.value","Q.value"), row.names=FALSE)
 
     # write visualizations for results passing threshold
     heatmap_file <- file.path(output,"heatmap.pdf")
