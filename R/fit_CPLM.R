@@ -14,11 +14,23 @@ fit.CPLM <- function(features,
                    correction = "BH",
                    residuals_file = NONE){
   
-  #######################################
-  # Apply Normalization to the Features #
-  #######################################
+  ##########################################################
+  # Apply Normalization and Transformation to the Features #
+  ##########################################################
   
   features<-normalizeFeatures(features, normalization = normalization)
+  
+  if (transformation =='LOG')   {
+    features<-apply(features, 2, LOG)
+  }
+  
+  if (transformation =='LOGIT')   {
+    features<-apply(features, 2, LOGIT)
+  }
+  
+  if (transformation =='AST')   {
+    features<-apply(features, 2, AST)
+  }
   
   ######################################################################
   # Apply Per-Feature Modeling Followed by User-defined Transformation #
@@ -26,13 +38,9 @@ fit.CPLM <- function(features,
   
   paras <- pbapply::pbsapply(1:ncol(features), simplify=FALSE, function(x){
     
+    # Extract Features One by One
     featuresVector <- features[, x]
-    
-    # Transform
-    if (transformation =='LOG') featuresVector<-LOG(featuresVector);
-    if (transformation =='LOGIT') featuresVector<-LOGIT(featuresVector);
-    if (transformation =='AST') featuresVector<-AST(featuresVector);
-    
+
     # Fit Model
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
     if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))

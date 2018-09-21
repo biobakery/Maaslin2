@@ -14,9 +14,9 @@ fit.negbin <- function(features,
                    correction = "BH",
                    residuals_file = NULL){
   
-  #######################################
-  # Apply Normalization to the Features #
-  #######################################
+  ##########################################################
+  # Apply Normalization and Transformation to the Features #
+  ##########################################################
   
   features<-normalizeFeatures(features, normalization = normalization)
   
@@ -26,6 +26,7 @@ fit.negbin <- function(features,
   
   paras <- pbapply::pbsapply(1:ncol(features), simplify=FALSE, function(x){
     
+    # Extract Features One by One
     featuresVector <- features[, x]
     
     # Fit Model
