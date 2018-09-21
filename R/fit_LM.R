@@ -15,12 +15,6 @@ fit.LM <- function(features,
                    correction = "BH",
                    residuals_file = NULL){
   
-  
-  #######################################################
-  # Add Artificial Delimiter to the Colnames of Metdata #
-  #######################################################
-  colnames(metadata)<-paste(colnames(metadata), '_', sep ='')
-  
   ##########################################################
   # Apply Normalization and Transformation to the Features #
   ##########################################################
@@ -62,15 +56,15 @@ fit.LM <- function(features,
         if (all(class(fit) != "try-error")){
               lm_summary<-coef(summary(fit))
               para<-as.data.frame(lm_summary)[-1,-c(2:4)]
-              para$name<-rownames(lm_summary)[-1]
+              para$metadata<-rownames(lm_summary)[-1]
               if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
               } 
         else{
               logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
               para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
-              para$name<-setdiff(colnames(metadata),random_effects)
+              para$metadata<-setdiff(colnames(metadata),random_effects)
             }
-        colnames(para)<-c('coef', 'pval', 'name')
+        colnames(para)<-c('coef', 'pval', 'metadata')
     } 
     else {
         fit <- tryCatch({
@@ -83,15 +77,15 @@ fit.LM <- function(features,
         if (all(class(fit) != "try-error")){
               lm_summary <- summary(fit)$coefficients
               para<-as.data.frame(lm_summary)[-1,-c(2:3)]
-              para$name<-rownames(lm_summary)[-1]
+              para$metadata<-rownames(lm_summary)[-1]
               if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
               } 
         else{
               logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
               para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
-              para$name<-colnames(metadata)
+              para$metadata<-colnames(metadata)
             }
-        colnames(para)<-c('coef', 'pval', 'name')
+        colnames(para)<-c('coef', 'pval', 'metadata')
     }
 
     para$feature<-colnames(features)[x]
@@ -100,11 +94,9 @@ fit.LM <- function(features,
   })    
   
   paras<-do.call(rbind, paras)
-  paras$metdata<-sapply(strsplit(paras$name, '_'), '[', 1) 
-  paras$name<-sub("_", "", paras$name)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
-  paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
+  paras<-dplyr::select(paras, c('feature', 'metadata'), dplyr::everything())
   return(paras)  
 }
 
