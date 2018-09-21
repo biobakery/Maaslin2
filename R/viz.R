@@ -2,13 +2,14 @@
 # Author: Gholamali (Ali) rahnavard
 # Email: gholamali.rahnavard@gmail.com
 # This script includes functions for visualzing overall output of MaAsLin2 and
-# inditual associations as scatterplot or boxplot
+# individual associations as scatterplot and boxplot
 # Date: `r paste(date())` 
 # --------------
 
 # Load libararies 
 library(ggplot2)
 library(pheatmap)
+#library(ggcorrplot)
 
 # MaAsLin2 theme based on Nutur journal rquiremnts
 nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 1),
@@ -26,8 +27,9 @@ nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 
 
 # MaAsLin2 heatmap function for overall view of associations 
 maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
-                            border_color = "grey93", format =  NA, color = colorRampPalette(c("blue","grey90", "red"))(50)) {#)
+                            border_color = "grey93", format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50)) {#)
   # read MaAsLin output
+
   df <- read.table( output_results,
                     header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
   if (dim(df)[1] < 1){
@@ -59,8 +61,6 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
   rownames(a) <- levels(metadata)
   colnames(a) <- levels(data)
   
-  #colnames(a) <-  sapply(colnames(a), pcl.sub )
-  
   p <- pheatmap::pheatmap(a, cellwidth = 7, cellheight = 7,   # changed to 3
                 main = title,
                 fontsize = 6,
@@ -77,7 +77,7 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
                 color = color,
                 treeheight_row=0,
                 treeheight_col=0,
-                display_numbers = matrix(ifelse(a > 0.0, "+", ifelse(a < 0.0, "|", "")),  nrow(a)))
+                display_numbers = matrix(ifelse(a > 0.0, "+", ifelse(a < 0.0, "-", "")),  nrow(a)))
   return(p)
 }
 
