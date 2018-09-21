@@ -19,7 +19,7 @@ fit.LM <- function(features,
   #######################################################
   # Add Artificial Delimiter to the Colnames of Metdata #
   #######################################################
-  colnames(metdata)<-paste(colnames(metdata), '_', sep ='')
+  colnames(metadata)<-paste(colnames(metadata), '_', sep ='')
   
   ##########################################################
   # Apply Normalization and Transformation to the Features #
