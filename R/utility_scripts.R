@@ -3,6 +3,29 @@ for( lib in c('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')) {
   if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
+
+###################
+## Transformation #
+###################
+
+transformFeatures = function(features, transformation) {
+
+  if (transformation =='LOG')   {
+    features<-apply(features, 2, LOG)
+  }
+
+  if (transformation =='LOGIT')   {
+    features<-apply(features, 2, LOGIT)
+  }
+
+  if (transformation =='AST')   {
+    features<-apply(features, 2, AST)
+  }
+
+  return(features)
+}
+
+
 ##################
 ## Normalization #
 ##################

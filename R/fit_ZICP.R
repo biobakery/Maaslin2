@@ -19,18 +19,7 @@ fit.ZICP <- function(features,
   ##########################################################
   
   features<-normalizeFeatures(features, normalization = normalization)
-  
-  if (transformation =='LOG')   {
-    features<-apply(features, 2, LOG)
-  }
-  
-  if (transformation =='LOGIT')   {
-    features<-apply(features, 2, LOGIT)
-  }
-  
-  if (transformation =='AST')   {
-    features<-apply(features, 2, AST)
-  }
+  features<-transformFeatures(features, transformation = transformation)  
   
   ######################################################################
   # Apply Per-Feature Modeling Followed by User-defined Transformation #
