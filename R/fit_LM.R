@@ -54,7 +54,6 @@ fit.LM <- function(features,
               para$name<-setdiff(colnames(metadata),random_effects)
             }
         colnames(para)<-c('coef', 'pval', 'name')
-        para$metadata<-setdiff(colnames(metadata),random_effects)
     } 
     else {
         fit <- tryCatch({
@@ -76,7 +75,6 @@ fit.LM <- function(features,
               para$name<-colnames(metadata)
             }
         colnames(para)<-c('coef', 'pval', 'name')
-        para$metadata<-colnames(metadata)
     }
 
     para$feature<-colnames(features)[x]
@@ -87,6 +85,15 @@ fit.LM <- function(features,
   
   paras<-do.call(rbind, paras)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
+  # determine the metadata names from the model names
+  metadata_names<-colnames(metadata)
+  # order the metadata names by decreasing length
+  metadata_names_ordered<-metadata_names[order(nchar(metadata_names),decreasing=TRUE)]
+  # find the metadata name based on the match to the beginning of the string
+  extract_metadata_name <- function(name) {
+    return(metadata_names_ordered[mapply(startsWith,name,metadata_names_ordered)][1])
+  }
+  paras$metadata<-unlist(lapply(paras$name,extract_metadata_name))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
   paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
   return(paras)  

@@ -46,7 +46,6 @@ fit.negbin <- function(features,
           para$name<-rownames(glm_summary)[-1]
           if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
           colnames(para)<-c('coef', 'pval', 'name')
-          para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
           } 
@@ -55,7 +54,6 @@ fit.negbin <- function(features,
           para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
           para$name<-colnames(metadata)
           colnames(para)<-c('coef', 'pval', 'name')
-          para$metadata<-colnames(metadata)
           para$feature<-colnames(features)[x]
           rownames(para)<-NULL
         }
@@ -64,6 +62,15 @@ fit.negbin <- function(features,
    
   paras<-do.call(rbind, paras)
   paras$qval<-as.numeric(p.adjust(paras$pval, method = correction))
+  # determine the metadata names from the model names
+  metadata_names<-colnames(metadata)
+  # order the metadata names by decreasing length
+  metadata_names_ordered<-metadata_names[order(nchar(metadata_names),decreasing=TRUE)]
+  # find the metadata name based on the match to the beginning of the string
+  extract_metadata_name <- function(name) {
+    return(metadata_names_ordered[mapply(startsWith,name,metadata_names_ordered)][1])
+  }
+  paras$metadata<-unlist(lapply(paras$name,extract_metadata_name))
   paras<-paras[order(paras$qval, decreasing=FALSE),]
   paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
   return(paras)  
