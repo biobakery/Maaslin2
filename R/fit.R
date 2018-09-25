@@ -97,18 +97,14 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     if (all(class(fit) != "try-error")){
           para<-summary_function(fit)
           if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
-          colnames(para)<-c('coef', 'pval', 'name')
-          para$feature<-colnames(features)[x]
-          rownames(para)<-NULL
           } 
     else{
           logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
           para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
           para$name<-colnames(metadata)
-          colnames(para)<-c('coef', 'pval', 'name')
-          para$feature<-colnames(features)[x]
-          rownames(para)<-NULL
         }
+    colnames(para)<-c('coef', 'pval', 'name')
+    para$feature<-colnames(features)[x]
     return(para)
   })    
    
