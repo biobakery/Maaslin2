@@ -1,7 +1,7 @@
 #snippet header
 # Author: Gholamali (Ali) rahnavard
 # Email: gholamali.rahnavard@gmail.com
-# This script includes functions for visualzing overall output of MaAsLin2 and
+# This script includes functions for visualizing overall output of MaAsLin2 and
 # individual associations as scatterplot and boxplot
 # Date: `r paste(date())` 
 # --------------
@@ -11,7 +11,7 @@ library(ggplot2)
 library(pheatmap)
 #library(ggcorrplot)
 
-# MaAsLin2 theme based on Nutur journal rquiremnts
+# MaAsLin2 theme based on Nature journal requirements
 nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 1),
                                    axis.text.y = element_text(size = 8, hjust = 1),
                                    axis.title=element_text(size = 10  ),
@@ -91,33 +91,32 @@ save_heatmap <- function(results_file, heatmap_file, title = "", cell_value = "Q
   ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, width = 135, height = 100, units = "mm", dpi = 350)
 }
 
-maaslin2_association_plots <- function(metadata_path, features_path,
+maaslin2_association_plots <- function(metadata, features,
                                        output_results, write_to_file = F, write_to='./')
 { 
   #MaAslin2 scatter plot function and theme
   
   # combine the data and metadata to one datframe using common rows
-  # read MaAsLin output (allow for inputs as data frames)
-  if (is.character(metadata_path)) {
-    metadata <- read.table( metadata_path, header = TRUE,
-                            row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
-  } else {
-    metadata <- metadata_path
+  # read MaAsLin output
+  if (is.character(metadata)){
+    metadata <- read.table( metadata, header = TRUE,
+                          row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   }
-
-  if (is.character(features_path)) {
-    features <- read.table( features_path, header = TRUE,
-                            row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
-  } else {
-    features <- features_path
+  if (is.character(features)){
+    features <- read.table( features, header = TRUE,
+                          row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
   }
-
+  
   common_rows <- intersect(rownames(features), rownames(metadata))
   input_df_all <- cbind(features[common_rows,], metadata[common_rows,])
   
   # read MaAsLin output
-  output_df_all <- read.table( output_results, header = TRUE,
+  if (is.character(output_results)){
+    output_df_all <- read.table( output_results, header = TRUE,
                                row.names = NULL, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  }else{
+    output_df_all <- output_results
+  }
   
   if (dim(output_df_all)[1] < 1){
     print('There is no association to plot!')
@@ -136,7 +135,8 @@ maaslin2_association_plots <- function(metadata_path, features_path,
     # if Metadata is continuous generate a scatter plot
     temp_plot <- NULL
     if (is.numeric(input_df[1,'x'])){
-      temp_plot <- ggplot2::ggplot(data=input_df, ggplot2::aes(x, y)) +
+      temp_plot <- ggplot2::ggplot(data=input_df, 
+        ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
         ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
         ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
         ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
