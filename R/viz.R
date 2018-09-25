@@ -127,7 +127,8 @@ maaslin2_association_plots <- function(metadata_path, features_path,
     # if Metadata is continuous generate a scatter plot
     temp_plot <- NULL
     if (is.numeric(input_df[1,'x'])){
-      temp_plot <- ggplot2::ggplot(data=input_df, ggplot2::aes(x, y)) +
+      temp_plot <- ggplot2::ggplot(data=input_df, 
+        ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
         ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
         ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
         ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
