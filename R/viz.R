@@ -53,9 +53,7 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
   }
   n <- length(unique(metadata))
   m <- length(unique(data))
-  print(n, m)
   a = matrix(0, nrow=n, ncol=m)
-  print(dim(a))
   for (i in 1:length(metadata)){
     #if (abs(a[as.numeric(metadata[i]), as.numeric(metadata[i])]) > abs(value[i]))
     #  next
@@ -100,17 +98,25 @@ maaslin2_association_plots <- function(metadata_path, features_path,
   
   # combine the data and metadata to one datframe using common rows
   # read MaAsLin output
-  metadata <- read.table( metadata_path, header = TRUE,
+  if (is.character(metadata_path)){
+    metadata <- read.table( metadata_path, header = TRUE,
                           row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
-  features <- read.table( features_path, header = TRUE,
+  }
+  if (is.character(features_path)){
+    features <- read.table( features_path, header = TRUE,
                           row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  }
   
   common_rows <- intersect(rownames(features), rownames(metadata))
   input_df_all <- cbind(features[common_rows,], metadata[common_rows,])
   
   # read MaAsLin output
-  output_df_all <- read.table( output_results, header = TRUE,
+  if (is.character(output_results)){
+    output_df_all <- read.table( output_results, header = TRUE,
                                row.names = NULL, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  }else{
+    output_df_all <- output_results
+  }
   
   if (dim(output_df_all)[1] < 1){
     print('There is no association to plot!')
