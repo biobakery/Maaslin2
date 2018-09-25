@@ -55,6 +55,7 @@ transform_choices <- c("LOG","LOGIT","AST","NONE")
 valid_choice_combinations_method_norm <- hash::hash()
 valid_choice_combinations_method_norm[[analysis_method_choices_names[4]]] <- normalization_choices[2:5]
 valid_choice_combinations_method_norm[[analysis_method_choices_names[5]]] <- normalization_choices[2:5]
+valid_choice_method_transform<-analysis_method_choices_names[1:3]
 valid_choice_combinations_transform_norm <- hash::hash()
 valid_choice_combinations_transform_norm[[transform_choices[2]]] <- normalization_choices[1]
 valid_choice_combinations_transform_norm[[transform_choices[3]]] <- normalization_choices[1]
@@ -185,6 +186,14 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
             if (! normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
                 option_not_valid_error("This transform can only be used with a subset of normalizations. Please select from the following list", toString(valid_choice_combinations_transform_norm[[limited_transform]]))
             }
+        }
+    }
+
+    # check that the transform can be applied to the method selected
+    if (transform!="NONE")
+    {
+        if (! analysis_method %in% valid_choice_method_transform) {
+            option_not_valid_error("The transform selected can only be used with some methods. Please select from the following list", toString(valid_choice_method_transform))
         }
     }
 
