@@ -1,7 +1,7 @@
 #snippet header
 # Author: Gholamali (Ali) rahnavard
 # Email: gholamali.rahnavard@gmail.com
-# This script includes functions for visualzing overall output of MaAsLin2 and
+# This script includes functions for visualizing overall output of MaAsLin2 and
 # individual associations as scatterplot and boxplot
 # Date: `r paste(date())` 
 # --------------
@@ -11,7 +11,7 @@ library(ggplot2)
 library(pheatmap)
 #library(ggcorrplot)
 
-# MaAsLin2 theme based on Nutur journal rquiremnts
+# MaAsLin2 theme based on Nature journal requirements
 nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 1),
                                    axis.text.y = element_text(size = 8, hjust = 1),
                                    axis.title=element_text(size = 10  ),
@@ -37,7 +37,7 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
     print('There is no association to plot!')
     return (NULL)
   }
-  metadata <- df$Variable
+  metadata <- df$Metadata
   data <- df$Feature
   value <- NA
   # values to use for coloring the heatmap
@@ -53,7 +53,9 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
   }
   n <- length(unique(metadata))
   m <- length(unique(data))
+  print(n, m)
   a = matrix(0, nrow=n, ncol=m)
+  print(dim(a))
   for (i in 1:length(metadata)){
     #if (abs(a[as.numeric(metadata[i]), as.numeric(metadata[i])]) > abs(value[i]))
     #  next
@@ -120,7 +122,7 @@ maaslin2_association_plots <- function(metadata_path, features_path,
   for (i in 1:dim(output_df_all)[1]){
     #print(i)
     #i <- 1
-    x_label <- as.character(output_df_all[i, 'Variable'])
+    x_label <- as.character(output_df_all[i, 'Metadata'])
     y_label <- as.character(output_df_all[i, 'Feature'])
     input_df <- input_df_all[c(x_label,y_label)]
     colnames(input_df) <- c("x", "y")
