@@ -371,8 +371,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     filtered_data<-transformFeatures(filtered_data, transformation = transform)
 
     # apply the method to the data with the correction
-    results <- fit.data(filtered_data, metadata, analysis_method, random_effects=random_effects, random_effects_formula=random_effects_formula,
-        formula=formula, correction=correction, residuals_file=residuals_file)
+    results <- fit.data(filtered_data, metadata, analysis_method, formula=formula, random_effects_formula=random_effects_formula,
+        correction=correction, residuals_file=residuals_file)
 
     ###########################################
     # Count the total values for each feature #

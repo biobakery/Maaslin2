@@ -4,8 +4,8 @@ for( lib in c('dplyr', 'pbapply', 'MASS', 'lme4', 'car', 'cplm', 'nlme', 'pscl')
 }
 
 # fit the data using the model selected and applying the correction
-fit.data <- function(features, metadata, model, random_effects = NULL, random_effects_formula = NULL, 
-    formula = NULL, correction = "BH", residuals_file = NULL){
+fit.data <- function(features, metadata, model, formula = NULL, random_effects_formula = NULL, 
+    correction = "BH", residuals_file = NULL){
 
   # set the formula default to all fixed effects if not provided  
   if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
@@ -15,7 +15,7 @@ fit.data <- function(features, metadata, model, random_effects = NULL, random_ef
   #############################################################
 
   if (model=="LM") {
-    if (is.null(random_effects)) {
+    if (is.null(random_effects_formula)) {
       model_function <- function(formula, data) { return(glm(formula, data = data, family='gaussian')) }
       summary_function <- function(fit) {
         lm_summary <- summary(fit)$coefficients
