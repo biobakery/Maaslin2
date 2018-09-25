@@ -147,7 +147,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
   }
   paras$metadata<-unlist(lapply(paras$name,extract_metadata_name))
   # compute the value as the model contrast minus metadata
-  paras$value<-mapply(function(x,y) { gsub(x,"",y) }, paras$metadata, paras$name)
+  paras$value<-mapply(function(x,y) { if (x==y) x else gsub(x,"",y) }, paras$metadata, paras$name)
 
   ##############################
   # Sort by decreasing q-value #
