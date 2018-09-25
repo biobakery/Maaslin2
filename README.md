@@ -116,7 +116,7 @@ MaAsLin2 generates two types of output files: data and visualization.
 1. Data output files
     * ``all_results.tsv`` : This file contains all of the association results ordered by increasing q-value.
     * ``significant_results.tsv`` : This file is a subset of the data in the first file. It only includes those associations with q-values less than or equal to the significance threshold.
-    * ``residuals.txt`` : This file contains a line for each feature analyzed including the feature number and the residuals from the model selected.
+    * ``residuals.rds`` : This file contains a data frame with residuals for each feature analyzed from the model selected.
     * ``maaslin2.log`` : This file contains all of the debug information for the run. It includes all settings, warnings, errors, and steps run.
 2. Visualization output files
     * ``heatmap.pdf`` : This file contains a heatmap of the significant associations.

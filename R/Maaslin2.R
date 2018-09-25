@@ -357,39 +357,42 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     # Nomalize, transform, and run method writing residuals to file #
     #################################################################
 
-    logging::loginfo("Running selected analysis method: %s", analysis_method)
-    residuals_file = file.path(output, "residuals.txt")
-    # remove residuals file if already exists (since residuals append)
-    if(file.exists(residuals_file)) {
-        logging::logwarn("Deleting existing residuals file: %s", residuals_file)
-        unlink(residuals_file)
-    }
-    logging::loginfo("Writing residuals to file %s", residuals_file)
-
     # normalize and transform features
+    logging::loginfo("Running selected normalization method: %s", normalization)
     filtered_data<-normalizeFeatures(filtered_data, normalization = normalization)
+    logging::loginfo("Running selected transform method: %s", transform)
     filtered_data<-transformFeatures(filtered_data, transformation = transform)
 
     # apply the method to the data with the correction
-    results <- fit.data(filtered_data, metadata, analysis_method, formula=formula, random_effects_formula=random_effects_formula,
-        correction=correction, residuals_file=residuals_file)
+    logging::loginfo("Running selected analysis method: %s", analysis_method)
+    fit_data <- fit.data(filtered_data, metadata, analysis_method, formula=formula, random_effects_formula=random_effects_formula, correction=correction)
 
     ###########################################
     # Count the total values for each feature #
     ###########################################
 
     logging::loginfo("Counting total values for each feature")
-    results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
-    results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(filtered_data[,x[1]] > 0)))
+    fit_data$results$N <- apply(fit_data$results, 1, FUN = function(x) length(filtered_data[,x[1]]))
+    fit_data$results$N.not.zero <- apply(fit_data$results, 1, FUN = function(x) length(which(filtered_data[,x[1]] > 0)))
 
     #########################
     # Write out the results #
     #########################
+
+    # write residuals to file
+    residuals_file = file.path(output, "residuals.rds")
+    # remove residuals file if already exists (since residuals append)
+    if(file.exists(residuals_file)) {
+        logging::logwarn("Deleting existing residuals file: %s", residuals_file)
+        unlink(residuals_file)
+    }
+    logging::loginfo("Writing residuals to file %s", residuals_file)
+    saveRDS(fit_data$residuals, file=residuals_file)
    
     # write all results to file
     results_file <- file.path(output,"all_results.tsv")
     logging::loginfo("Writing all results to file (ordered by increasing q-values): %s", results_file)
-    ordered_results <- results[order(results$qval),]
+    ordered_results <- fit_data$results[order(fit_data$results$qval),]
     write.table(ordered_results[c("metadata","feature","name","coef","N","N.not.zero","pval","qval")], file=results_file, sep="\t", quote=FALSE, col.names=c("Metadata","Feature","Contrast","Coefficient","N","N.not.0","P.value","Q.value"), row.names=FALSE)
 
     # write results passing threshold to file (removing any that are NA for the q-value)

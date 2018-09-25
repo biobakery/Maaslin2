@@ -4,8 +4,7 @@ for( lib in c('dplyr', 'pbapply', 'MASS', 'lme4', 'car', 'cplm', 'nlme', 'pscl')
 }
 
 # fit the data using the model selected and applying the correction
-fit.data <- function(features, metadata, model, formula = NULL, random_effects_formula = NULL, 
-    correction = "BH", residuals_file = NULL){
+fit.data <- function(features, metadata, model, formula = NULL, random_effects_formula = NULL, correction = "BH"){
 
   # set the formula default to all fixed effects if not provided  
   if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
@@ -79,7 +78,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
   ############################## 
   # Apply per-feature modeling #
   ##############################
-  paras <- pbapply::pbsapply(1:ncol(features), simplify=FALSE, function(x){
+  outputs <- pbapply::pblapply(1:ncol(features), function(x){
     
     # Extract Features One by One
     featuresVector <- features[, x]
@@ -94,21 +93,26 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     })
     
     # Gather Output
+    output<-list()
     if (all(class(fit) != "try-error")){
-          para<-summary_function(fit)
-          if (!is.null(residuals_file)) write(paste("Residuals for feature",x,paste(residuals(fit), collapse=",")),file=residuals_file,append=TRUE)
+          output$para<-summary_function(fit)
+          output$residuals<-residuals(fit)
           } 
     else{
           logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
-          para<- as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
-          para$name<-colnames(metadata)
+          output$para<-as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
+          output$para$name<-colnames(metadata)
+          output$residuals<-NA
         }
-    colnames(para)<-c('coef', 'pval', 'name')
-    para$feature<-colnames(features)[x]
-    return(para)
+    colnames(output$para)<-c('coef', 'pval', 'name')
+    output$para$feature<-colnames(features)[x]
+    return(output)
   })    
-   
-  paras<-do.call(rbind, paras)
+
+  # bind the results for each feature
+  paras<-do.call(rbind, lapply(outputs, function(x) { return(x$para) }))
+  residuals<-do.call(rbind, lapply(outputs, function(x) { return(x$residuals) }))
+  row.names(residuals)<-colnames(features)
 
   ################################
   # Apply correction to p-values #
@@ -135,6 +139,6 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
 
   paras<-paras[order(paras$qval, decreasing=FALSE),]
   paras<-dplyr::select(paras, c('feature', 'metadata', 'name'), dplyr::everything())
-  return(paras)  
+  return(list("results"=paras,"residuals"=residuals))  
 }
 
