@@ -1,10 +1,10 @@
 # Load Required Packages
-for( lib in c('dplyr', 'pbapply', 'MASS', 'lme4', 'car', 'cplm', 'nlme', 'pscl')) {
+for( lib in c('dplyr', 'pbapply', 'MASS', 'lme4', 'car', 'cplm', 'nlme', 'pscl', 'parallel')) {
   if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
 # fit the data using the model selected and applying the correction
-fit.data <- function(features, metadata, model, formula = NULL, random_effects_formula = NULL, correction = "BH"){
+fit.data <- function(features, metadata, model, formula = NULL, random_effects_formula = NULL, correction = "BH", cores = 1){
 
   # set the formula default to all fixed effects if not provided  
   if (is.null(formula)) formula<-as.formula(paste("expr ~ ", paste(colnames(metadata), collapse= "+")))
@@ -74,11 +74,22 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
       return(para)
     }
   }
+  
+  #######################################
+  # Init cluster for parallel computing #
+  #######################################
+
+  cluster <- NULL
+  if (cores > 1)
+  {  
+      logging::loginfo("Creating cluster of %s R processes", cores)
+      cluster <- parallel::makeCluster(cores)
+  }
 
   ############################## 
   # Apply per-feature modeling #
   ##############################
-  outputs <- pbapply::pblapply(1:ncol(features), function(x){
+  outputs <- pbapply::pblapply(1:ncol(features), cl=cluster, function(x){
     
     # Extract Features One by One
     featuresVector <- features[, x]
@@ -108,6 +119,9 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     output$para$feature<-colnames(features)[x]
     return(output)
   })    
+
+  # stop the cluster
+  if (! is.null(cluster) ) parallel::stopCluster(cluster)
 
   # bind the results for each feature
   paras<-do.call(rbind, lapply(outputs, function(x) { return(x$para) }))

@@ -81,6 +81,7 @@ args$random_effects <- NULL
 args$fixed_effects <- NULL
 args$correction <- correction_choices[1]
 args$standardize <- TRUE
+args$cores <- 1
 
 ##############################
 # Add command line arguments #
@@ -107,6 +108,8 @@ options <- add_option(options, c("-c","--correction"), type="character", dest="c
     default=args$correction, help="The correction method for computing the q-value [ Default: %default ]")
 options <- add_option(options, c("-z","--standardize"), type="logical", dest="standardize",
     default=args$standardize, help="Apply z-score so continuous metadata are on the same scale [ Default: %default ]")
+options <- add_option(options, c("-e","--cores"), type="double", dest="cores",
+    default=args$cores, help="The number of R processes to run in parallel [ Default: %default ]")
 
 option_not_valid_error <- function(message, valid_options) {
     logging::logerror(paste(message,": %s"), toString(valid_options))
@@ -121,7 +124,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
     analysis_method=args$analysis_method, max_significance=args$max_significance,
     random_effects=args$random_effects, fixed_effects=args$fixed_effects, correction=args$correction,
-    standardize=args$standardize)
+    standardize=args$standardize, cores=args$cores)
 {
     #################################################################
     # Read in the data and metadata, create output folder, init log #
@@ -167,6 +170,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::logdebug("Fixed effects: %s", fixed_effects)
     logging::logdebug("Correction method: %s", correction)
     logging::logdebug("Standardize: %s", standardize)
+    logging::logdebug("Cores: %d", cores)
 
     ####################################
     # Check valid options are selected #
@@ -365,7 +369,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # apply the method to the data with the correction
     logging::loginfo("Running selected analysis method: %s", analysis_method)
-    fit_data <- fit.data(filtered_data, metadata, analysis_method, formula=formula, random_effects_formula=random_effects_formula, correction=correction)
+    fit_data <- fit.data(filtered_data, metadata, analysis_method, formula=formula, random_effects_formula=random_effects_formula, 
+        correction=correction, cores=cores)
 
     ###########################################
     # Count the total values for each feature #
@@ -438,5 +443,5 @@ if(identical(environment(), globalenv()) &&
         current_args$normalization, current_args$transform,
         current_args$analysis_method, current_args$max_significance,
         current_args$random_effects, current_args$fixed_effects,
-        current_args$correction, current_args$standardize) 
+        current_args$correction, current_args$standardize, current_args$cores) 
 }

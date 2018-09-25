@@ -174,6 +174,9 @@ Options:
 	-z STANDARDIZE, --standardize=STANDARDIZE
 		Apply z-score so continuous metadata are on the same scale [ Default: TRUE ]
 
+	-e CORES, --cores=CORES
+		The number of R processes to run in parallel [ Default: 1 ]
+
 ```
 
 ## Visualization ##
