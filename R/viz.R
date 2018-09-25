@@ -37,7 +37,7 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
     print('There is no association to plot!')
     return (NULL)
   }
-  metadata <- df$Variable
+  metadata <- df$Metadata
   data <- df$Feature
   value <- NA
   # values to use for coloring the heatmap
@@ -97,12 +97,21 @@ maaslin2_association_plots <- function(metadata_path, features_path,
   #MaAslin2 scatter plot function and theme
   
   # combine the data and metadata to one datframe using common rows
-  # read MaAsLin output
-  metadata <- read.table( metadata_path, header = TRUE,
-                          row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
-  features <- read.table( features_path, header = TRUE,
-                          row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
-  
+  # read MaAsLin output (allow for inputs as data frames)
+  if (is.character(metadata_path)) {
+    metadata <- read.table( metadata_path, header = TRUE,
+                            row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  } else {
+    metadata <- metadata_path
+  }
+
+  if (is.character(features_path)) {
+    features <- read.table( features_path, header = TRUE,
+                            row.names = 1, sep = "\t", fill = FALSE, comment.char = "" , check.names = FALSE)
+  } else {
+    features <- features_path
+  }
+
   common_rows <- intersect(rownames(features), rownames(metadata))
   input_df_all <- cbind(features[common_rows,], metadata[common_rows,])
   
@@ -120,7 +129,7 @@ maaslin2_association_plots <- function(metadata_path, features_path,
   for (i in 1:dim(output_df_all)[1]){
     #print(i)
     #i <- 1
-    x_label <- as.character(output_df_all[i, 'Variable'])
+    x_label <- as.character(output_df_all[i, 'Metadata'])
     y_label <- as.character(output_df_all[i, 'Feature'])
     input_df <- input_df_all[c(x_label,y_label)]
     colnames(input_df) <- c("x", "y")
@@ -141,18 +150,12 @@ maaslin2_association_plots <- function(metadata_path, features_path,
         ggplot2::geom_boxplot(notch = TRUE) +
         ggplot2::geom_jitter(position = position_jitter(0.5), ggplot2::aes(colour = x))
       
-      # fomrat the figure to defualt nature format and add some 
-      # statistics (Q.value and Coefficient) to the plot 
+      # format the figure to default nature format, remove legend, add x/y labels
       temp_plot <- temp_plot + nature_theme +
-        annotate(geom="text", x=(max(input_df['x'],na.rm = T) - 
-                                   .5*(max(input_df['y'], na.rm = T) - 
-                                         min(input_df['x'], na.rm = T))),
-                 y=max(input_df['y'], na.rm = T) -0.012, 
-                 label=paste("Spearman correlation: ", str(output_df[i, 'Coefficient']),"q-value = ",
-                             str(output_df[i, 'Q.value'])), color="black", size=rel(2), fontface="italic")+
-        ggplot2::guides(legend.position=NULL)+
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              panel.background = element_blank(), axis.line = element_line(colour = "black"))
+              panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+        ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) +
+        theme(legend.position="none")
     }
     association_plot[[i]] <- temp_plot 
     if (write_to_file){
