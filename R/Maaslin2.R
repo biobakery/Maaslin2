@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 
-##########
+###############################################################################
 # MaAsLin2
 
 # Copyright (c) 2018 Harvard School of Public Health
@@ -22,15 +22,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-##########
+###############################################################################
 
 # load in the required libraries, report an error if they are not installed
 
-for( lib in c('optparse','logging','hash','data.table','dplyr')) {
+for( lib in c('optparse','logging','data.table','dplyr')) {
   if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
-# load in the maaslin2 R files if running from the command line
+###############################################################
+# If running on the command line, load other Maaslin2 modules #
+###############################################################
+
 # this evaluates to true if script is being called directly as an executable
 if(identical(environment(), globalenv()) &&
     !length( grep( "^source\\(", sys.calls()))) {
@@ -47,10 +50,12 @@ if(identical(environment(), globalenv()) &&
     }
 }
 
-# set the default choices
+###########################
+# Set the default options #
+###########################
+
 normalization_choices <- c("TSS","CLR","CSS","NONE","TMM")
 analysis_method_choices_names <- c("LM","CPLM","ZICP","NEGBIN","ZINB")
-analysis_method_choices <- hash::hash(analysis_method_choices_names, c(fit.LM,fit.CPLM,fit.ZICP,fit.negbin,fit.ZINB))
 transform_choices <- c("LOG","LOGIT","AST","NONE")
 valid_choice_combinations_method_norm <- hash::hash()
 valid_choice_combinations_method_norm[[analysis_method_choices_names[4]]] <- normalization_choices[2:5]
@@ -77,7 +82,10 @@ args$fixed_effects <- NULL
 args$correction <- correction_choices[1]
 args$standardize <- TRUE
 
-# add command line arguments
+##############################
+# Add command line arguments #
+##############################
+
 options <- OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
 options <- add_option(options, c("-a","--min_abundance"), type="double", dest="min_abundance", 
     default=args$min_abundance, help="The minimum abundance for each feature [ Default: %default ]")
@@ -105,14 +113,20 @@ option_not_valid_error <- function(message, valid_options) {
     stop("Option not valid", call.=FALSE)
 }
 
-# main maaslin2 function with defaults set to the same as those used on the command line
+##########################################################################################
+# Main maaslin2 function with defaults set to the same as those used on the command line #
+##########################################################################################
+
 Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_abundance, 
     min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
     analysis_method=args$analysis_method, max_significance=args$max_significance,
     random_effects=args$random_effects, fixed_effects=args$fixed_effects, correction=args$correction,
     standardize=args$standardize)
 {
-    # read in the data and metadata
+    #################################################################
+    # Read in the data and metadata, create output folder, init log #
+    #################################################################
+
     data <- data.frame(data.table::fread(input_data, header=TRUE, sep = "\t"), row.names=1)
     metadata <- data.frame(data.table::fread(input_metadata, header=TRUE, sep = "\t"), row.names=1)
 
@@ -134,7 +148,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::addHandler(logging::writeToFile,file=log_file,level="DEBUG")
     logging::setLevel(20, logging::getHandler('basic.stdout'))
 
-    # log the arguments
+    #####################
+    # Log the arguments #
+    #####################
+
     logging::loginfo("Writing function arguments to log file")
     logging::logdebug("Function arguments")
     logging::logdebug("Input data file: %s", input_data)
@@ -151,7 +168,11 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::logdebug("Correction method: %s", correction)
     logging::logdebug("Standardize: %s", standardize)
 
-    # check valid normalization option selected
+    ####################################
+    # Check valid options are selected #
+    ####################################
+
+    # Check valid normalization option selected
     logging::loginfo("Verifying options selected are valid")
     if (! normalization %in% normalization_choices) {
         option_not_valid_error("Please select a normalization from the list of available options", toString(normalization_choices))
@@ -172,7 +193,6 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         option_not_valid_error("Please select a correction method from the list of available options", toString(correction_choices))
     }
     
-
     # check a valid choice combination is selected
     for (limited_method in hash::keys(valid_choice_combinations_method_norm)) {
         if (analysis_method == limited_method) {
@@ -197,7 +217,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         }
     }
 
-    # determine orientation of samples/features in input files
+    #######################################################################################
+    # Determine orientation of samples/features in input files and reorder to matched set #
+    #######################################################################################
+
     logging::loginfo("Determining format of input files")
     samples_row_row<-intersect(rownames(data),rownames(metadata))
     if(length(samples_row_row)>0) {
@@ -252,7 +275,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     data <- data[intersect_samples,]
     metadata <- metadata[intersect_samples,]
 
-    # get the formula based on user input
+    ###########################################
+    # Compute the formula based on user input #
+    ###########################################
+
     random_effects_formula<-NULL
     # use all metadata if no fixed effects are provided
     if (is.null(fixed_effects)) {
@@ -298,7 +324,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::loginfo("Formula for fixed effects: %s", formula_text)
     formula<-tryCatch(as.formula(formula_text), error=function(e) stop(paste("Invalid formula. Please provide a different formula: ",formula_text)))
 
-    # filter data based on min abundance and min prevalence
+    #########################################################
+    # Filter data based on min abundance and min prevalence #
+    #########################################################
+
     unfiltered_data <- data
     unfiltered_metadata <- metadata
     # require at least total samples * min prevalence values for each feature to be greater than min abundance
@@ -313,7 +342,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     filtered_feature_names <- setdiff(names(data),names(filtered_data))
     logging::loginfo("Filtered feature names: %s", toString(filtered_feature_names))
 
-    # standardize metadata, if set
+    ################################
+    # Standardize metadata, if set #
+    ################################
+
     if (standardize) { 
         logging::loginfo("Applying z-score to standardize continuous metadata")
         metadata <- metadata %>% dplyr::mutate_if(is.numeric, scale)
@@ -321,7 +353,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         logging::loginfo("Bypass z-score application to metadata")
     }
 
-    # run the selected method looking up the function in the hash
+    #################################################################
+    # Nomalize, transform, and run method writing residuals to file #
+    #################################################################
+
     logging::loginfo("Running selected analysis method: %s", analysis_method)
     residuals_file = file.path(output, "residuals.txt")
     # remove residuals file if already exists (since residuals append)
@@ -330,20 +365,28 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
         unlink(residuals_file)
     }
     logging::loginfo("Writing residuals to file %s", residuals_file)
-    if(analysis_method=="LM") {
-        results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
-            random_effects=random_effects, random_effects_formula=random_effects_formula, formula=formula, correction=correction,
-            residuals_file=residuals_file)
-    } else {
-        results <- analysis_method_choices[[analysis_method]](filtered_data, metadata, normalization=normalization, transform=transform,
-            formula=formula, correction=correction, residuals_file=residuals_file)
-    }
-    # count the total values for each feature
+
+    # normalize and transform features
+    filtered_data<-normalizeFeatures(filtered_data, normalization = normalization)
+    filtered_data<-transformFeatures(filtered_data, transformation = transform)
+
+    # apply the method to the data with the correction
+    results <- fit.data(filtered_data, metadata, analysis_method, random_effects=random_effects, random_effects_formula=random_effects_formula,
+        formula=formula, correction=correction, residuals_file=residuals_file)
+
+    ###########################################
+    # Count the total values for each feature #
+    ###########################################
+
     logging::loginfo("Counting total values for each feature")
     results$N <- apply(results, 1, FUN = function(x) length(filtered_data[,x[1]]))
     results$N.not.zero <- apply(results, 1, FUN = function(x) length(which(filtered_data[,x[1]] > 0)))
 
-    # write the results to a file
+    #########################
+    # Write out the results #
+    #########################
+   
+    # write all results to file
     results_file <- file.path(output,"all_results.tsv")
     logging::loginfo("Writing all results to file (ordered by increasing q-values): %s", results_file)
     ordered_results <- results[order(results$qval),]
@@ -356,7 +399,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     logging::loginfo("Writing the significant results (those which are less than or equal to the threshold of %f ) to file (ordered by increasing q-values): %s", max_significance, significant_results_file)
     write.table(significant_results[c("metadata","feature","name","coef","N","N.not.zero","pval","qval")], file=significant_results_file, sep="\t", quote=FALSE, col.names=c("Metadata","Feature","Contrast","Coefficient","N","N.not.0","P.value","Q.value"), row.names=FALSE)
 
-    # write visualizations for results passing threshold
+    #######################################################
+    # Create visualizations for results passing threshold #
+    #######################################################
+
     heatmap_file <- file.path(output,"heatmap.pdf")
     logging::loginfo("Writing heatmap of significant results to file: %s", heatmap_file)
     heatmap <- save_heatmap(significant_results_file, heatmap_file)
@@ -365,7 +411,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     plots <- maaslin2_association_plots(unfiltered_metadata, unfiltered_data, significant_results_file, write_to_file = TRUE, write_to = output)
 }
 
-# if running on the command line, get arguments and call maaslin function
+###########################################################################
+# If running on the command line, get arguments and call maaslin function #
+###########################################################################
+
 # this evaluates to true if script is being called directly as an executable
 if(identical(environment(), globalenv()) &&
     !length( grep( "^source\\(", sys.calls()))) {

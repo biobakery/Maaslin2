@@ -45,7 +45,6 @@ MaAsLin2 is an R package that can be run on the command line or as an R function
     * [ggplot2: Create Elegant Data Visualizations Using the Grammer of Graphics](https://cran.rstudio.com/web/packages/ggplot2/index.html)
     * [pheatmap: Pretty Heatmaps](https://cran.rstudio.com/web/packages/pheatmap/index.html)
     * [cplm: Compound Poisson Linear Models](https://cran.rstudio.com/web/packages/cplm/index.html)
-    * [hash: Full feature implementation of hash/associated arrays/dictionaries](https://cran.rstudio.com/web/packages/hash/index.html)
     * [logging: R logging package](https://cran.rstudio.com/web/packages/logging/index.html)
     * [data.table: Fast aggregation of large data](https://cran.rstudio.com/web/packages/data.table/index.html)
     * These packages can be installed in R with ``install.packages('pscl')`` or from the command line ``$ R -q -e "install.packages('pscl', repos='http://cran.r-project.org')"`` individually (for those packages which you do not yet have installed) or as a set by providing the complete list as a vector.
