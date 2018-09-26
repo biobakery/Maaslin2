@@ -11,5 +11,5 @@ Depends: R (>= 3.4.0), pscl, pbapply, car, nlme, dplyr, vegan, chemometrics, ggp
 License: MIT License
 LazyData: true
 Imports: edgeR, metagenomeSeq
-Collate: fit_CPLM.R fit_LM.R fit_negbin.R fit_ZICP.R fit_ZINB.R utility_scripts.R viz.R  Maaslin2.R
+Collate: fit.R utility_scripts.R viz.R  Maaslin2.R
 RoxygenNote: 6.1.0.9000
