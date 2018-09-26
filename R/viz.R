@@ -133,8 +133,9 @@ maaslin2_association_plots <- function(metadata, features,
     input_df <- input_df_all[c(x_label,y_label)]
     colnames(input_df) <- c("x", "y")
     # if Metadata is continuous generate a scatter plot
+    # Continuous is defined as numerical with more than 2 values (to exclude binary data)
     temp_plot <- NULL
-    if (is.numeric(input_df[1,'x'])){
+    if (is.numeric(input_df[1,'x']) & length(unique(input_df[['x']])) > 2){
       temp_plot <- ggplot2::ggplot(data=input_df, 
         ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
         ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
@@ -144,11 +145,10 @@ maaslin2_association_plots <- function(metadata, features,
         ggplot2::guides(alpha='none')+ggplot2::labs("")+
         ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme
     }else{
-      # if Metadata is categorical generate a Jitter plot with boxplot
+      # if Metadata is categorical generate a boxplot
       ### check if the variable is categorical
       temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
-        ggplot2::geom_boxplot(notch = TRUE) +
-        ggplot2::geom_jitter(position = position_jitter(0.5), ggplot2::aes(colour = x))
+        ggplot2::geom_boxplot(notch = TRUE) 
       
       # format the figure to default nature format, remove legend, add x/y labels
       temp_plot <- temp_plot + nature_theme +
