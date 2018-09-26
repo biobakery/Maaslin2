@@ -26,7 +26,7 @@ nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 
                                    panel.grid.minor = element_blank())
 
 # MaAsLin2 heatmap function for overall view of associations 
-maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
+maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
                              border_color = "grey93", format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50)) {#)
   # read MaAsLin output
   
@@ -45,24 +45,27 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
   if (cell_value == "P.value"){
     value <- -log(df$P.value)*sign(df$Coefficient)
     value <- pmax(-2, pmin(2, value))
+    if (is.null(title)) title<-"Significant associations (-log(p-val)*sign(coeff))"
   }else if(cell_value == "Q.value"){
     value <- -log(df$Q.value)*sign(df$Coefficient)
     value <- pmax(-2, pmin(2, value))
+    if (is.null(title)) title<-"Significant associations (-log(q-val)*sign(coeff))"
   }else if(cell_value == "Coefficient"){
     value <- df$Coefficient
+    if (is.null(title)) title<-"Significant associations (coeff)"
   }
-  n <- length(unique(metadata))
-  m <- length(unique(data))
+  n <- length(unique(data))
+  m <- length(unique(metadata))
   a = matrix(0, nrow=n, ncol=m)
   for (i in 1:length(metadata)){
     #if (abs(a[as.numeric(metadata[i]), as.numeric(metadata[i])]) > abs(value[i]))
     #  next
-    a[as.numeric(metadata)[i], as.numeric(data)[i]] <- value[i]
+    a[as.numeric(data)[i], as.numeric(metadata)[i]] <- value[i]
   }
-  rownames(a) <- levels(metadata)
-  colnames(a) <- levels(data)
+  rownames(a) <- levels(data)
+  colnames(a) <- levels(metadata)
   p <- pheatmap::pheatmap(
-    a, cellwidth = 7, cellheight = 7,   # changed to 3
+    a, cellwidth = 5, cellheight = 5,   # changed to 3
     main = title,
     fontsize = 6,
     kmeans_k = NA,
@@ -83,12 +86,12 @@ maaslin2_heatmap <- function(output_results, title = "", cell_value = "Q.value",
   return(p)
 }
 
-save_heatmap <- function(results_file, heatmap_file, title = "", cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
+save_heatmap <- function(results_file, heatmap_file, title = NULL, cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
                          border_color = "grey93", format =  NA, color = colorRampPalette(c("blue","grey90", "red"))(50)) {
   # generate a heatmap and save it to a pdf
   heatmap <- maaslin2_heatmap(results_file, title, cell_value, data_label, metadata_label, border_color, color)
   
-  ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, width = 135, height = 100, units = "mm", dpi = 350)
+  ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, dpi = 350)
 }
 
 maaslin2_association_plots <- function(metadata, features,
@@ -146,6 +149,7 @@ maaslin2_association_plots <- function(metadata, features,
     }else{
       # if Metadata is categorical generate a boxplot
       ### check if the variable is categorical
+      input_df['x'] <- sapply(input_df['x'], as.character) 
       temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
         ggplot2::geom_boxplot(aes(fill =input_df$x), notch = T,
                               outlier.alpha = 0.25, na.rm = T,
@@ -161,8 +165,7 @@ maaslin2_association_plots <- function(metadata, features,
     }
     association_plot[[i]] <- temp_plot 
     if (write_to_file){
-      ggplot2::ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot,
-                      width = 6.5, height = 5, units = "cm", dpi = 300)
+      ggplot2::ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot, dpi = 300)
       #dev.off()
     }
   }
