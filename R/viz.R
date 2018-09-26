@@ -127,7 +127,6 @@ maaslin2_association_plots <- function(metadata, features,
   
   for (i in 1:dim(output_df_all)[1]){
     #print(i)
-    #i <- 1
     x_label <- as.character(output_df_all[i, 'Metadata'])
     y_label <- as.character(output_df_all[i, 'Feature'])
     input_df <- input_df_all[c(x_label,y_label)]
@@ -148,7 +147,10 @@ maaslin2_association_plots <- function(metadata, features,
       # if Metadata is categorical generate a boxplot
       ### check if the variable is categorical
       temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
-        ggplot2::geom_boxplot(notch = TRUE) 
+        ggplot2::geom_boxplot(aes(fill =input_df$x), notch = T,
+                              outlier.alpha = 0.25, na.rm = T,
+                              show.legend = F) + 
+        ggplot2::scale_fill_brewer(palette="Spectral")
       
       # format the figure to default nature format, remove legend, add x/y labels
       temp_plot <- temp_plot + nature_theme +
