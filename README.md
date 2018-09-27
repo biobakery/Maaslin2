@@ -56,7 +56,7 @@ but you will need to install the MaAsLin2 dependencies.
 
 ### From command line ###
 
-1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/tip.tar.gz)
+1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.1.tar.gz)
 2. Decompress the download: 
     * ``$ tar xzvf maaslin2.tar.gz``
 3. Install the Bioconductor dependencies: 
@@ -73,7 +73,7 @@ but you will need to install the MaAsLin2 dependencies.
 2. Install the Bioconuctor dependencies: 
     * ``> source('https://bioconductor.org/biocLite.R'); biocLite('edgeR'); biocLite('metagenomeSeq')``
 3. Install MaAsLin2 (and also all dependencies from CRAN): 
-    * ``> devtools::install_bitbucket("biobakery/maaslin2@default")``
+    * ``> devtools::install_bitbucket("biobakery/maaslin2@default", ref="0.1")``
 
 ## How to Run ##
 
