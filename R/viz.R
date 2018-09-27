@@ -91,7 +91,7 @@ save_heatmap <- function(results_file, heatmap_file, title = NULL, cell_value = 
   # generate a heatmap and save it to a pdf
   heatmap <- maaslin2_heatmap(results_file, title, cell_value, data_label, metadata_label, border_color, color)
   
-  ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, dpi = 350)
+  ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, height=7, width=7, dpi = 350)
 }
 
 maaslin2_association_plots <- function(metadata, features,
@@ -127,9 +127,9 @@ maaslin2_association_plots <- function(metadata, features,
   }
   # a list to store association(scatter or boxplot) plot of all associations 
   association_plot <- vector(mode="list", length=dim(output_df_all)[1])
-  
+ 
+  logging::loginfo("Plotting associations from most to least significant") 
   for (i in 1:dim(output_df_all)[1]){
-    #print(i)
     x_label <- as.character(output_df_all[i, 'Metadata'])
     y_label <- as.character(output_df_all[i, 'Feature'])
     input_df <- input_df_all[c(x_label,y_label)]
@@ -138,6 +138,7 @@ maaslin2_association_plots <- function(metadata, features,
     # Continuous is defined as numerical with more than 2 values (to exclude binary data)
     temp_plot <- NULL
     if (is.numeric(input_df[1,'x']) & length(unique(input_df[['x']])) > 2){
+      logging::loginfo("Creating plot # %d, scatter plot for continuous data, %s vs %s", i, x_label, y_label)
       temp_plot <- ggplot2::ggplot(data=input_df, 
         ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
         ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
@@ -149,6 +150,7 @@ maaslin2_association_plots <- function(metadata, features,
     }else{
       # if Metadata is categorical generate a boxplot
       ### check if the variable is categorical
+      logging::loginfo("Creating plot # %d, boxplot for catgorical data, %s vs %s", i, x_label, y_label)
       input_df['x'] <- sapply(input_df['x'], as.character) 
       temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
         ggplot2::geom_boxplot(aes(fill =input_df$x), notch = T,
@@ -165,8 +167,9 @@ maaslin2_association_plots <- function(metadata, features,
     }
     association_plot[[i]] <- temp_plot 
     if (write_to_file){
-      ggplot2::ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot, dpi = 300)
-      #dev.off()
+      stdout <- capture.output( ggplot2::ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot, 
+                      height=7, width=7, dpi = 300), type="message")
+      if (length(stdout)>0) logging::logdebug(stdout)
     }
   }
   return (association_plot)

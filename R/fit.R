@@ -95,6 +95,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     featuresVector <- features[, x]
     
     # Fit Model
+    logging::loginfo("Fitting model to feature number %d, %s", x, colnames(features)[x])
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
     fit <- tryCatch({
       fit1 <- model_function(formula, data = dat_sub)
