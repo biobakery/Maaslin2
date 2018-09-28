@@ -10,7 +10,6 @@
 library(ggplot2)
 library(pheatmap)
 #library(ggcorrplot)
-pdf(NULL)
 # MaAsLin2 theme based on Nature journal requirements
 nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 1),
                                    axis.text.y = element_text(size = 8, hjust = 1),
