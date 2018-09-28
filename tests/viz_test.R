@@ -3,11 +3,11 @@ library(Maaslin2)
 
 # test case for th MaAsLin2 heatmap
 output_path = '~/Documents/Hutlab/maaslin2/tests/'
-metadata_path <- '~/Documents/Hutlab/maaslin2/tests/example1_metadata.txt'
-#stat_diff_family_abundance.pre_0.75.RPK.CPM.metadata.tsv'
+metadata_path <- '~/Documents/Hutlab/maaslin2/tests/stat_diff_family_abundance.pre_0.75.RPK.CPM.metadata.tsv'
+#example1_metadata.txt'
 #
-features_path <- '~/Documents/Hutlab/maaslin2/tests/example1_features.txt'
-#stat_diff_family_abundance.pre_0.75.RPK.CPM.feature.sub.tsv'
+features_path <- '~/Documents/Hutlab/maaslin2/tests/stat_diff_family_abundance.pre_0.75.RPK.CPM.feature.sub.tsv'
+#example1_features.txt'
 #
 Maaslin2(features_path, metadata_path, output_path)
 output_results = '~/Documents/Hutlab/maaslin2/tests/significant_results.tsv'

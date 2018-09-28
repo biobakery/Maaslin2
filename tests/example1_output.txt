@@ -1,1 +1,0 @@
-	Variable	Feature	Value	Coefficient	N	N.not.0	P.value	Q.value1	Metadata1	Feature1	Metadata1	0.002223445	200	170	3.59E-07	0.0005006792	Metadata2	Feature2	Metadata2	0.000598335	200	190	5.35E-05	0.0102588523	Metadata3	Feature3	Metadata3	0.000721997	200	180	0.00076774	0.038917436
