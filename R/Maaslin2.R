@@ -429,6 +429,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
   logging::loginfo("Writing association plots (one for each significant association) to output folder: %s", output)
   maaslin2_association_plots(unfiltered_metadata, unfiltered_data, significant_results_file, output)
+
+  return(fit_data)
 }
 
 ###########################################################################
@@ -450,10 +452,10 @@ if(identical(environment(), globalenv()) &&
   }
     
   # call maaslin with the command line options
-  Maaslin2(positional_args[1], positional_args[2], positional_args[3],
-           current_args$min_abundance, current_args$min_prevalence, 
-           current_args$normalization, current_args$transform,
-           current_args$analysis_method, current_args$max_significance,
-           current_args$random_effects, current_args$fixed_effects,
-           current_args$correction, current_args$standardize, current_args$cores) 
+  fit_data <- Maaslin2(positional_args[1], positional_args[2], positional_args[3],
+                       current_args$min_abundance, current_args$min_prevalence, 
+                       current_args$normalization, current_args$transform,
+                       current_args$analysis_method, current_args$max_significance,
+                       current_args$random_effects, current_args$fixed_effects,
+                       current_args$correction, current_args$standardize, current_args$cores) 
 }

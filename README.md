@@ -91,7 +91,7 @@ To run from R as a function:
 ```
 $ R
 > library(Maaslin2)
-> Maaslin2(data, metadata, output)
+> fit_data <- Maaslin2(data, metadata, output)
 ```
 
 ### Input Files ###
