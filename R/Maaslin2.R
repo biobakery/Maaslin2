@@ -417,10 +417,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
   heatmap_file <- file.path(output,"heatmap.pdf")
   logging::loginfo("Writing heatmap of significant results to file: %s", heatmap_file)
-  heatmap <- save_heatmap(significant_results_file, heatmap_file)
+  save_heatmap(significant_results_file, heatmap_file)
 
   logging::loginfo("Writing association plots (one for each significant association) to output folder: %s", output)
-  plots <- maaslin2_association_plots(unfiltered_metadata, unfiltered_data, significant_results_file, write_to_file = TRUE, write_to = output)
+  maaslin2_association_plots(unfiltered_metadata, unfiltered_data, significant_results_file, output)
 }
 
 ###########################################################################

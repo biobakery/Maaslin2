@@ -7,9 +7,9 @@
 # --------------
 
 # Load libararies 
-library(ggplot2)
-library(pheatmap)
-#library(ggcorrplot)
+for( lib in c('ggplot2','pheatmap')) {
+  if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
+}
 
 # MaAsLin2 theme based on Nature journal requirements
 nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 1),
@@ -96,8 +96,7 @@ save_heatmap <- function(results_file, heatmap_file, title = NULL, cell_value = 
   dev.off()  
 }
 
-maaslin2_association_plots <- function(metadata, features,
-                                       output_results, write_to_file = F, write_to='./')
+maaslin2_association_plots <- function(metadata, features, output_results, write_to='./')
 { 
   #MaAslin2 scatter plot function and theme
   
@@ -127,52 +126,59 @@ maaslin2_association_plots <- function(metadata, features,
     print('There is no association to plot!')
     return (NULL)
   }
-  # a list to store association(scatter or boxplot) plot of all associations 
-  association_plot <- vector(mode="list", length=dim(output_df_all)[1])
  
-  logging::loginfo("Plotting associations from most to least significant") 
-  for (i in 1:dim(output_df_all)[1]){
-    x_label <- as.character(output_df_all[i, 'Metadata'])
-    y_label <- as.character(output_df_all[i, 'Feature'])
-    input_df <- input_df_all[c(x_label,y_label)]
-    colnames(input_df) <- c("x", "y")
-    # if Metadata is continuous generate a scatter plot
-    # Continuous is defined as numerical with more than 2 values (to exclude binary data)
-    temp_plot <- NULL
-    if (is.numeric(input_df[1,'x']) & length(unique(input_df[['x']])) > 2){
-      logging::loginfo("Creating plot # %d, scatter plot for continuous data, %s vs %s", i, x_label, y_label)
-      temp_plot <- ggplot2::ggplot(data=input_df, 
-        ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
-        ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
-        ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
-        ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
-        ggplot2::stat_smooth(method = "glm", color ='blue', na.rm = T)+ 
-        ggplot2::guides(alpha='none')+ggplot2::labs("")+
-        ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme
-    }else{
-      # if Metadata is categorical generate a boxplot
-      ### check if the variable is categorical
-      logging::loginfo("Creating plot # %d, boxplot for catgorical data, %s vs %s", i, x_label, y_label)
-      input_df['x'] <- sapply(input_df['x'], as.character) 
-      temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
-        ggplot2::geom_boxplot(aes(fill =input_df$x), notch = T,
-                              outlier.alpha = 0.25, na.rm = T,
-                              show.legend = F) + 
-        ggplot2::scale_fill_brewer(palette="Spectral")
+  logging::loginfo("Plotting associations from most to least significant, grouped by metadata")
+  metadata_types <- unlist(output_df_all[, 'Metadata'])
+  metadata_labels <- unlist(metadata_types[!duplicated(metadata_types)])
+  metadata_number <- 1
+  for (label in metadata_labels) {
+
+    # for file name replace any non alphanumeric with underscore
+    plot_file <- paste(write_to, "/", gsub("[^[:alnum:]_]", "_", label), ".pdf", sep="")
+    data_index <- which(label==metadata_types)
+    logging::loginfo("Plotting data for metadata number %s, %s", metadata_number, label) 
+    pdf(plot_file, onefile=TRUE)
+
+    for (i in data_index){
+      x_label <- as.character(output_df_all[i, 'Metadata'])
+      y_label <- as.character(output_df_all[i, 'Feature'])
+      input_df <- input_df_all[c(x_label,y_label)]
+      colnames(input_df) <- c("x", "y")
+      # if Metadata is continuous generate a scatter plot
+      # Continuous is defined as numerical with more than 2 values (to exclude binary data)
+      temp_plot <- NULL
+      if (is.numeric(input_df[1,'x']) & length(unique(input_df[['x']])) > 2){
+        logging::loginfo("Creating scatter plot for continuous data, %s vs %s", x_label, y_label)
+        temp_plot <- ggplot2::ggplot(data=input_df, 
+          ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
+          ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
+          ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
+          ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
+          ggplot2::stat_smooth(method = "glm", color ='blue', na.rm = T)+ 
+          ggplot2::guides(alpha='none')+ggplot2::labs("")+
+          ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme
+      }else{
+        # if Metadata is categorical generate a boxplot
+        ### check if the variable is categorical
+        logging::loginfo("Creating boxplot for catgorical data, %s vs %s", x_label, y_label)
+        input_df['x'] <- sapply(input_df['x'], as.character) 
+        temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y)) + 
+          ggplot2::geom_boxplot(aes(fill =input_df$x), notch = T,
+                                outlier.alpha = 0.25, na.rm = T,
+                                show.legend = F) + 
+          ggplot2::scale_fill_brewer(palette="Spectral")
       
-      # format the figure to default nature format, remove legend, add x/y labels
-      temp_plot <- temp_plot + nature_theme +
-        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-              panel.background = element_blank(), axis.line = element_line(colour = "black")) +
-        ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) +
-        theme(legend.position="none")
+        # format the figure to default nature format, remove legend, add x/y labels
+        temp_plot <- temp_plot + nature_theme +
+          theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+          ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) +
+          theme(legend.position="none")
     }
-    association_plot[[i]] <- temp_plot 
-    if (write_to_file){
-      stdout <- capture.output( ggplot2::ggsave(filename=paste(write_to,'/', i, '.pdf', sep = ''), plot=temp_plot, 
-                      height=7, width=7, dpi = 300), type="message")
-      if (length(stdout)>0) logging::logdebug(stdout)
-    }
+    stdout <- capture.output(print(temp_plot),type="message")
+    logging::logdebug(stdout)
   }
-  return (association_plot)
+  dev.off()
+  metadata_number <- metadata_number + 1
+  }
 }
