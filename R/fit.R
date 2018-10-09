@@ -15,7 +15,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
 
   if (model=="LM") {
     if (is.null(random_effects_formula)) {
-      model_function <- function(formula, data) { return(glm(formula, data = data, family='gaussian')) }
+      model_function <- function(formula, data, na.action) { return(glm(formula, data = data, family='gaussian', na.action = na.action)) }
       summary_function <- function(fit) {
         lm_summary <- summary(fit)$coefficients
         para<-as.data.frame(lm_summary)[-1,-c(2:3)]
@@ -23,7 +23,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
         return(para)     
       }
     } else {
-      model_function <- function(formula, data) { return(nlme::lme(fixed=formula, random=random_effects_formula, data = data)) }
+      model_function <- function(formula, data, na.action) { return(nlme::lme(fixed=formula, random=random_effects_formula, data = data, na.action = na.action)) }
       summary_function <- function(fit) {
         lm_summary<-coef(summary(fit))
         para<-as.data.frame(lm_summary)[-1,-c(2:4)]
@@ -98,9 +98,9 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     logging::loginfo("Fitting model to feature number %d, %s", x, colnames(features)[x])
     dat_sub <- data.frame(expr = as.numeric(featuresVector), metadata)
     fit <- tryCatch({
-      fit1 <- model_function(formula, data = dat_sub)
+      fit1 <- model_function(formula, data = dat_sub, na.action = na.exclude)
     }, error=function(err){
-      fit1 <- try({model_function(formula, data = dat_sub)}) 
+      fit1 <- try({model_function(formula, data = dat_sub, na.action = na.exclude)}) 
       return(fit1)
     })
     
