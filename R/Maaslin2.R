@@ -129,9 +129,17 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   #################################################################
   # Read in the data and metadata, create output folder, init log #
   #################################################################
-
-  data <- data.frame(data.table::fread(input_data, header=TRUE, sep = "\t"), row.names=1)
-  metadata <- data.frame(data.table::fread(input_metadata, header=TRUE, sep = "\t"), row.names=1)
+  # if a character string then this is a file name, else it is a data frame
+  if (is.character(input_data)) {
+    data <- data.frame(data.table::fread(input_data, header=TRUE, sep = "\t"), row.names=1)
+  } else {
+    data <- input_data
+  }
+  if (is.character(input_metadata)) {
+    metadata <- data.frame(data.table::fread(input_metadata, header=TRUE, sep = "\t"), row.names=1)
+  } else {
+    metadata <- input_metadata
+  }
 
   # create an output folder if it does not exist
   if (!file.exists(output)) {

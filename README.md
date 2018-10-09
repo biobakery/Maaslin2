@@ -109,6 +109,8 @@ The data file can contain samples not included in the metadata file (along with 
 those samples not included in both files will be removed from the analysis. Also the samples do not
 need to be in the same order in the two files.
 
+NOTE: If running MaAsLin2 as a function, the data and metadata inputs can be of type ``data.frame`` instead of a path to a file.
+
 ### Output Files ###
 
 MaAsLin2 generates two types of output files: data and visualization.
