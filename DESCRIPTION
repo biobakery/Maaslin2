@@ -1,6 +1,6 @@
 Package: Maaslin2
 Title: Maaslin2
-Version: 0.1
+Version: 0.2
 Authors@R: as.person(c(
     "Himel Mallick <hmallick@broadinstitute.org> [aut, cre]", 
     "Ali Rahnavard <rah@broadinstitute.org> [aut]",
