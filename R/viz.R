@@ -64,25 +64,28 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "Q.value
   }
   rownames(a) <- levels(data)
   colnames(a) <- levels(metadata)
-  p <- pheatmap::pheatmap(
-    a, cellwidth = 5, cellheight = 5,   # changed to 3
-    main = title,
-    fontsize = 6,
-    kmeans_k = NA,
-    border=TRUE,
-    show_rownames = T, show_colnames = T,
-    scale="none",
-    #clustering_method = "complete",
-    cluster_rows = FALSE, cluster_cols = TRUE,
-    clustering_distance_rows = "euclidean", 
-    clustering_distance_cols = "euclidean",
-    legend=TRUE,
-    border_color = border_color,
-    color = color,
-    treeheight_row=0,
-    treeheight_col=0,
-    display_numbers = matrix(ifelse(a > 0.0, "+", ifelse(a < 0.0, "-", "")),  nrow(a))
-  )
+  p <- NULL
+  tryCatch({ 
+    p <- pheatmap::pheatmap(
+      a, cellwidth = 5, cellheight = 5,   # changed to 3
+      main = title,
+      fontsize = 6,
+      kmeans_k = NA,
+      border=TRUE,
+      show_rownames = T, show_colnames = T,
+      scale="none",
+      cluster_rows = FALSE, cluster_cols = TRUE,
+      clustering_distance_rows = "euclidean", 
+      clustering_distance_cols = "euclidean",
+      legend=TRUE,
+      border_color = border_color,
+      color = color,
+      treeheight_row=0,
+      treeheight_col=0,
+      display_numbers = matrix(ifelse(a > 0.0, "+", ifelse(a < 0.0, "-", "")),  nrow(a)))
+    }, error=function(err){ 
+      logging::logerror("Unable to plot heatmap") 
+    })
   return(p)
 }
 
@@ -91,9 +94,11 @@ save_heatmap <- function(results_file, heatmap_file, title = NULL, cell_value = 
   # generate a heatmap and save it to a pdf
   heatmap <- maaslin2_heatmap(results_file, title, cell_value, data_label, metadata_label, border_color, color)
 
-  pdf(heatmap_file)
-  print(heatmap)
-  dev.off()  
+  if (!is.null(heatmap)) {
+    pdf(heatmap_file)
+    print(heatmap)
+    dev.off()  
+  }
 }
 
 maaslin2_association_plots <- function(metadata, features, output_results, write_to='./')
