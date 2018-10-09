@@ -90,8 +90,10 @@ save_heatmap <- function(results_file, heatmap_file, title = NULL, cell_value = 
                          border_color = "grey93", format =  NA, color = colorRampPalette(c("blue","grey90", "red"))(50)) {
   # generate a heatmap and save it to a pdf
   heatmap <- maaslin2_heatmap(results_file, title, cell_value, data_label, metadata_label, border_color, color)
-  
-  ggplot2::ggsave(filename=heatmap_file, plot=heatmap$gtable, height=7, width=7, dpi = 350)
+
+  pdf(heatmap_file)
+  print(heatmap)
+  dev.off()  
 }
 
 maaslin2_association_plots <- function(metadata, features,
