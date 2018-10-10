@@ -1,0 +1,19 @@
+
+# MaAsLin2 ChangeLog #
+
+## v0.2.1 10-10-2018 ##
+
+* Update read/slicing to support input files with a single feature.
+
+## v0.2.0 10-09-2018 ##
+
+* Group boxplots/scatter plots by metadata name.
+* Replace ggsave with pdf to print heatmap/plots to resolve ggsave Rplot.pdf issue.
+* Add tryCatch to allow for error in heatmap but still print other plots.
+* Allow data/metadata inputs to be paths to files or data.frame.
+* Return fit data from maaslin2 function.
+* Set na.action default in model fit to na.exclude.
+
+## v0.1.0 09-27-2018 ##
+ 
+* Initial tagged release.
