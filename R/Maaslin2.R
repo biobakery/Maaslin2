@@ -132,11 +132,18 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   # if a character string then this is a file name, else it is a data frame
   if (is.character(input_data)) {
     data <- data.frame(data.table::fread(input_data, header=TRUE, sep = "\t"), row.names=1)
+    if (nrow(data)==1) { 
+      # read again to get row name
+      data <- read.table(input_data, header=TRUE, row.names=1)
+    }
   } else {
     data <- input_data
   }
   if (is.character(input_metadata)) {
     metadata <- data.frame(data.table::fread(input_metadata, header=TRUE, sep = "\t"), row.names=1)
+    if (nrow(metadata)==1) {
+      metadata <- read.table(input_metadata, header=TRUE, row.names=1)
+    }
   } else {
     metadata <- input_metadata
   }
@@ -284,8 +291,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
   # now order both data and metadata with the same sample ordering
   logging::logdebug("Reordering data/metadata to use same sample ordering")
-  data <- data[intersect_samples,]
-  metadata <- metadata[intersect_samples,]
+  data <- data[intersect_samples, ,drop=FALSE]
+  metadata <- metadata[intersect_samples, ,drop=FALSE]
 
   ###########################################
   # Compute the formula based on user input #
@@ -329,7 +336,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
   # reduce metadata to only include fixed/random effects in formula
   effects_names <- union(fixed_effects,random_effects)
-  metadata <- metadata[,effects_names]
+  metadata <- metadata[,effects_names, drop=FALSE]
 
   # create the fixed effects formula text
   formula_text<-paste("expr ~ ", paste(fixed_effects, collapse= " + "))
@@ -348,7 +355,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   logging::loginfo("Total samples in data: %d", total_samples)
   min_samples <- total_samples * min_prevalence
   logging::loginfo("Min samples required with min abundance for a feature not to be filtered: %f", min_samples)
-  filtered_data <- data[,colSums(data >= min_abundance) > min_samples]
+  filtered_data <- data[,colSums(data >= min_abundance) > min_samples, drop=FALSE]
   total_filtered_features <- ncol(data) - ncol(filtered_data)
   logging::loginfo("Total filtered features: %d", total_filtered_features)
   filtered_feature_names <- setdiff(names(data),names(filtered_data))
