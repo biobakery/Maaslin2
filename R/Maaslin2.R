@@ -306,7 +306,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     fixed_effects<-unlist(strsplit(fixed_effects,",", fixed=TRUE))
     # remove any fixed effects not found in metadata names
     to_remove<-setdiff(fixed_effects,colnames(metadata))
-    logging::logwarn("Feature name not found in metadata so not applied to formula as fixed effect: %s",paste(to_remove, collapse= " , "))
+    if (length(to_remove)>0) logging::logwarn("Feature name not found in metadata so not applied to formula as fixed effect: %s",paste(to_remove, collapse= " , "))
     fixed_effects<-setdiff(fixed_effects,to_remove)
     if(length(fixed_effects)==0) {
       logging::logerror("No fixed effects included in formula.")
@@ -323,7 +323,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
     fixed_effects<-setdiff(fixed_effects,random_effects)
     # remove any random effects not found in metadata
     to_remove<-setdiff(random_effects,colnames(metadata))
-    logging::logwarn("Feature name not found in metadata so not applied to formula as random effect: %s",paste(to_remove, collapse= " , "))
+    if (length(to_remove)>0) logging::logwarn("Feature name not found in metadata so not applied to formula as random effect: %s",paste(to_remove, collapse= " , "))
     random_effects<-setdiff(random_effects,to_remove)
 
     # create formula
