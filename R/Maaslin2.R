@@ -422,9 +422,9 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   significant_results <- significant_results[significant_results$qval <= max_significance,]
   significant_results_file <- file.path(output,"significant_results.tsv")
   logging::loginfo("Writing the significant results (those which are less than or equal to the threshold of %f ) to file (ordered by increasing q-values): %s", max_significance, significant_results_file)
-  write.table(significant_results[c("metadata","feature","value","coef","N","N.not.zero","pval","qval")], 
+  write.table(significant_results[c("metadata","feature","value","coef","stderr", "N","N.not.zero","pval","qval")], 
               file=significant_results_file, sep="\t", quote=FALSE, 
-              col.names=c("Metadata","Feature","Value","Coefficient","N","N.not.0","P.value","Q.value"), row.names=FALSE)
+              col.names=c("Metadata","Feature","Value","Coefficient","Std.Error","N","N.not.0","P.value","Q.value"), row.names=FALSE)
 
   #######################################################
   # Create visualizations for results passing threshold #

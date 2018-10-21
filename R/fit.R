@@ -18,7 +18,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
       model_function <- function(formula, data, na.action) { return(glm(formula, data = data, family='gaussian', na.action = na.action)) }
       summary_function <- function(fit) {
         lm_summary <- summary(fit)$coefficients
-        para<-as.data.frame(lm_summary)[-1,-c(2:3)]
+        para<-as.data.frame(lm_summary)[-1,-3]
         para$name<-rownames(lm_summary)[-1]
         return(para)     
       }
@@ -26,7 +26,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
       model_function <- function(formula, data, na.action) { return(nlme::lme(fixed=formula, random=random_effects_formula, data = data, na.action = na.action)) }
       summary_function <- function(fit) {
         lm_summary<-coef(summary(fit))
-        para<-as.data.frame(lm_summary)[-1,-c(2:4)]
+        para<-as.data.frame(lm_summary)[-1,-c(3:4)]
         para$name<-rownames(lm_summary)[-1]
         return(para)
       }
@@ -37,7 +37,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     model_function <- cplm::cpglm
     summary_function <- function(fit) {
       cplm_out<-capture.output( cplm_summary <- cplm::summary(fit)$coefficients )
-      para<-as.data.frame(cplm_summary)[-1,-c(2:3)]
+      para<-as.data.frame(cplm_summary)[-1,-3]
       para$name<-rownames(cplm_summary)[-1]
       logging::logdebug("Summary output\n%s", paste(cplm_out, collapse="\n"))
       return(para)
@@ -48,7 +48,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     model_function <- MASS::glm.nb
     summary_function <- function(fit) {
       glm_summary <- summary(fit)$coefficients
-      para<-as.data.frame(glm_summary)[-1,-c(2:3)]
+      para<-as.data.frame(glm_summary)[-1,-3]
       para$name<-rownames(glm_summary)[-1]
       return(para)
     }
@@ -58,7 +58,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     model_function <- cplm::zcpglm
     summary_function <- function(fit) {
       cplm_out<-capture.output( cplm_summary <- summary(fit)$coefficients$tweedie )
-      para<-as.data.frame(cplm_summary)[-1,-c(2:3)]
+      para<-as.data.frame(cplm_summary)[-1,-3]
       para$name<-rownames(cplm_summary)[-1]
       logging::logdebug("Summary output\n%s", paste(cplm_out, collapse="\n"))
       return(para)
@@ -69,7 +69,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
     model_function <- pscl::zeroinfl
     summary_function <- function(fit) {
       pscl_summary <- summary(fit)$coefficients$count
-      para<-as.data.frame(pscl_summary)[-c(1, (ncol(metadata)+2)),-c(2:3)]
+      para<-as.data.frame(pscl_summary)[-c(1, (ncol(metadata)+2)),-3]
       para$name<-rownames(pscl_summary)[c(2:11)]
       return(para)
     }
@@ -116,7 +116,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
           output$para$name<-colnames(metadata)
           output$residuals<-NA
         }
-    colnames(output$para)<-c('coef', 'pval', 'name')
+    colnames(output$para)<-c('coef', 'stderr' , 'pval', 'name')
     output$para$feature<-colnames(features)[x]
     return(output)
   })    
