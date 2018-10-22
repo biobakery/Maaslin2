@@ -112,7 +112,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
           } 
     else{
           logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
-          output$para<-as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=2))
+          output$para<-as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=3))
           output$para$name<-colnames(metadata)
           output$residuals<-NA
         }
