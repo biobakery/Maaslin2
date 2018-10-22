@@ -7,7 +7,7 @@
 # --------------
 
 # Load libararies 
-for( lib in c('ggplot2','pheatmap')) {
+for( lib in c('ggplot2',"grid",'pheatmap')) {
   if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
@@ -25,9 +25,26 @@ nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 
                                    panel.grid.major = element_blank(),
                                    panel.grid.minor = element_blank())
 
+## Edit body of pheatmap:::draw_colnames, customizing it to your liking
+draw_colnames_45 <- function (coln, ...) {
+  m = length(coln)
+  x = (1:m)/m - 1/2/m
+  grid.text(coln, x = x, y = unit(0.96, "npc"), vjust = .5, 
+            hjust = 1, rot = 45, gp = gpar(...)) ## Was 'hjust=0' and 'rot=270'
+}
+
+## For pheatmap_1.0.8 and later:
+draw_colnames_45 <- function (coln, gaps, ...) {
+  coord = pheatmap:::find_coordinates(length(coln), gaps)
+  x = coord$coord - 0.5 * coord$size
+  res = textGrob(coln, x = x, y = unit(1, "npc") - unit(3,"bigpts"), vjust = 0.5, hjust = 1, rot = 45, gp = gpar(...))
+  return(res)}
+
+
 # MaAsLin2 heatmap function for overall view of associations 
 maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
-                             border_color = "grey93", format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50)) {#)
+                             border_color = "grey93", format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50),
+                             col_rotate = 45) {#)
   # read MaAsLin output
   
   df <- read.table( output_results,
@@ -36,6 +53,13 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "Q.value
   if (dim(df)[1] < 1){
     print('There is no association to plot!')
     return (NULL)
+  }
+  
+  # rotate colnames
+  if (col_rotate == 45) {
+    ## 'Overwrite' default draw_colnames with your own version 
+    assignInNamespace(x="draw_colnames", value="draw_colnames_45",
+                      ns=asNamespace("pheatmap"))
   }
   metadata <- df$Metadata
   data <- df$Feature
