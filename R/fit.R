@@ -36,7 +36,7 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
   if (model=="CPLM") {
     model_function <- cplm::cpglm
     summary_function <- function(fit) {
-      cplm_out<-capture.output( cplm_summary <- cplm::summary(fit)$coefficients )
+      cplm_out<-capture.output(cplm_summary <- cplm::summary(fit)$coefficients)
       para<-as.data.frame(cplm_summary)[-1,-3]
       para$name<-rownames(cplm_summary)[-1]
       logging::logdebug("Summary output\n%s", paste(cplm_out, collapse="\n"))
@@ -57,10 +57,10 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
   if (model=="ZICP") {
     model_function <- cplm::zcpglm
     summary_function <- function(fit) {
-      cplm_out<-capture.output( cplm_summary <- summary(fit)$coefficients$tweedie )
-      para<-as.data.frame(cplm_summary)[-1,-3]
-      para$name<-rownames(cplm_summary)[-1]
-      logging::logdebug("Summary output\n%s", paste(cplm_out, collapse="\n"))
+      zicp_out<-capture.output(zicp_summary <- cplm::summary(fit)$coefficients$tweedie)
+      para<-as.data.frame(zicp_summary)[-1,-3]
+      para$name<-rownames(zicp_summary)[-1]
+      logging::logdebug("Summary output\n%s", paste(zicp_out, collapse="\n"))
       return(para)
     }
   }
