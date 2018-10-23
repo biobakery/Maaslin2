@@ -1,5 +1,5 @@
 # Load Required Packages
-for( lib in c('dplyr', 'pbapply', 'MASS', 'lme4', 'car', 'cplm', 'nlme', 'pscl', 'parallel')) {
+for( lib in c('dplyr', 'pbapply', 'MASS', 'lme4', 'lmerTest', 'car', 'cplm', 'nlme', 'pscl', 'parallel')) {
   if(! suppressPackageStartupMessages(require(lib, character.only=TRUE)) ) stop(paste("Please install the R package: ",lib))
 }
 
@@ -23,7 +23,9 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
         return(para)     
       }
     } else {
-      model_function <- function(formula, data, na.action) { return(nlme::lme(fixed=formula, random=random_effects_formula, data = data, na.action = na.action)) }
+      fixed_formula<-paste('. ~', paste(all.vars(formula)[-1], collapse = ' + '), '.', sep = ' + ')
+      full_formula<-update(random_effects_formula, fixed_formula)     
+      model_function <- function(full_formula, data, na.action) {return(lme4::lmer(full_formula, data = data, na.action = na.action)) }
       summary_function <- function(fit) {
         lm_summary<-coef(summary(fit))
         para<-as.data.frame(lm_summary)[-1,-c(3:4)]

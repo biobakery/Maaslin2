@@ -328,7 +328,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
     # create formula
     if(length(random_effects)>0) {
-      random_effects_formula_text <- paste("expr ~ 1 |",paste(random_effects,collapse= " + 1 | "))
+      random_effects_formula_text <- paste("expr ~ (1 |", paste(random_effects, ")", collapse= " + (1 | "))
       logging::loginfo("Formula for random effects: %s", random_effects_formula_text)
       random_effects_formula<-tryCatch(as.formula(random_effects_formula_text), error=function(e) stop(paste("Invalid formula for random effects: ",random_effects_formula_text)))
     }

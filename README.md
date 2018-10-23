@@ -47,6 +47,8 @@ MaAsLin2 is an R package that can be run on the command line or as an R function
     * [cplm: Compound Poisson Linear Models](https://cran.rstudio.com/web/packages/cplm/index.html)
     * [logging: R logging package](https://cran.rstudio.com/web/packages/logging/index.html)
     * [data.table: Fast aggregation of large data](https://cran.rstudio.com/web/packages/data.table/index.html)
+  * [lme4: Linear Mixed-Effects Models using 'Eigen' and S4](https://cran.rstudio.com/web/packages/lme4/index.html)
+  * [lmerTest: Tests in Linear Mixed Effects Models](https://cran.rstudio.com/web/packages/lmerTest/index.html)
     * These packages can be installed in R with ``install.packages('pscl')`` or from the command line ``$ R -q -e "install.packages('pscl', repos='http://cran.r-project.org')"`` individually (for those packages which you do not yet have installed) or as a set by providing the complete list as a vector.
 
 ## Installation ##
