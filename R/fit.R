@@ -23,9 +23,9 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
         return(para)     
       }
     } else {
-      fixed_formula<-paste('. ~', paste(all.vars(formula)[-1], collapse = ' + '), '.', sep = ' + ')
-      full_formula<-update(random_effects_formula, fixed_formula)     
-      model_function <- function(full_formula, data, na.action) {return(lme4::lmer(full_formula, data = data, na.action = na.action)) }
+      formula<-paste('. ~', paste(all.vars(formula)[-1], collapse = ' + '), '.', sep = ' + ')
+      formula<-update(random_effects_formula, formula)     
+      model_function <- function(formula, data, na.action) {return(lmerTest::lmer(formula, data = data, na.action = na.action)) }
       summary_function <- function(fit) {
         lm_summary<-coef(summary(fit))
         para<-as.data.frame(lm_summary)[-1,-c(3:4)]
