@@ -179,8 +179,12 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
 
   logging::loginfo("Writing function arguments to log file")
   logging::logdebug("Function arguments")
-  logging::logdebug("Input data file: %s", input_data)
-  logging::logdebug("Input metadata file: %s", input_metadata)
+  if (is.character(input_data)) {
+    logging::logdebug("Input data file: %s", input_data)
+  }
+  if (is.character(input_metadata)) {
+    logging::logdebug("Input metadata file: %s", input_metadata)
+  }
   logging::logdebug("Output folder: %s", output)
   logging::logdebug("Min Abundance: %f", min_abundance)
   logging::logdebug("Min Prevalence: %f", min_prevalence)
