@@ -42,7 +42,7 @@ draw_colnames_45 <- function (coln, gaps, ...) {
 
 
 # MaAsLin2 heatmap function for overall view of associations 
-maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
+maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", data_label = 'data', metadata_label = 'metadata',
                              border_color = "grey93", format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50),
                              col_rotate = 45) {#)
   # read MaAsLin output
@@ -61,21 +61,21 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "Q.value
     assignInNamespace(x="draw_colnames", value="draw_colnames_45",
                       ns=asNamespace("pheatmap"))
   }
-  metadata <- df$Metadata
-  data <- df$Feature
+  metadata <- df$metadata
+  data <- df$feature
   value <- NA
   # values to use for coloring the heatmap
   # and set the colorbar boundaries
-  if (cell_value == "P.value"){
-    value <- -log(df$P.value)*sign(df$Coefficient)
+  if (cell_value == "pval"){
+    value <- -log(df$pval)*sign(df$coef)
     value <- pmax(-2, pmin(2, value))
-    if (is.null(title)) title<-"Significant associations (-log(p-val)*sign(coeff))"
-  }else if(cell_value == "Q.value"){
-    value <- -log(df$Q.value)*sign(df$Coefficient)
+    if (is.null(title)) title<-"Significant associations (-log(pval)*sign(coeff))"
+  }else if(cell_value == "qval"){
+    value <- -log(df$qval)*sign(df$coef)
     value <- pmax(-2, pmin(2, value))
-    if (is.null(title)) title<-"Significant associations (-log(q-val)*sign(coeff))"
-  }else if(cell_value == "Coefficient"){
-    value <- df$Coefficient
+    if (is.null(title)) title<-"Significant associations (-log(qval)*sign(coeff))"
+  }else if(cell_value == "coef"){
+    value <- df$coef
     if (is.null(title)) title<-"Significant associations (coeff)"
   }
   n <- length(unique(data))
@@ -113,7 +113,7 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "Q.value
   return(p)
 }
 
-save_heatmap <- function(results_file, heatmap_file, title = NULL, cell_value = "Q.value", data_label = 'Data', metadata_label = 'Metadata',
+save_heatmap <- function(results_file, heatmap_file, title = NULL, cell_value = "qval", data_label = 'data', metadata_label = 'metadata',
                          border_color = "grey93", format =  NA, color = colorRampPalette(c("blue","grey90", "red"))(50)) {
   # generate a heatmap and save it to a pdf
   heatmap <- maaslin2_heatmap(results_file, title, cell_value, data_label, metadata_label, border_color, color)
@@ -157,7 +157,7 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
   }
  
   logging::loginfo("Plotting associations from most to least significant, grouped by metadata")
-  metadata_types <- unlist(output_df_all[, 'Metadata'])
+  metadata_types <- unlist(output_df_all[, 'metadata'])
   metadata_labels <- unlist(metadata_types[!duplicated(metadata_types)])
   metadata_number <- 1
   for (label in metadata_labels) {
@@ -169,8 +169,8 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
     pdf(plot_file, onefile=TRUE)
 
     for (i in data_index){
-      x_label <- as.character(output_df_all[i, 'Metadata'])
-      y_label <- as.character(output_df_all[i, 'Feature'])
+      x_label <- as.character(output_df_all[i, 'metadata'])
+      y_label <- as.character(output_df_all[i, 'feature'])
       input_df <- input_df_all[c(x_label,y_label)]
       colnames(input_df) <- c("x", "y")
       # if Metadata is continuous generate a scatter plot

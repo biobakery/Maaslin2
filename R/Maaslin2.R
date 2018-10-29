@@ -422,7 +422,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   ordered_results <- fit_data$results[order(fit_data$results$qval),]
   write.table(ordered_results[c("metadata","feature","value","coef","stderr","N","N.not.zero","pval","qval")], 
               file=results_file, sep="\t", quote=FALSE, 
-              col.names=c("Metadata","Feature","Value","Coefficient","Std.error","N","N.not.0","P.value","Q.value"), row.names=FALSE)
+              col.names=c("metadata","feature","value","coef","stderr","N","N.not.0","pval","qval"), row.names=FALSE)
 
   # write results passing threshold to file (removing any that are NA for the q-value)
   significant_results <- ordered_results[!is.na(ordered_results$qval),]
@@ -431,7 +431,7 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   logging::loginfo("Writing the significant results (those which are less than or equal to the threshold of %f ) to file (ordered by increasing q-values): %s", max_significance, significant_results_file)
   write.table(significant_results[c("metadata","feature","value","coef","stderr", "N","N.not.zero","pval","qval")], 
               file=significant_results_file, sep="\t", quote=FALSE, 
-              col.names=c("Metadata","Feature","Value","Coefficient","Std.error","N","N.not.0","P.value","Q.value"), row.names=FALSE)
+              col.names=c("metadata","feature","value","coef","stderr","N","N.not.0","pval","qval"), row.names=FALSE)
 
   #######################################################
   # Create visualizations for results passing threshold #
