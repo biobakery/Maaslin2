@@ -81,6 +81,8 @@ args$random_effects <- NULL
 args$fixed_effects <- NULL
 args$correction <- correction_choices[1]
 args$standardize <- TRUE
+args$plot_heatmap <- TRUE
+args$plot_scatter <- TRUE
 args$cores <- 1
 
 ##############################
@@ -108,6 +110,10 @@ options <- add_option(options, c("-c","--correction"), type="character", dest="c
   default=args$correction, help="The correction method for computing the q-value [ Default: %default ]")
 options <- add_option(options, c("-z","--standardize"), type="logical", dest="standardize",
   default=args$standardize, help="Apply z-score so continuous metadata are on the same scale [ Default: %default ]")
+options <- add_option(options, c("-l","--plot_heatmap"), type="logical", dest="plot_heatmap",
+  default=args$plot_heatmap, help="Generate a heatmap for the significant associations [ Default: %default ]")
+options <- add_option(options, c("-o","--plot_scatter"), type="logical", dest="plot_scatter",
+  default=args$plot_scatter, help="Generate scatter plots for the significant associations [ Default: %default ]")
 options <- add_option(options, c("-e","--cores"), type="double", dest="cores",
   default=args$cores, help="The number of R processes to run in parallel [ Default: %default ]")
 
@@ -124,7 +130,8 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
                      min_prevalence=args$min_prevalence, normalization=args$normalization, transform=args$transform, 
                      analysis_method=args$analysis_method, max_significance=args$max_significance,
                      random_effects=args$random_effects, fixed_effects=args$fixed_effects, correction=args$correction,
-                     standardize=args$standardize, cores=args$cores)
+                     standardize=args$standardize, cores=args$cores, plot_heatmap=args$plot_heatmap, 
+                     plot_scatter=args$plot_scatter)
 {
   #################################################################
   # Read in the data and metadata, create output folder, init log #
@@ -430,12 +437,16 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   # Create visualizations for results passing threshold #
   #######################################################
 
-  heatmap_file <- file.path(output,"heatmap.pdf")
-  logging::loginfo("Writing heatmap of significant results to file: %s", heatmap_file)
-  save_heatmap(significant_results_file, heatmap_file)
+  if (plot_heatmap) { 
+    heatmap_file <- file.path(output,"heatmap.pdf")
+    logging::loginfo("Writing heatmap of significant results to file: %s", heatmap_file)
+    save_heatmap(significant_results_file, heatmap_file)
+  }
 
-  logging::loginfo("Writing association plots (one for each significant association) to output folder: %s", output)
-  maaslin2_association_plots(unfiltered_metadata, unfiltered_data, significant_results_file, output)
+  if (plot_scatter) {
+    logging::loginfo("Writing association plots (one for each significant association) to output folder: %s", output)
+    maaslin2_association_plots(unfiltered_metadata, unfiltered_data, significant_results_file, output)
+  }
 
   return(fit_data)
 }
@@ -464,5 +475,6 @@ if(identical(environment(), globalenv()) &&
                        current_args$normalization, current_args$transform,
                        current_args$analysis_method, current_args$max_significance,
                        current_args$random_effects, current_args$fixed_effects,
-                       current_args$correction, current_args$standardize, current_args$cores) 
+                       current_args$correction, current_args$standardize, current_args$cores,
+                       current_args$plot_heatmap, current_args$plot_scatter) 
 }
