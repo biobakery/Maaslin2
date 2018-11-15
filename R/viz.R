@@ -141,8 +141,8 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
   }
   
   common_rows <- intersect(rownames(features), rownames(metadata))
-  input_df_all <- cbind(features[common_rows,], metadata[common_rows,])
-  
+  input_df_all <- cbind(features[common_rows, ,drop=FALSE], metadata[common_rows, ,drop=FALSE])
+ 
   # read MaAsLin output
   if (is.character(output_results)){
     output_df_all <- read.table( output_results, header = TRUE,
