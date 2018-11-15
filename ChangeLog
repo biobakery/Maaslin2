@@ -1,6 +1,17 @@
 
 # MaAsLin2 ChangeLog #
 
+## v0.2.2 11-15-2018 ##
+
+* Fix issue with single column in visualizations (Thanks, sma!)
+* Add hash to dependencies
+* Change output column names to match data.frame names
+* Add options to bypass plotting
+* Add crossed random effects for LM using lme4 and lmerTest
+* Fix ZICP fitting errors
+* Add stderr to results
+* Rotate heatmap column names by 45 degrees
+
 ## v0.2.1 10-10-2018 ##
 
 * Update read/slicing to support input files with a single feature.
