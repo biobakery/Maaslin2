@@ -73,8 +73,8 @@ TSSnorm = function(features) {
   dd<-colnames(features_norm)
   
   # TSS Normalizing the Data
-  features_TSS <- vegan::decostand(features_norm, method="total", MARGIN=1)
-  
+  features_TSS <- vegan::decostand(features_norm, method="total", MARGIN=1, na.rm=TRUE)
+
   # Convert back to data frame
   features_TSS<-as.data.frame(features_TSS)
   
