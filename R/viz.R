@@ -206,7 +206,7 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
           theme(legend.position="none")
     }
     stdout <- capture.output(print(temp_plot),type="message")
-    logging::logdebug(stdout)
+    if (length(stdout)>0) logging::logdebug(stdout)
   }
   dev.off()
   metadata_number <- metadata_number + 1
