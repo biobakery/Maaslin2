@@ -109,6 +109,7 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", 
       display_numbers = matrix(ifelse(a > 0.0, "+", ifelse(a < 0.0, "-", "")),  nrow(a)))
     }, error=function(err){ 
       logging::logerror("Unable to plot heatmap") 
+      logging::logerror(err)
     })
   return(p)
 }
