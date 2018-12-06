@@ -198,7 +198,7 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
           ggplot2::geom_boxplot(aes(fill =input_df$x), notch = T,
                                 outlier.alpha = 0.25, na.rm = T,
                                 show.legend = F) + 
-          ggplot2::geom_point(aes(fill = input_df$x)), size = 5, shape = 21, position = position_jitterdodge()) +
+          ggplot2::geom_point(aes(fill = input_df$x), size = 5, shape = 21, position = position_jitterdodge()) +
           ggplot2::scale_fill_brewer(palette="Spectral")
       
         # format the figure to default nature format, remove legend, add x/y labels
