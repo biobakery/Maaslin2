@@ -26,25 +26,25 @@ nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 
                                    panel.grid.minor = element_blank())
 
 ## Edit body of pheatmap:::draw_colnames, customizing it to your liking
-draw_colnames_45 <- function (coln, ...) {
-  m = length(coln)
-  x = (1:m)/m - 1/2/m
-  grid.text(coln, x = x, y = unit(0.96, "npc"), vjust = .5, 
-            hjust = 1, rot = 45, gp = gpar(...)) ## Was 'hjust=0' and 'rot=270'
-}
+# draw_colnames_45 <- function (coln, ...) {
+#   m = length(coln)
+#   x = (1:m)/m - 1/2/m
+#   grid.text(coln, x = x, y = unit(0.96, "npc"), vjust = .5, 
+#             hjust = 1, rot = 45, gp = gpar(...)) ## Was 'hjust=0' and 'rot=270'
+# }
 
 ## For pheatmap_1.0.8 and later:
-draw_colnames_45 <- function (coln, gaps, ...) {
-  coord = pheatmap:::find_coordinates(length(coln), gaps)
-  x = coord$coord - 0.5 * coord$size
-  res = textGrob(coln, x = x, y = unit(1, "npc") - unit(3,"bigpts"), vjust = 0.5, hjust = 1, rot = 45, gp = gpar(...))
-  return(res)}
+# draw_colnames_45 <- function (coln, gaps, ...) {
+#   coord = pheatmap:::find_coordinates(length(coln), gaps)
+#   x = coord$coord - 0.5 * coord$size
+#   res = textGrob(coln, x = x, y = unit(1, "npc") - unit(3,"bigpts"), vjust = 0.5, hjust = 1, rot = 45, gp = gpar(...))
+#   return(res)}
 
 
 # MaAsLin2 heatmap function for overall view of associations 
 maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", data_label = 'data', metadata_label = 'metadata',
                              border_color = "grey93", format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50),
-                             col_rotate = 45) {#)
+                             col_rotate = 90) {#)
   # read MaAsLin output
   
   df <- read.table( output_results,
@@ -56,11 +56,11 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", 
   }
   
   # rotate colnames
-  if (col_rotate == 45) {
-    ## 'Overwrite' default draw_colnames with your own version 
-    assignInNamespace(x="draw_colnames", value="draw_colnames_45",
-                      ns=asNamespace("pheatmap"))
-  }
+  # if (col_rotate == 45) {
+  #   ## 'Overwrite' default draw_colnames with your own version 
+  #   assignInNamespace(x="draw_colnames", value="draw_colnames_45",
+  #                     ns=asNamespace("pheatmap"))
+  # }
   metadata <- df$metadata
   data <- df$feature
   value <- NA
@@ -68,11 +68,11 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", 
   # and set the colorbar boundaries
   if (cell_value == "pval"){
     value <- -log(df$pval)*sign(df$coef)
-    value <- pmax(-2, pmin(2, value))
+    value <- pmax(-10, pmin(10, value))
     if (is.null(title)) title<-"Significant associations (-log(pval)*sign(coeff))"
   }else if(cell_value == "qval"){
     value <- -log(df$qval)*sign(df$coef)
-    value <- pmax(-2, pmin(2, value))
+    value <- pmax(-10, pmin(10, value))
     if (is.null(title)) title<-"Significant associations (-log(qval)*sign(coeff))"
   }else if(cell_value == "coef"){
     value <- df$coef
@@ -81,13 +81,15 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", 
   n <- length(unique(data))
   m <- length(unique(metadata))
   a = matrix(0, nrow=n, ncol=m)
-  for (i in 1:length(metadata)){
-    #if (abs(a[as.numeric(metadata[i]), as.numeric(metadata[i])]) > abs(value[i]))
-    #  next
-    a[as.numeric(data)[i], as.numeric(metadata)[i]] <- value[i]
-  }
+  a <- as.data.frame(a)
   rownames(a) <- levels(data)
   colnames(a) <- levels(metadata)
+  for (i in 1:dim(df)[1]){
+    if (abs(a[as.character(data[i]), as.character(metadata[i])]) > abs(value[i]))
+      next
+    a[as.character(data[i]), as.character(metadata[i])] <- value[i]
+  }
+  
   p <- NULL
   tryCatch({ 
     p <- pheatmap::pheatmap(
