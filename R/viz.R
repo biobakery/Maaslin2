@@ -194,11 +194,11 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
         ### check if the variable is categorical
         logging::loginfo("Creating boxplot for catgorical data, %s vs %s", x_label, y_label)
         input_df['x'] <- sapply(input_df['x'], as.character) 
-        temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y), fill = input_df$x) +
-          ggplot2::geom_boxplot(alpha = 0.8 ,
-                                outlier.alpha = 0.25, na.rm = T,
+        temp_plot <- ggplot2::ggplot(data=input_df, aes(factor(x), y)) +
+          ggplot2::geom_boxplot(aes(fill= x), 
+                                outlier.alpha = 0.0, na.rm = T,
                                 show.legend = F) +
-          ggplot2::geom_point(aes(fill = input_df$x), size = 5, shape = 21, position = position_jitterdodge()) +
+          ggplot2::geom_point(aes(fill = x), alpha = 0.75 , size = 3, shape = 21, position = position_jitterdodge()) +
           ggplot2::scale_fill_brewer(palette="Spectral")
       
         # format the figure to default nature format, remove legend, add x/y labels
