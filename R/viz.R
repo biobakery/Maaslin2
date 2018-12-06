@@ -194,7 +194,7 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
         ### check if the variable is categorical
         logging::loginfo("Creating boxplot for catgorical data, %s vs %s", x_label, y_label)
         input_df['x'] <- sapply(input_df['x'], as.character) 
-        temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y), fill = input_df$x)) +
+        temp_plot <- ggplot2::ggplot(data=input_df, aes(x, y), fill = input_df$x) +
           ggplot2::geom_boxplot(alpha = 0.8 ,
                                 outlier.alpha = 0.25, na.rm = T,
                                 show.legend = F) +
