@@ -55,7 +55,7 @@ if(identical(environment(), globalenv()) &&
 ###########################
 
 normalization_choices <- c("TSS","CLR","CSS","NONE","TMM")
-analysis_method_choices_names <- c("LM","CPLM","ZICP","NEGBIN","ZINB")
+analysis_method_choices_names <- c("LM","SLM","CPLM","ZICP","NEGBIN","ZINB")
 transform_choices <- c("LOG","LOGIT","AST","NONE")
 valid_choice_combinations_method_norm <- hash::hash()
 valid_choice_combinations_method_norm[[analysis_method_choices_names[4]]] <- normalization_choices[2:5]

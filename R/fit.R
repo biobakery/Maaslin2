@@ -34,6 +34,33 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
       }
     }
   }
+  
+  
+  if (model=="SLM") {
+    # simple "lm" linear model
+    if (is.null(random_effects_formula)) {
+      model_function <- function(formula, data, na.action) { return(lm(formula, data = data, family='gaussian', na.action = na.action)) }
+      summary_function <- function(fit) {
+        lm_summary <- summary(fit)$coefficients
+        r2 <- summary(fit)$r.squared
+        para<-as.data.frame(lm_summary)[-1,-3]
+        para$name<-rownames(lm_summary)[-1]
+        para$r2 <- r2
+        return(para) 
+      }
+    }else { #need to be tested
+      formula<-paste('. ~', paste(all.vars(formula)[-1], collapse = ' + '), '.', sep = ' + ')
+      formula<-update(random_effects_formula, formula)     
+      model_function <- function(formula, data, na.action) {return(lmerTest::lmer(formula, data = data, na.action = na.action)) }
+      summary_function <- function(fit) {
+        lm_summary<-coef(summary(fit))
+        para<-as.data.frame(lm_summary)[-1,-c(3:4)]
+        para$name<-rownames(lm_summary)[-1]
+        para$r2 <- r.squaredGLMM(fit)
+        return(para)
+      }
+    }
+  }
 
   if (model=="CPLM") {
     model_function <- cplm::cpglm
@@ -117,8 +144,10 @@ fit.data <- function(features, metadata, model, formula = NULL, random_effects_f
           output$para<-as.data.frame(matrix(NA, nrow=ncol(metadata), ncol=3))
           output$para$name<-colnames(metadata)
           output$residuals<-NA
-        }
-    colnames(output$para)<-c('coef', 'stderr' , 'pval', 'name')
+    }
+    if (model == 'SLM')
+      colnames(output$para)<-c('coef', 'stderr' , 'pval', 'name', 'r2')
+    else colnames(output$para)<-c('coef', 'stderr' , 'pval', 'name')
     output$para$feature<-colnames(features)[x]
     return(output)
   })    
