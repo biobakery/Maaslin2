@@ -355,24 +355,30 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   formula<-tryCatch(as.formula(formula_text), error=function(e) stop(paste("Invalid formula. Please provide a different formula: ",formula_text)))
 
   #########################################################
-  # Filter data based on min abundance and min prevalence #
+  # Normalize and filter data based on min abundance and min prevalence #
   #########################################################
 
   unfiltered_data <- data
   unfiltered_metadata <- metadata
+
+  # normalize features
+  logging::loginfo("Running selected normalization method: %s", normalization)
+  normalized_data<-normalizeFeatures(data, normalization = normalization)
+
   # require at least total samples * min prevalence values for each feature to be greater than min abundance
   logging::loginfo("Filter data based on min abundance and min prevalence")
-  total_samples <- nrow(data)
+  total_samples <- nrow(normalized_data)
   logging::loginfo("Total samples in data: %d", total_samples)
   min_samples <- total_samples * min_prevalence
   logging::loginfo("Min samples required with min abundance for a feature not to be filtered: %f", min_samples)
+
   # Filter by abundance using zero as value for NAs
-  data_zeros <- data
+  data_zeros <- normalized_data
   data_zeros[is.na(data_zeros)] <- 0
-  filtered_data <- data[,colSums(data_zeros >= min_abundance) > min_samples, drop=FALSE]
-  total_filtered_features <- ncol(data) - ncol(filtered_data)
+  filtered_data <- normalized_data[,colSums(data_zeros >= min_abundance) > min_samples, drop=FALSE]
+  total_filtered_features <- ncol(normalized_data) - ncol(filtered_data)
   logging::loginfo("Total filtered features: %d", total_filtered_features)
-  filtered_feature_names <- setdiff(names(data),names(filtered_data))
+  filtered_feature_names <- setdiff(names(normalized_data),names(filtered_data))
   logging::loginfo("Filtered feature names: %s", toString(filtered_feature_names))
 
   ################################
@@ -387,12 +393,10 @@ Maaslin2 <- function(input_data, input_metadata, output, min_abundance=args$min_
   }
 
   #################################################################
-  # Nomalize, transform, and run method writing residuals to file #
+  # Transform and run method writing residuals to file #
   #################################################################
 
-  # normalize and transform features
-  logging::loginfo("Running selected normalization method: %s", normalization)
-  filtered_data<-normalizeFeatures(filtered_data, normalization = normalization)
+  # transform features
   logging::loginfo("Running selected transform method: %s", transform)
   filtered_data<-transformFeatures(filtered_data, transformation = transform)
 

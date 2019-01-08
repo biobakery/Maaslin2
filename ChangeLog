@@ -1,6 +1,11 @@
 
 # MaAsLin2 ChangeLog #
 
+## v0.2.3 12-20-2018 ##
+
+* Move filtering to after normalization
+* Updates to barplots
+
 ## v0.2.2 11-15-2018 ##
 
 * Fix issue with single column in visualizations (Thanks, sma!)
