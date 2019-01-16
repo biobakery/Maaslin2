@@ -50,8 +50,8 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", 
   df <- read.table( output_results,
                     header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
   
-  if (dim(df)[1] < 1){
-    print('There is no association to plot!')
+  if (dim(df)[1] < 2){
+    print('There is no enough association to plot!')
     return (NULL)
   }
   
