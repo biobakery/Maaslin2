@@ -42,14 +42,20 @@ nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 
 
 
 # MaAsLin2 heatmap function for overall view of associations 
-maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", data_label = 'data', metadata_label = 'metadata',
-                             border_color = "grey93", format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50),
-                             col_rotate = 90) {#)
+maaslin2_heatmap <- function(output_results, title = NA, cell_value = 'qval', data_label = 'data', metadata_label = 'metadata',
+                             border_color = 'grey93', format =  NA, color = colorRampPalette(c("darkblue","grey90", "darkred"))(50),
+                             col_rotate = 90, first_n =  NA) {#)
   # read MaAsLin output
-  
   df <- read.table( output_results,
                     header = TRUE, sep = "\t", fill = TRUE, comment.char = "" , check.names = FALSE)
-  
+  if (!is.na(first_n) & first_n > 0 & first_n < dim(df)[1]){
+    if (cell_value =='coef'){
+      df <- df[order(-abs(df[cell_value])) ,]
+    }else{
+      df <- df[order(df[cell_value]),]
+    }
+    df <- df[1:first_n, ]
+  }
   if (dim(df)[1] < 2){
     print('There is no enough association to plot!')
     return (NULL)
@@ -68,11 +74,11 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", 
   # and set the colorbar boundaries
   if (cell_value == "pval"){
     value <- -log(df$pval)*sign(df$coef)
-    value <- pmax(-10, pmin(10, value))
+    value <- pmax(-20, pmin(20, value))
     if (is.null(title)) title<-"Significant associations (-log(pval)*sign(coeff))"
   }else if(cell_value == "qval"){
     value <- -log(df$qval)*sign(df$coef)
-    value <- pmax(-10, pmin(10, value))
+    value <- pmax(-20, pmin(20, value))
     if (is.null(title)) title<-"Significant associations (-log(qval)*sign(coeff))"
   }else if(cell_value == "coef"){
     value <- df$coef
@@ -82,8 +88,8 @@ maaslin2_heatmap <- function(output_results, title = NULL, cell_value = "qval", 
   m <- length(unique(metadata))
   a = matrix(0, nrow=n, ncol=m)
   a <- as.data.frame(a)
-  rownames(a) <- levels(data)
-  colnames(a) <- levels(metadata)
+  rownames(a) <- unique(data)
+  colnames(a) <- unique(metadata)
   for (i in 1:dim(df)[1]){
     if (abs(a[as.character(data[i]), as.character(metadata[i])]) > abs(value[i]))
       next
