@@ -208,7 +208,7 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
           ggplot2::guides(alpha='none')+ggplot2::labs("")+
           ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme+
           ggplot2::annotate(geom="text", x= Inf, y = Inf, hjust=1,vjust=1,
-                            label=sprintf("p-value: %s\nCoefficient: %s",qval, coef_val) ,
+                            label=sprintf("p-value: %#.4f\nCoefficient: %#.4f",qval, coef_val) ,
                             color="black", size= 2.25, fontface="italic")
       }else{
         # if Metadata is categorical generate a boxplot
@@ -230,7 +230,7 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
           ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) +
           ggplot2::theme(legend.position="none")+
           ggplot2::annotate(geom="text", x= Inf, y = Inf, hjust=1,vjust=1,
-                            label=sprintf("p-value: %.4f\nCoefficient: %.4f",qval, coef_val) ,
+                            label=sprintf("p-value: %#.4f\nCoefficient: %#.4f",qval, coef_val) ,
                             color="black", size= 2.25, fontface="italic")
     }
     stdout <- capture.output(print(temp_plot),type="message")
