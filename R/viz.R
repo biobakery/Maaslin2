@@ -12,18 +12,18 @@ for( lib in c('ggplot2',"grid",'pheatmap')) {
 }
 
 # MaAsLin2 theme based on Nature journal requirements
-nature_theme <- theme_bw() + theme(axis.text.x = element_text(size = 8, vjust = 1),
-                                   axis.text.y = element_text(size = 8, hjust = 1),
-                                   axis.title=element_text(size = 10  ),
-                                   plot.title =element_text(size=7, face='bold'),
-                                   legend.title=element_text(size=6, face='bold'),
-                                   legend.text=element_text(size=6),
-                                   axis.line = element_line(colour = 'black', size = .25),
-                                   axis.line.x = element_line(colour = 'black', size = .25), 
-                                   axis.line.y = element_line(colour = 'black', size = .25),
-                                   panel.border = element_blank(), 
-                                   panel.grid.major = element_blank(),
-                                   panel.grid.minor = element_blank())
+nature_theme <- ggplot2::theme_bw() + ggplot2::theme(axis.text.x = ggplot2::element_text(size = 8, vjust = 1),
+                                   axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
+                                   axis.title = ggplot2::element_text(size = 10  ),
+                                   plot.title = ggplot2::element_text(size=7, face='bold'),
+                                   legend.title = ggplot2::element_text(size=6, face='bold'),
+                                   legend.text = ggplot2::element_text(size=6),
+                                   axis.line = ggplot2::element_line(colour = 'black', size = .25),
+                                   axis.line.x = ggplot2::element_line(colour = 'black', size = .25), 
+                                   axis.line.y = ggplot2::element_line(colour = 'black', size = .25),
+                                   panel.border = ggplot2::element_blank(), 
+                                   panel.grid.major = ggplot2::element_blank(),
+                                   panel.grid.minor = ggplot2::element_blank())
 
 ## Edit body of pheatmap:::draw_colnames, customizing it to your liking
 # draw_colnames_45 <- function (coln, ...) {
@@ -86,6 +86,16 @@ maaslin2_heatmap <- function(output_results, title = NA, cell_value = 'qval', da
   }
   n <- length(unique(data))
   m <- length(unique(metadata))
+  if (n < 2){
+    print('There is no enough features in associations to make a heatmap plot of associations. 
+          Please look at association in text output file!')
+    return (NULL)
+  }
+  if (m < 2){
+    print('There is no enough metadata in associations to make a heatmap plot of associations. 
+          Please look at association in text output file!')
+    return (NULL)
+  }
   a = matrix(0, nrow=n, ncol=m)
   a <- as.data.frame(a)
   rownames(a) <- unique(data)
@@ -175,11 +185,13 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
     plot_file <- paste(write_to, "/", gsub("[^[:alnum:]_]", "_", label), ".pdf", sep="")
     data_index <- which(label==metadata_types)
     logging::loginfo("Plotting data for metadata number %s, %s", metadata_number, label) 
-    pdf(plot_file, onefile=TRUE)
+    pdf(plot_file, width = 2.65, height = 2.5, onefile=TRUE)
 
     for (i in data_index){
       x_label <- as.character(output_df_all[i, 'metadata'])
       y_label <- as.character(output_df_all[i, 'feature'])
+      qval <- as.numeric(output_df_all[i, 'qval'])
+      coef_val <- as.numeric(output_df_all[i, 'coef'])
       input_df <- input_df_all[c(x_label,y_label)]
       colnames(input_df) <- c("x", "y")
       # if Metadata is continuous generate a scatter plot
@@ -189,35 +201,42 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
         logging::loginfo("Creating scatter plot for continuous data, %s vs %s", x_label, y_label)
         temp_plot <- ggplot2::ggplot(data=input_df, 
           ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
-          ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1.5, stroke = 0.05) + 
+          ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1, stroke = 0.25) + 
           ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
           ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
           ggplot2::stat_smooth(method = "glm", color ='blue', na.rm = T)+ 
           ggplot2::guides(alpha='none')+ggplot2::labs("")+
-          ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme
+          ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme+
+          ggplot2::annotate(geom="text", x= Inf, y = Inf, hjust=1,vjust=1,
+                            label=sprintf("p-value: %s\nCoefficient: %s",qval, coef_val) ,
+                            color="black", size= 2.25, fontface="italic")
       }else{
         # if Metadata is categorical generate a boxplot
         ### check if the variable is categorical
         logging::loginfo("Creating boxplot for catgorical data, %s vs %s", x_label, y_label)
         input_df['x'] <- sapply(input_df['x'], as.character) 
-        temp_plot <- ggplot2::ggplot(data=input_df, aes(factor(x), y)) +
-          ggplot2::geom_boxplot(aes(fill= x), 
+        temp_plot <- ggplot2::ggplot(data=input_df, ggplot2::aes(factor(x), y)) +
+          ggplot2::geom_boxplot(ggplot2::aes(fill= x), 
                                 outlier.alpha = 0.0, na.rm = T,
                                 show.legend = F) +
-          ggplot2::geom_point(aes(fill = x), alpha = 0.75 , size = 3, shape = 21, position = position_jitterdodge()) +
+          ggplot2::geom_point(ggplot2::aes(fill = x), alpha = 0.5 , size = 1, shape = 21, stroke = 0.25, 
+                              position = ggplot2::position_jitterdodge()) +
           ggplot2::scale_fill_brewer(palette="Spectral")
       
         # format the figure to default nature format, remove legend, add x/y labels
         temp_plot <- temp_plot + nature_theme +
-          theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-                panel.background = element_blank(), axis.line = element_line(colour = "black")) +
+          ggplot2::theme(panel.grid.major = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank(),
+                panel.background = ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black")) +
           ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) +
-          theme(legend.position="none")
+          ggplot2::theme(legend.position="none")+
+          ggplot2::annotate(geom="text", x= Inf, y = Inf, hjust=1,vjust=1,
+                            label=sprintf("p-value: %.4f\nCoefficient: %.4f",qval, coef_val) ,
+                            color="black", size= 2.25, fontface="italic")
     }
     stdout <- capture.output(print(temp_plot),type="message")
     if (length(stdout)>0) logging::logdebug(stdout)
   }
   dev.off()
-  metadata_number <- metadata_number + 1
+   metadata_number <- metadata_number + 1
   }
 }
