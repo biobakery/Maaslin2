@@ -201,7 +201,7 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
         logging::loginfo("Creating scatter plot for continuous data, %s vs %s", x_label, y_label)
         temp_plot <- ggplot2::ggplot(data=input_df, 
           ggplot2::aes(as.numeric(as.character(x)), as.numeric(as.character(y)))) +
-          ggplot2::geom_point( fill = 'darkolivegreen4', color = 'darkolivegreen4', alpha = .5, shape = 21, size = 1, stroke = 0.25) + 
+          ggplot2::geom_point( fill = 'darkolivegreen4', color = 'black', alpha = .5, shape = 21, size = 1, stroke = 0.15) + 
           ggplot2::scale_x_continuous(limits=c(min(input_df['x']), max(input_df['x'])))+
           ggplot2::scale_y_continuous(limits=c(min(input_df['y']), max(input_df['y'])))+
           ggplot2::stat_smooth(method = "glm", color ='blue', na.rm = T)+ 
@@ -218,9 +218,9 @@ maaslin2_association_plots <- function(metadata, features, output_results, write
         input_df['x'] <- sapply(input_df['x'], as.character) 
         temp_plot <- ggplot2::ggplot(data=input_df, ggplot2::aes(factor(x), y)) +
           ggplot2::geom_boxplot(ggplot2::aes(fill= x), 
-                                outlier.alpha = 0.0, na.rm = T,
+                                outlier.alpha = 0.0, na.rm = T, alpha = .5,
                                 show.legend = F) +
-          ggplot2::geom_point(ggplot2::aes(fill = x), alpha = 0.5 , size = 1, shape = 21, stroke = 0.25, 
+          ggplot2::geom_point(ggplot2::aes(fill = x), alpha = 0.75 , size = 1, shape = 21, stroke = 0.15, color = 'black',
                               position = ggplot2::position_jitterdodge()) +
           ggplot2::scale_fill_brewer(palette="Spectral")
       
