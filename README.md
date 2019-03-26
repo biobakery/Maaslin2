@@ -38,7 +38,6 @@ MaAsLin2 is an R package that can be run on the command line or as an R function
     * [pscl: Political Science Computational Laboratory](https://cran.r-project.org/web/packages/pscl/pscl.pdf)
     * [pbapply: Adding Progress Bar to '*apply' Functions](https://cran.rstudio.com/web/packages/pbapply/index.html)
     * [car: Companion to Applied Regression](https://cran.rstudio.com/web/packages/car/index.html)
-    * [nlme: Linear and Nonlinear Mixed Effects Models](https://cran.rstudio.com/web/packages/nlme/index.html)
     * [dplyr: A Grammer of Data Manipulation](https://cran.rstudio.com/web/packages/dplyr/index.html)
     * [vegan: Community Ecology Package](https://cran.rstudio.com/web/packages/vegan/index.html)
     * [chemometrics: Multivariate Statistical Analysis in Chemometrics](https://cran.rstudio.com/web/packages/chemometrics/index.html) 
@@ -47,7 +46,6 @@ MaAsLin2 is an R package that can be run on the command line or as an R function
     * [cplm: Compound Poisson Linear Models](https://cran.rstudio.com/web/packages/cplm/index.html)
     * [logging: R logging package](https://cran.rstudio.com/web/packages/logging/index.html)
     * [data.table: Fast aggregation of large data](https://cran.rstudio.com/web/packages/data.table/index.html)
-    * [lme4: Linear Mixed-Effects Models using 'Eigen' and S4](https://cran.rstudio.com/web/packages/lme4/index.html)
     * [lmerTest: Tests in Linear Mixed Effects Models](https://cran.rstudio.com/web/packages/lmerTest/index.html)
     * These packages can be installed in R with ``install.packages('pscl')`` or from the command line ``$ R -q -e "install.packages('pscl', repos='http://cran.r-project.org')"`` individually (for those packages which you do not yet have installed) or as a set by providing the complete list as a vector.
 
@@ -64,8 +62,8 @@ but you will need to install the MaAsLin2 dependencies.
 3. Install the Bioconductor dependencies: 
     * ``$ R -q -e "source('https://bioconductor.org/biocLite.R'); biocLite('edgeR'); biocLite('metagenomeSeq')"``
 4. Install the CRAN dependencies:
-    * ``$ R -q -e "install.packages(c('pscl','pbapply','car','nlme','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging','data.table'), repos='http://cran.r-project.org')"``
-5. Install the MaAsLin2 package (only required if running as an R function): 
+    * ``$ R -q -e "install.packages(c('lmerTest','pscl','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging','data.table','MASS','MuMIn'), repos='http://cran.r-project.org')"``
+5. Install the MaAsLin2 package (only r,equired if running as an R function): 
     * ``$ R CMD INSTALL maaslin2``
 
 ### From R ###
