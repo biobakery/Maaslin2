@@ -1,5 +1,6 @@
 export(Maaslin2)
 
+import("optparse")
 importFrom("grDevices", "colorRampPalette", "dev.off", "pdf")
 importFrom("stats", "as.formula", "coef", "glm", "lm", "na.exclude",
            "p.adjust", "update")
