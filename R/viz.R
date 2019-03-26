@@ -279,7 +279,9 @@ maaslin2_association_plots <-
           width = 2.65,
           height = 2.5,
           onefile = TRUE)
-      
+     
+      x <- NULL
+      y <- NULL 
       for (i in data_index) {
         x_label <- as.character(output_df_all[i, 'metadata'])
         y_label <- as.character(output_df_all[i, 'feature'])
