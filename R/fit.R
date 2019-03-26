@@ -3,13 +3,12 @@ for (lib in c(
   'dplyr',
   'pbapply',
   'MASS',
-  'lme4',
   'lmerTest',
   'car',
   'cplm',
-  'nlme',
   'pscl',
-  'parallel'
+  'parallel',
+  'MuMIn'
 )) {
   if (!suppressPackageStartupMessages(require(lib, character.only = TRUE)))
     stop(paste("Please install the R package: ", lib))
@@ -101,7 +100,7 @@ fit.data <-
           lm_summary <- coef(summary(fit))
           para <- as.data.frame(lm_summary)[-1, -c(3:4)]
           para$name <- rownames(lm_summary)[-1]
-          para$r2 <- r.squaredGLMM(fit)
+          para$r2 <- MuMIn::r.squaredGLMM(fit)
           return(para)
         }
       }
