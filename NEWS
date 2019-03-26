@@ -1,0 +1,28 @@
+
+Changes in version 0.2.3 (2018-12-20):
++ Move filtering to after normalization
++ Updates to barplots
+
+Changes in version 0.2.2 (2018-11-15):
++ Fix issue with single column in visualizations (Thanks, sma!)
++ Add hash to dependencies
++ Change output column names to match data.frame names
++ Add options to bypass plotting
++ Add crossed random effects for LM using lme4 and lmerTest
++ Fix ZICP fitting errors
++ Add stderr to results
++ Rotate heatmap column names by 45 degrees
+
+Changes in version 0.2.1 (2018-10-10):
++ Update read/slicing to support input files with a single feature.
+
+Changes in version 0.2.0 (2018-10-09):
++ Group boxplots/scatter plots by metadata name.
++ Replace ggsave with pdf to print heatmap/plots to resolve ggsave Rplot.pdf issue.
++ Add tryCatch to allow for error in heatmap but still print other plots.
++ Allow data/metadata inputs to be paths to files or data.frame.
++ Return fit data from maaslin2 function.
++ Set na.action default in model fit to na.exclude.
+
+Changes in version 0.1.0 (2018-09-27):
++ Initial tagged release.
