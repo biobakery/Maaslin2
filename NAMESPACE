@@ -4,4 +4,4 @@ importFrom("grDevices", "colorRampPalette", "dev.off", "pdf")
 importFrom("stats", "as.formula", "coef", "glm", "lm", "na.exclude",
            "p.adjust", "update")
 importFrom("utils", "capture.output", "read.table", "write.table")
-
+importFrom("dplyr", "%>%")
