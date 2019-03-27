@@ -1,14 +1,15 @@
 Package: Maaslin2
 Title: Maaslin2
 Version: 0.2.3
-Authors@R: as.person(c(
-    "Himel Mallick <hmallick@broadinstitute.org> [aut, cre]", 
-    "Ali Rahnavard <rah@broadinstitute.org> [aut]",
-    "Lauren McIver <lauren.j.mciver@gmail.com> [aut]"
-  ))
+Authors@R: c(
+  person("Himel", "Mallick", email = "hmallick@broadinstitute.org", role = c("aut", "cre")), 
+  person("Ali", "Rahnavard", email = "rah@broadinstitute.org", role = "aut"),
+  person("Lauren", "McIver", email = "lauren.j.mciver@gmail.com", role = "aut")
+  )
 Description: MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate statistical framework that finds associations between clinical metadata and microbial community abundance or function. 
 License: MIT + file LICENSE
 LazyData: true
-Imports: edgeR, metagenomeSeq, pscl, pbapply, car, dplyr, vegan, chemometrics, ggplot2, pheatmap, cplm, logging, data.table, lmerTest, hash, optparse, MASS, MuMIn
+Imports: edgeR, metagenomeSeq, pscl, pbapply, car, dplyr, vegan, chemometrics, ggplot2, pheatmap, cplm, logging, data.table, lmerTest, hash, optparse, MASS, MuMIn, grDevices, stats, utils
+Suggests: BiocGenerics
 Collate: fit.R utility_scripts.R viz.R  Maaslin2.R
 URL: http://huttenhower.sph.harvard.edu/maaslin2
