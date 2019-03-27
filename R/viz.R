@@ -151,8 +151,8 @@ maaslin2_heatmap <-
           fontsize = 6,
           kmeans_k = NA,
           border = TRUE,
-          show_rownames = T,
-          show_colnames = T,
+          show_rownames = TRUE,
+          show_colnames = TRUE,
           scale = "none",
           cluster_rows = FALSE,
           cluster_cols = TRUE,
@@ -317,7 +317,7 @@ maaslin2_association_plots <-
               method = "glm",
               size = 0.5,
               color = 'blue',
-              na.rm = T
+              na.rm = TRUE
             ) +
             ggplot2::guides(alpha = 'none') + ggplot2::labs("") +
             ggplot2::xlab(x_label) +  ggplot2::ylab(y_label) + nature_theme +
@@ -349,9 +349,9 @@ maaslin2_association_plots <-
             ggplot2::geom_boxplot(
               ggplot2::aes(fill = x),
               outlier.alpha = 0.0,
-              na.rm = T,
+              na.rm = TRUE,
               alpha = .5,
-              show.legend = F
+              show.legend = FALSE
             ) +
             ggplot2::geom_point(
               ggplot2::aes(fill = x),
