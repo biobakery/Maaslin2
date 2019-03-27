@@ -2,9 +2,9 @@ Package: Maaslin2
 Title: Maaslin2
 Version: 0.2.3
 Authors@R: c(
-  person("Himel", "Mallick", email = "hmallick@broadinstitute.org", role = c("aut", "cre")), 
+  person("Himel", "Mallick", email = "hmallick@broadinstitute.org", role = "aut"), 
   person("Ali", "Rahnavard", email = "rah@broadinstitute.org", role = "aut"),
-  person("Lauren", "McIver", email = "lauren.j.mciver@gmail.com", role = "aut")
+  person("Lauren", "McIver", email = "lauren.j.mciver@gmail.com", role = c("aut", "cre"))
   )
 Description: MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate statistical framework that finds associations between clinical metadata and microbial community abundance or function. 
 License: MIT + file LICENSE
