@@ -38,7 +38,8 @@ for (lib in c('optparse', 'logging', 'data.table', 'dplyr')) {
 # this evaluates to true if script is being called directly as an executable
 if (identical(environment(), globalenv()) &&
     !length(grep("^source\\(", sys.calls()))) {
-  # source all R in Maaslin2 package, relative to this folder (same method as original maaslin)
+  # source all R in Maaslin2 package, relative to this folder
+  # same method as original maaslin
   script_options <- commandArgs(trailingOnly = FALSE)
   script_path <-
     sub("--file=", "", script_options[grep("--file=", script_options)])
@@ -98,7 +99,12 @@ args$cores <- 1
 ##############################
 
 options <-
-  optparse::OptionParser(usage = "%prog [options] <data.tsv> <metadata.tsv> <output_folder>")
+  optparse::OptionParser(usage = paste("%prog [options]",
+                                       " <data.tsv> ",
+                                       "<metadata.tsv> ",
+                                       "<output_folder>" 
+                        )
+  )
 options <-
   optparse::add_option(
     options,
@@ -106,7 +112,9 @@ options <-
     type = "double",
     dest = "min_abundance",
     default = args$min_abundance,
-    help = "The minimum abundance for each feature [ Default: %default ]"
+    help = paste0("The minimum abundance for each feature",
+                  " [ Default: %default ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -115,7 +123,10 @@ options <-
     type = "double",
     dest = "min_prevalence",
     default = args$min_prevalence,
-    help = "The minimum percent of samples for which a feature is detected at minimum abundance [ Default: %default ]"
+    help = paste0("The minimum percent of samples for which",
+                  "a feature is detected at minimum abundance",
+                  " [ Default: %default ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -124,7 +135,9 @@ options <-
     type = "double",
     dest = "max_significance",
     default = args$max_significance,
-    help = "The q-value threshold for significance [ Default: %default ]"
+    help = paste0("The q-value threshold for significance",
+                  " [ Default: %default ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -134,7 +147,8 @@ options <-
     dest = "normalization",
     default = args$normalization,
     help = paste(
-      "The normalization method to apply [ Default: %default ] [ Choices:",
+      "The normalization method to apply",
+      " [ Default: %default ] [ Choices:",
       toString(normalization_choices),
       "]"
     )
@@ -172,7 +186,10 @@ options <-
     type = "character",
     dest = "random_effects",
     default = args$random_effects,
-    help = "The random effects for the model, comma-delimited for multiple effects [ Default: none ]"
+    help = paste("The random effects for the model, ",
+                 "comma-delimited for multiple effects",
+                 " [ Default: none ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -181,7 +198,10 @@ options <-
     type = "character",
     dest = "fixed_effects",
     default = args$fixed_effects,
-    help = "The fixed effects for the model, comma-delimited for multiple effects [ Default: all ]"
+    help = paste("The fixed effects for the model,",
+                 " comma-delimited for multiple effects",
+                 " [ Default: all ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -190,7 +210,9 @@ options <-
     type = "character",
     dest = "correction",
     default = args$correction,
-    help = "The correction method for computing the q-value [ Default: %default ]"
+    help = paste("The correction method for computing",
+                 " the q-value [ Default: %default ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -199,7 +221,9 @@ options <-
     type = "logical",
     dest = "standardize",
     default = args$standardize,
-    help = "Apply z-score so continuous metadata are on the same scale [ Default: %default ]"
+    help = paste("Apply z-score so continuous metadata are on",
+                 " the same scale [ Default: %default ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -208,7 +232,9 @@ options <-
     type = "logical",
     dest = "plot_heatmap",
     default = args$plot_heatmap,
-    help = "Generate a heatmap for the significant associations [ Default: %default ]"
+    help = paste("Generate a heatmap for the significant ",
+                 "associations [ Default: %default ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -217,7 +243,9 @@ options <-
     type = "logical",
     dest = "plot_scatter",
     default = args$plot_scatter,
-    help = "Generate scatter plots for the significant associations [ Default: %default ]"
+    help = paste("Generate scatter plots for the significant",
+                 " associations [ Default: %default ]"
+    )
   )
 options <-
   optparse::add_option(
@@ -226,7 +254,9 @@ options <-
     type = "double",
     dest = "cores",
     default = args$cores,
-    help = "The number of R processes to run in parallel [ Default: %default ]"
+    help = paste("The number of R processes to ",
+                 "run in parallel [ Default: %default ]"
+    )
   )
 
 option_not_valid_error <- function(message, valid_options) {
@@ -234,9 +264,9 @@ option_not_valid_error <- function(message, valid_options) {
   stop("Option not valid", call. = FALSE)
 }
 
-##########################################################################################
-# Main maaslin2 function with defaults set to the same as those used on the command line #
-##########################################################################################
+#######################################################
+# Main maaslin2 function (defaults same command line) #
+#######################################################
 
 Maaslin2 <-
   function(input_data,
@@ -369,7 +399,8 @@ Maaslin2 <-
       if (analysis_method == limited_method) {
         if (!normalization %in% valid_choice_combinations_method_norm[[limited_method]]) {
           option_not_valid_error(
-            "This method can only be used with a subset of normalizations. Please select from the following list",
+            "This method can only be used with a subset of normalizations. ",
+            "Please select from the following list",
             toString(valid_choice_combinations_method_norm[[limited_method]])
           )
         }
@@ -379,7 +410,8 @@ Maaslin2 <-
       if (transform == limited_transform) {
         if (!normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
           option_not_valid_error(
-            "This transform can only be used with a subset of normalizations. Please select from the following list",
+            "This transform can only be used with a subset of normalizations. ",
+            "Please select from the following list",
             toString(valid_choice_combinations_transform_norm[[limited_transform]])
           )
         }
@@ -391,7 +423,8 @@ Maaslin2 <-
     {
       if (!analysis_method %in% valid_choice_method_transform) {
         option_not_valid_error(
-          "The transform selected can only be used with some methods. Please select from the following list",
+          "The transform selected can only be used with some methods. ",
+          "Please select from the following list",
           toString(valid_choice_method_transform)
         )
       }
