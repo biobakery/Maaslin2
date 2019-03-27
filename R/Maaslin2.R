@@ -399,8 +399,9 @@ Maaslin2 <-
       if (analysis_method == limited_method) {
         if (!normalization %in% valid_choice_combinations_method_norm[[limited_method]]) {
           option_not_valid_error(
-            "This method can only be used with a subset of normalizations. ",
-            "Please select from the following list",
+            paste0("This method can only be used with a subset of normalizations. ",
+                   "Please select from the following list"
+            ),
             toString(valid_choice_combinations_method_norm[[limited_method]])
           )
         }
@@ -410,8 +411,9 @@ Maaslin2 <-
       if (transform == limited_transform) {
         if (!normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
           option_not_valid_error(
-            "This transform can only be used with a subset of normalizations. ",
-            "Please select from the following list",
+            paste0("This transform can only be used with a subset of normalizations. ",
+                   "Please select from the following list"
+            ),
             toString(valid_choice_combinations_transform_norm[[limited_transform]])
           )
         }
@@ -423,8 +425,9 @@ Maaslin2 <-
     {
       if (!analysis_method %in% valid_choice_method_transform) {
         option_not_valid_error(
-          "The transform selected can only be used with some methods. ",
-          "Please select from the following list",
+          paste0("The transform selected can only be used with some methods. ",
+                 "Please select from the following list"
+          ),
           toString(valid_choice_method_transform)
         )
       }
