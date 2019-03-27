@@ -7,7 +7,7 @@ Authors@R: as.person(c(
     "Lauren McIver <lauren.j.mciver@gmail.com> [aut]"
   ))
 Description: MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate statistical framework that finds associations between clinical metadata and microbial community abundance or function. 
-License: MIT License
+License: MIT + file LICENSE
 LazyData: true
 Imports: edgeR, metagenomeSeq, pscl, pbapply, car, dplyr, vegan, chemometrics, ggplot2, pheatmap, cplm, logging, data.table, lmerTest, hash, optparse, MASS, MuMIn
 Collate: fit.R utility_scripts.R viz.R  Maaslin2.R
