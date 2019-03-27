@@ -51,7 +51,10 @@ fit.data <-
         }
       } else {
         formula <-
-          paste('. ~', paste(all.vars(formula)[-1], collapse = ' + '), '.', sep = ' + ')
+          paste('. ~', 
+                paste(all.vars(formula)[-1], collapse = ' + '), 
+                '.', 
+                sep = ' + ')
         formula <- update(random_effects_formula, formula)
         model_function <-
           function(formula, data, na.action) {
@@ -90,7 +93,10 @@ fit.data <-
       } else {
         #need to be tested
         formula <-
-          paste('. ~', paste(all.vars(formula)[-1], collapse = ' + '), '.', sep = ' + ')
+          paste('. ~', 
+                paste(all.vars(formula)[-1], collapse = ' + '), 
+                '.', 
+                sep = ' + ')
         formula <- update(random_effects_formula, formula)
         model_function <-
           function(formula, data, na.action) {
@@ -197,7 +203,9 @@ fit.data <-
           output$residuals <- residuals(fit)
         }
         else{
-          logging::logwarn(paste("Fitting problem for feature", x, "returning NA"))
+          logging::logwarn(paste("Fitting problem for feature", 
+                                 x, 
+                                 "returning NA"))
           output$para <-
             as.data.frame(matrix(NA, nrow = ncol(metadata), ncol = 3))
           output$para$name <- colnames(metadata)
@@ -243,7 +251,9 @@ fit.data <-
       metadata_names[order(nchar(metadata_names), decreasing = TRUE)]
     # find the metadata name based on the match to the beginning of the string
     extract_metadata_name <- function(name) {
-      return(metadata_names_ordered[mapply(startsWith, name, metadata_names_ordered)][1])
+      return(metadata_names_ordered[mapply(startsWith, 
+                                           name, 
+                                           metadata_names_ordered)][1])
     }
     paras$metadata <- unlist(lapply(paras$name, extract_metadata_name))
     # compute the value as the model contrast minus metadata
