@@ -1,7 +1,7 @@
 # Load Required Packages
 for (lib in c('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')) {
-  if (!suppressPackageStartupMessages(require(lib, character.only = TRUE)))
-    stop(paste("Please install the R package: ", lib))
+    if (!suppressPackageStartupMessages(require(lib, character.only = TRUE)))
+        stop(paste("Please install the R package: ", lib))
 }
 
 
@@ -10,19 +10,19 @@ for (lib in c('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')) {
 ###################
 
 transformFeatures = function(features, transformation) {
-  if (transformation == 'LOG')   {
-    features <- apply(features, 2, LOG)
-  }
-  
-  if (transformation == 'LOGIT')   {
-    features <- apply(features, 2, LOGIT)
-  }
-  
-  if (transformation == 'AST')   {
-    features <- apply(features, 2, AST)
-  }
-  
-  return(features)
+    if (transformation == 'LOG')     {
+        features <- apply(features, 2, LOG)
+    }
+    
+    if (transformation == 'LOGIT')     {
+        features <- apply(features, 2, LOGIT)
+    }
+    
+    if (transformation == 'AST')     {
+        features <- apply(features, 2, AST)
+    }
+    
+    return(features)
 }
 
 
@@ -31,32 +31,32 @@ transformFeatures = function(features, transformation) {
 ##################
 
 normalizeFeatures = function(features, normalization) {
-  if (normalization == 'TSS')
-  {
-    features <- TSSnorm(features)
-  }
-  
-  if (normalization == 'CLR')
-  {
-    features <- CLRnorm(features)
-  }
-  
-  if (normalization == 'CSS')
-  {
-    features <- CSSnorm(features)
-  }
-  
-  if (normalization == 'TMM')
-  {
-    features <- TMMnorm(features)
-  }
-  
-  if (normalization == 'NONE')
-  {
-    features <- features
-  }
-  
-  return(features)
+    if (normalization == 'TSS')
+    {
+        features <- TSSnorm(features)
+    }
+    
+    if (normalization == 'CLR')
+    {
+        features <- CLRnorm(features)
+    }
+    
+    if (normalization == 'CSS')
+    {
+        features <- CSSnorm(features)
+    }
+    
+    if (normalization == 'TMM')
+    {
+        features <- TMMnorm(features)
+    }
+    
+    if (normalization == 'NONE')
+    {
+        features <- features
+    }
+    
+    return(features)
 }
 
 ######################
@@ -66,26 +66,26 @@ normalizeFeatures = function(features, normalization) {
 # Apply TSS Normalization To A Dataset
 
 TSSnorm = function(features) {
-  # Convert to Matrix from Data Frame
-  features_norm = as.matrix(features)
-  dd <- colnames(features_norm)
-  
-  # TSS Normalizing the Data
-  features_TSS <-
-    vegan::decostand(features_norm,
-                     method = "total",
-                     MARGIN = 1,
-                     na.rm = TRUE)
-  
-  # Convert back to data frame
-  features_TSS <- as.data.frame(features_TSS)
-  
-  # Rename the True Positive Features - Same Format as Before
-  colnames(features_TSS) <- dd
-  
-  
-  # Return
-  return(features_TSS)
+    # Convert to Matrix from Data Frame
+    features_norm = as.matrix(features)
+    dd <- colnames(features_norm)
+    
+    # TSS Normalizing the Data
+    features_TSS <-
+        vegan::decostand(features_norm,
+                         method = "total",
+                         MARGIN = 1,
+                         na.rm = TRUE)
+    
+    # Convert back to data frame
+    features_TSS <- as.data.frame(features_TSS)
+    
+    # Rename the True Positive Features - Same Format as Before
+    colnames(features_TSS) <- dd
+    
+    
+    # Return
+    return(features_TSS)
 }
 
 
@@ -96,22 +96,22 @@ TSSnorm = function(features) {
 # Apply CLR Normalization To A Dataset
 
 CLRnorm = function(features) {
-  # Convert to Matrix from Data Frame
-  features_norm = as.matrix(features)
-  dd <- colnames(features_norm)
-  
-  # CLR Normalizing the Data
-  features_CLR <- chemometrics::clr(features_norm + 1)
-  
-  # Convert back to data frame
-  features_CLR <- as.data.frame(features_CLR)
-  
-  # Rename the True Positive Features - Same Format as Before
-  colnames(features_CLR) <- dd
-  
-  
-  # Return
-  return(features_CLR)
+    # Convert to Matrix from Data Frame
+    features_norm = as.matrix(features)
+    dd <- colnames(features_norm)
+    
+    # CLR Normalizing the Data
+    features_CLR <- chemometrics::clr(features_norm + 1)
+    
+    # Convert back to data frame
+    features_CLR <- as.data.frame(features_CLR)
+    
+    # Rename the True Positive Features - Same Format as Before
+    colnames(features_CLR) <- dd
+    
+    
+    # Return
+    return(features_CLR)
 }
 
 ######################
@@ -121,29 +121,29 @@ CLRnorm = function(features) {
 # Apply CSS Normalization To A Dataset
 
 CSSnorm = function(features) {
-  # Convert to Matrix from Data Frame
-  features_norm = as.matrix(features)
-  dd <- colnames(features_norm)
-  
-  # CSS Normalizing the Data
-  # Create the metagenomeSeq object
-  MGS = metagenomeSeq::newMRexperiment(
-    t(features_norm),
-    featureData = NULL,
-    libSize = NULL,
-    normFactors = NULL
-  )
-  # Trigger metagenomeSeq to calculate its Cumulative Sum scaling factor.
-  MGS = metagenomeSeq::cumNorm(MGS, p = metagenomeSeq::cumNormStat(MGS))
-  # Save the normalized data as data.frame
-  features_CSS = as.data.frame(t(metagenomeSeq::MRcounts(MGS, norm = TRUE, log = FALSE)))
-  
-  # Rename the True Positive Features - Same Format as Before
-  colnames(features_CSS) <- dd
-  
-  
-  # Return as list
-  return(features_CSS)
+    # Convert to Matrix from Data Frame
+    features_norm = as.matrix(features)
+    dd <- colnames(features_norm)
+    
+    # CSS Normalizing the Data
+    # Create the metagenomeSeq object
+    MGS = metagenomeSeq::newMRexperiment(
+        t(features_norm),
+        featureData = NULL,
+        libSize = NULL,
+        normFactors = NULL
+    )
+    # Trigger metagenomeSeq to calculate its Cumulative Sum scaling factor.
+    MGS = metagenomeSeq::cumNorm(MGS, p = metagenomeSeq::cumNormStat(MGS))
+    # Save the normalized data as data.frame
+    features_CSS = as.data.frame(t(metagenomeSeq::MRcounts(MGS, norm = TRUE, log = FALSE)))
+    
+    # Rename the True Positive Features - Same Format as Before
+    colnames(features_CSS) <- dd
+    
+    
+    # Return as list
+    return(features_CSS)
 }
 
 ######################
@@ -153,30 +153,30 @@ CSSnorm = function(features) {
 # Apply TMM Normalization To A Dataset
 
 TMMnorm = function(features) {
-  # Convert to Matrix from Data Frame
-  features_norm = as.matrix(features)
-  dd <- colnames(features_norm)
-  
-  # TMM Normalizing the Data
-  X <- t(features_norm)
-  
-  libSize = edgeR::calcNormFactors(X, method = "TMM") #Calculate normaization factors
-  eff.lib.size = colSums(X) * libSize
-  
-  ref.lib.size = mean(eff.lib.size)
-  #Use the mean of the effective library sizes as a reference library size
-  X.output = sweep(X, MARGIN = 2, eff.lib.size, "/") * ref.lib.size
-  #Normalized read counts
-  
-  # Convert back to data frame
-  features_TMM <- as.data.frame(t(X.output))
-  
-  # Rename the True Positive Features - Same Format as Before
-  colnames(features_TMM) <- dd
-  
-  
-  # Return as list
-  return(features_TMM)
+    # Convert to Matrix from Data Frame
+    features_norm = as.matrix(features)
+    dd <- colnames(features_norm)
+    
+    # TMM Normalizing the Data
+    X <- t(features_norm)
+    
+    libSize = edgeR::calcNormFactors(X, method = "TMM") #Calculate normaization factors
+    eff.lib.size = colSums(X) * libSize
+    
+    ref.lib.size = mean(eff.lib.size)
+    #Use the mean of the effective library sizes as a reference library size
+    X.output = sweep(X, MARGIN = 2, eff.lib.size, "/") * ref.lib.size
+    #Normalized read counts
+    
+    # Convert back to data frame
+    features_TMM <- as.data.frame(t(X.output))
+    
+    # Rename the True Positive Features - Same Format as Before
+    colnames(features_TMM) <- dd
+    
+    
+    # Return as list
+    return(features_TMM)
 }
 
 #######################################
@@ -185,7 +185,7 @@ TMMnorm = function(features) {
 
 # Arc Sine Square Root Transformation
 AST <- function(x) {
-  return(sign(x) * asin(sqrt(abs(x))))
+    return(sign(x) * asin(sqrt(abs(x))))
 }
 
 ########################
@@ -194,16 +194,16 @@ AST <- function(x) {
 
 # Zero-inflated Logit Transformation (Does not work well for microbiome data)
 LOGIT <- function(x) {
-  y <- car::logit(x, adjust = 0)
-  y[!is.finite(y)] <- 0
-  return(y)
+    y <- car::logit(x, adjust = 0)
+    y[!is.finite(y)] <- 0
+    return(y)
 }
 
 # Shifted Logit Transformation (Lukens et al, 2014, Nature)
 # LOGIT_S<-function(x){
-#   y<-0.5*log(x/(1-x)) + 10
-#   y[!is.finite(y)]<-0
-#   return(y)
+#     y<-0.5*log(x/(1-x)) + 10
+#     y[!is.finite(y)]<-0
+#     return(y)
 # }
 
 ######################
@@ -212,5 +212,5 @@ LOGIT <- function(x) {
 
 # Log Transformation
 LOG <- function(x) {
-  return(log(x + 1))
+    return(log(x + 1))
 }
