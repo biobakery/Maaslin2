@@ -13,3 +13,4 @@ Imports: edgeR, metagenomeSeq, pscl, pbapply, car, dplyr, vegan, chemometrics, g
 Suggests: BiocGenerics
 Collate: fit.R utility_scripts.R viz.R  Maaslin2.R
 URL: http://huttenhower.sph.harvard.edu/maaslin2
+biocViews: Statistics, Metagenomics, Bioinformatics, Software
