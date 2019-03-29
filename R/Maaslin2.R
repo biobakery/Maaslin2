@@ -270,21 +270,21 @@ option_not_valid_error <- function(message, valid_options) {
 
 Maaslin2 <-
     function(input_data,
-                     input_metadata,
-                     output,
-                     min_abundance = args$min_abundance,
-                     min_prevalence = args$min_prevalence,
-                     normalization = args$normalization,
-                     transform = args$transform,
-                     analysis_method = args$analysis_method,
-                     max_significance = args$max_significance,
-                     random_effects = args$random_effects,
-                     fixed_effects = args$fixed_effects,
-                     correction = args$correction,
-                     standardize = args$standardize,
-                     cores = args$cores,
-                     plot_heatmap = args$plot_heatmap,
-                     plot_scatter = args$plot_scatter)
+             input_metadata,
+             output,
+             min_abundance = args$min_abundance,
+             min_prevalence = args$min_prevalence,
+             normalization = args$normalization,
+             transform = args$transform,
+             analysis_method = args$analysis_method,
+             max_significance = args$max_significance,
+             random_effects = args$random_effects,
+             fixed_effects = args$fixed_effects,
+             correction = args$correction,
+             standardize = args$standardize,
+             cores = args$cores,
+             plot_heatmap = args$plot_heatmap,
+             plot_scatter = args$plot_scatter)
     {
         #################################################################
         # Read in the data and metadata, create output folder, init log #
