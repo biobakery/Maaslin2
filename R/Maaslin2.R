@@ -272,19 +272,19 @@ Maaslin2 <-
     function(input_data,
              input_metadata,
              output,
-             min_abundance = args$min_abundance,
-             min_prevalence = args$min_prevalence,
-             normalization = args$normalization,
-             transform = args$transform,
-             analysis_method = args$analysis_method,
-             max_significance = args$max_significance,
-             random_effects = args$random_effects,
-             fixed_effects = args$fixed_effects,
-             correction = args$correction,
-             standardize = args$standardize,
-             cores = args$cores,
-             plot_heatmap = args$plot_heatmap,
-             plot_scatter = args$plot_scatter)
+             min_abundance = 0.0,
+             min_prevalence = 0.1,
+             normalization = "TSS",
+             transform = "LOG",
+             analysis_method = "LM",
+             max_significance = 0.25,
+             random_effects = NULL,
+             fixed_effects = NULL,
+             correction = "BH",
+             standardize = TRUE,
+             cores = 1,
+             plot_heatmap = TRUE,
+             plot_scatter = TRUE)
     {
         #################################################################
         # Read in the data and metadata, create output folder, init log #
