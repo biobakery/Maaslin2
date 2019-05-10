@@ -76,6 +76,9 @@ Maaslin2(
   The number of R processes to run in parallel.
 }
 }
+\value{
+  Data.frame containing the results from applying the model.
+}
 \author{
 Himel Mallick<hmallick@broadinstitute.org>,\cr
 Ali Rahnavard<rah@broadinstitute.org>,\cr
