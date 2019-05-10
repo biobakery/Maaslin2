@@ -1,0 +1,60 @@
+---
+title: "maaslin2"
+date: "Friday, May 10, 2019"
+output: html_document
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Introduction
+
+MaAsLin2 was developed to find associations between microbiome multi'omics features and complex metadata in population-scale epidemiological studies. The software includes multiple analysis methods, normalization, and transform options to customize analysis for your specific study.
+
+## How To Run
+
+```
+> library(Maaslin2)
+> fit_data <- Maaslin2(data, metadata, output)
+```
+
+Run Maaslin2 by providing two files or data.frames. The first argument to the function is the set of features while the second is the corresponding
+metadata. These two data sets can include features and samples as rows or columns. The final argument to the function is the folder to write the output files.
+The data.frame returned from the function is the fit data from applying the model.
+
+
+### Required Input
+
+MaAsLin2 requires two input files or data.frames.
+
+1. Data (or features) file (or data.frame): This file is tab-delimited formatted with features as columns and samples as rows (the transpose is also okay). Possible features in this file include data like taxonomic or gene abundances.
+2. Metadata file (or data.frame): This file is tab-delimited formatted with metadata as columns and samples as rows (the transpose is also okay). Possible metadata in this file include gender or age.
+
+The data files (or data.frames) can contain samples not included in the metadata file (along with the reverse case). For both cases, those samples not included in both files (or data.frames) will be removed from the analysis. Also the samples do not need to be in the same order in the two files.
+
+### Output
+
+MaAsLin2 generates two types of output files: data and visualization.
+
+1. Data output files
+  a. all_results.tsv : This file contains all of the association results ordered by increasing q-value.
+  b. significant_results.tsv : This file is a subset of the data in the first file. It only includes those associations with q-values less than or equal to the significance threshold.
+  c. residuals.rds : This file contains a data frame with residuals for each feature analyzed from the model selected.
+  d. maaslin2.log : This file contains all of the debug information for the run. It includes all settings, warnings, errors, and steps run.
+
+2. Visualization output files
+  a. heatmap.pdf : This file contains a heatmap of the significant associations.
+  b. [0-9]+.pdf : These files are scatter plots with one generated for each significant association.
+
+### Run a Demo
+
+Example input files can be found in the tests folder of the MaAsLin2 source.
+
+```
+> library(Maaslin2)
+> fit_data <- Maaslin2('maaslin2/tests/example1_data.txt', 'maaslin2/tests/example1_metadata.txt', 'demo_output')
+```
+
+When running this command, all output files will be written to a folder named demo_output.
+
+
