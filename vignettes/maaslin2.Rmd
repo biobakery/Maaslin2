@@ -3,6 +3,7 @@ title: "maaslin2"
 date: "Friday, May 10, 2019"
 output: html_document
 vignette: >
+  %\VignetteIndexEntry{MaAsLin2}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
