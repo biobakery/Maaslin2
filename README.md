@@ -128,7 +128,7 @@ MaAsLin2 generates two types of output files: data and visualization.
 
 Example input files can be found in the tests folder of the MaAsLin2 source. 
 
-To run: ``$ Maaslin2.R maaslin2/tests/example1_data.txt maaslin2/tests/example1_metadata.txt demo_output``
+To run: ``$ Maaslin2.R inst/extdata/example1_features.txt inst/extdata/example1_metadata.txt demo_output``
 
 When running this command, all output files will be written to a folder named ``demo_output``.
 
