@@ -27,65 +27,65 @@ Maaslin2(
 )
 }
 \arguments{
-  \item{input_data}{
-  The tab-delimited input file of features.
+    \item{input_data}{
+    The tab-delimited input file of features.
 }
-  \item{input_metadata}{
-  The tab-delimited input file of metadata.
+    \item{input_metadata}{
+    The tab-delimited input file of metadata.
 }
-  \item{output}{
-  The output folder to write results.
+    \item{output}{
+    The output folder to write results.
 }
-  \item{min_abundance}{
-  The minimum abundance for each feature.
+    \item{min_abundance}{
+    The minimum abundance for each feature.
 }
-  \item{min_prevalence}{
-  The minimum percent of samples for which a feature is detected at minimum abundance.
+    \item{min_prevalence}{
+    The minimum percent of samples for which a feature is detected at minimum abundance.
 }
-  \item{max_significance}{
-  The q-value threshold for significance.
+    \item{max_significance}{
+    The q-value threshold for significance.
 }
-  \item{normalization}{
-  The normalization method to apply.
+    \item{normalization}{
+    The normalization method to apply.
 }
-  \item{transform}{
-  The transform to apply.
+    \item{transform}{
+    The transform to apply.
 }
-  \item{analysis_method}{
-  The analysis method to apply.
+    \item{analysis_method}{
+    The analysis method to apply.
 }
-  \item{random_effects}{
-  The random effects for the model, comma-delimited for multiple effects.
+    \item{random_effects}{
+    The random effects for the model, comma-delimited for multiple effects.
 }
-  \item{fixed_effects}{
-  The fixed effects for the model, comma-delimited for multiple effects.
+    \item{fixed_effects}{
+    The fixed effects for the model, comma-delimited for multiple effects.
 }
-  \item{correction}{
-  The correction method for computing the q-value.
+    \item{correction}{
+    The correction method for computing the q-value.
 }
-  \item{standardize}{
-  Apply z-score so continuous metadata are on the same scale.
+    \item{standardize}{
+    Apply z-score so continuous metadata are on the same scale.
 }
-  \item{plot_heatmap}{
-  Generate a heatmap for the significant associations.
+    \item{plot_heatmap}{
+    Generate a heatmap for the significant associations.
 }
-  \item{plot_scatter}{
-  Generate scatter plots for the significant associations.
+    \item{plot_scatter}{
+    Generate scatter plots for the significant associations.
 }
-  \item{cores}{
-  The number of R processes to run in parallel.
+    \item{cores}{
+    The number of R processes to run in parallel.
 }
 }
 \value{
-  Data.frame containing the results from applying the model.
+    Data.frame containing the results from applying the model.
 }
 \author{
-Himel Mallick<hmallick@broadinstitute.org>,\cr
-Ali Rahnavard<rah@broadinstitute.org>,\cr
-Maintainers: Lauren McIver<lauren.j.mciver@gmail.com>,\cr
+    Himel Mallick<hmallick@broadinstitute.org>,\cr
+    Ali Rahnavard<rah@broadinstitute.org>,\cr
+    Maintainers: Lauren McIver<lauren.j.mciver@gmail.com>,\cr
 }
 \examples{
-input_data <- system.file('extdata','example1_features.txt', package="Maaslin2")
-input_metadata <-system.file('extdata','example1_metadata.txt', package="Maaslin2")
-Maaslin2(input_data, input_metadata,'maaslin2_example_output')
+    input_data <- system.file('extdata','example1_features.txt', package="Maaslin2")
+    input_metadata <-system.file('extdata','example1_metadata.txt', package="Maaslin2")
+    fit_data <- Maaslin2(input_data, input_metadata,'maaslin2_example_output')
 }
