@@ -61,16 +61,16 @@ normalization_choices <- c("TSS", "CLR", "CSS", "NONE", "TMM")
 analysis_method_choices_names <-
     c("LM", "SLM", "CPLM", "ZICP", "NEGBIN", "ZINB")
 transform_choices <- c("LOG", "LOGIT", "AST", "NONE")
-valid_choice_combinations_method_norm <- hash::hash()
-valid_choice_combinations_method_norm[[analysis_method_choices_names[4]]] <-
+valid_choice_method_norm <- hash::hash()
+valid_choice_method_norm[[analysis_method_choices_names[4]]] <-
     normalization_choices[2:5]
-valid_choice_combinations_method_norm[[analysis_method_choices_names[5]]] <-
+valid_choice_method_norm[[analysis_method_choices_names[5]]] <-
     normalization_choices[2:5]
 valid_choice_method_transform <- analysis_method_choices_names[1:3]
-valid_choice_combinations_transform_norm <- hash::hash()
-valid_choice_combinations_transform_norm[[transform_choices[2]]] <-
+valid_choice_transform_norm <- hash::hash()
+valid_choice_transform_norm[[transform_choices[2]]] <-
     normalization_choices[1]
-valid_choice_combinations_transform_norm[[transform_choices[3]]] <-
+valid_choice_transform_norm[[transform_choices[3]]] <-
     normalization_choices[c(1, 4)]
 correction_choices <-
     c("BH", "holm", "hochberg", "hommel", "bonferroni", "BY")
@@ -291,11 +291,13 @@ Maaslin2 <-
         #################################################################
         # Read in the data and metadata, create output folder, init log #
         #################################################################
-        # if a character string then this is a file name, else it is a data frame
+        # if a character string then this is a file name, else it 
+        # is a data frame
         if (is.character(input_data)) {
             data <-
-                data.frame(data.table::fread(input_data, header = TRUE, sep = "\t"),
-                    row.names = 1)
+                data.frame(data.table::fread(
+                    input_data, header = TRUE, sep = "\t"),
+                        row.names = 1)
             if (nrow(data) == 1) {
                 # read again to get row name
                 data <- read.table(input_data, header = TRUE, row.names = 1)
@@ -305,8 +307,9 @@ Maaslin2 <-
         }
         if (is.character(input_metadata)) {
             metadata <-
-                data.frame(data.table::fread(input_metadata, header = TRUE, sep = "\t"),
-                    row.names = 1)
+                data.frame(data.table::fread(
+                    input_metadata, header = TRUE, sep = "\t"),
+                        row.names = 1)
             if (nrow(metadata) == 1) {
                 metadata <- read.table(input_metadata,
                     header = TRUE,
@@ -331,7 +334,8 @@ Maaslin2 <-
             unlink(log_file)
         }
         logging::basicConfig(level = 'FINEST')
-        logging::addHandler(logging::writeToFile, file = log_file, level = "DEBUG")
+        logging::addHandler(logging::writeToFile, 
+            file = log_file, level = "DEBUG")
         logging::setLevel(20, logging::getHandler('basic.stdout'))
         
         #####################
@@ -367,7 +371,9 @@ Maaslin2 <-
         logging::loginfo("Verifying options selected are valid")
         if (!normalization %in% normalization_choices) {
             option_not_valid_error(
-                "Please select a normalization from the list of available options",
+                paste(
+                    "Please select a normalization",
+                    "from the list of available options"),
                 toString(normalization_choices)
             )
         }
@@ -383,7 +389,9 @@ Maaslin2 <-
         # check valid method option selected
         if (!analysis_method %in% analysis_method_choices_names) {
             option_not_valid_error(
-                "Please select an analysis method from the list of available options",
+                paste(
+                    "Please select an analysis method",
+                    "from the list of available options"),
                 toString(analysis_method_choices_names)
             )
         }
@@ -391,32 +399,39 @@ Maaslin2 <-
         # check valid correction method selected
         if (!correction %in% correction_choices) {
             option_not_valid_error(
-                "Please select a correction method from the list of available options",
+                paste("Please select a correction method",
+                    "from the list of available options"),
                 toString(correction_choices)
             )
         }
         
         # check a valid choice combination is selected
-        for (limited_method in hash::keys(valid_choice_combinations_method_norm)) {
+        for (limited_method in hash::keys(
+            valid_choice_method_norm)) {
             if (analysis_method == limited_method) {
-                if (!normalization %in% valid_choice_combinations_method_norm[[limited_method]]) {
+                if (!normalization %in% 
+                    valid_choice_method_norm[[limited_method]]) {
                     option_not_valid_error(
-                        paste0("This method can only be used with a subset of normalizations. ",
+                        paste0("This method can only be used ",
+                            "with a subset of normalizations. ",
                             "Please select from the following list"
                         ),
-                        toString(valid_choice_combinations_method_norm[[limited_method]])
+                        toString(valid_choice_method_norm[[limited_method]])
                     )
                 }
             }
         }
-        for (limited_transform in hash::keys(valid_choice_combinations_transform_norm)) {
+        for (limited_transform in hash::keys(valid_choice_transform_norm)) {
             if (transform == limited_transform) {
-                if (!normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
+                if (!normalization %in% 
+                    valid_choice_transform_norm[[limited_transform]]) {
                     option_not_valid_error(
-                        paste0("This transform can only be used with a subset of normalizations. ",
+                        paste0("This transform can only be used",
+                            " with a subset of normalizations. ",
                             "Please select from the following list"
                         ),
-                        toString(valid_choice_combinations_transform_norm[[limited_transform]])
+                        toString(
+                            valid_choice_transform_norm[[limited_transform]])
                     )
                 }
             }
@@ -427,7 +442,8 @@ Maaslin2 <-
         {
             if (!analysis_method %in% valid_choice_method_transform) {
                 option_not_valid_error(
-                    paste0("The transform selected can only be used with some methods. ",
+                    paste0("The transform selected can only be used",
+                        " with some methods. ",
                         "Please select from the following list"
                     ),
                     toString(valid_choice_method_transform)
@@ -435,41 +451,67 @@ Maaslin2 <-
             }
         }
         
-        #######################################################################################
-        # Determine orientation of samples/features in input files and reorder to matched set #
-        #######################################################################################
+        ###############################################################
+        # Determine orientation of data in input and reorder to match #
+        ###############################################################
         
         logging::loginfo("Determining format of input files")
         samples_row_row <- intersect(rownames(data), rownames(metadata))
         if (length(samples_row_row) > 0) {
             # this is the expected formatting so do not modify data frames
-            logging::loginfo("Input format is data samples as rows and metadata samples as rows")
+            logging::loginfo(
+                paste(
+                    "Input format is data samples",
+                    "as rows and metadata samples as rows"))
         } else {
             samples_column_row <- intersect(colnames(data), rownames(metadata))
             if (length(samples_column_row) > 0) {
-                logging::loginfo("Input format is data samples as columns and metadata samples as rows")
+                logging::loginfo(
+                    paste(
+                        "Input format is data samples",
+                        "as columns and metadata samples as rows"))
                 # transpose data frame so samples are rows
                 data <- as.data.frame(t(data))
-                logging::logdebug("Transformed data so samples are rows")
+                logging::logdebug(
+                    "Transformed data so samples are rows")
             } else {
-                samples_column_column <- intersect(colnames(data), colnames(metadata))
+                samples_column_column <- 
+                    intersect(colnames(data), colnames(metadata))
                 if (length(samples_column_column) > 0) {
-                    logging::loginfo("Input format is data samples as columns and metadata samples as columns")
+                    logging::loginfo(
+                        paste(
+                            "Input format is data samples",
+                            "as columns and metadata samples as columns"))
                     data <- as.data.frame(t(data))
                     metadata <- as.data.frame(t(metadata))
-                    logging::logdebug("Transformed data and metadata so samples are rows")
+                    logging::logdebug(
+                        "Transformed data and metadata so samples are rows")
                 } else {
-                    samples_row_column <- intersect(rownames(data), colnames(metadata))
+                    samples_row_column <- 
+                        intersect(rownames(data), colnames(metadata))
                     if (length(samples_row_column) > 0) {
-                        logging::loginfo("Input format is data samples as rows and metadata samples as columns")
+                        logging::loginfo(
+                            paste(
+                                "Input format is data samples",
+                                "as rows and metadata samples as columns"))
                         metadata <- as.data.frame(t(metadata))
-                        logging::logdebug("Transformed metadata so samples are rows")
+                        logging::logdebug(
+                            "Transformed metadata so samples are rows")
                     } else {
-                        logging::logerror("Unable to find samples in data and metadata files. Rows/columns do not match.")
-                        logging::logdebug("Data rows: %s", paste(rownames(data), collapse = ","))
-                        logging::logdebug("Data columns: %s", paste(colnames(data), collapse = ","))
-                        logging::logdebug("Metadata rows: %s", paste(rownames(metadata), collapse = ","))
-                        logging::logdebug("Metadata columns: %s",
+                        logging::logerror(
+                            paste("Unable to find samples in data and",
+                                  "metadata files. Rows/columns do not match."))
+                        logging::logdebug(
+                            "Data rows: %s", 
+                            paste(rownames(data), collapse = ","))
+                        logging::logdebug(
+                            "Data columns: %s", 
+                            paste(colnames(data), collapse = ","))
+                        logging::logdebug(
+                            "Metadata rows: %s", 
+                            paste(rownames(metadata), collapse = ","))
+                        logging::logdebug(
+                            "Metadata columns: %s",
                             paste(colnames(data), collapse = ","))
                         stop()
                     }
@@ -482,7 +524,9 @@ Maaslin2 <-
             setdiff(rownames(data), rownames(metadata))
         if (length(extra_feature_samples) > 0)
             logging::logdebug(
-                "The following samples were found to have features but no metadata. They will be removed. %s",
+                paste("The following samples were found",
+                    "to have features but no metadata.",
+                    "They will be removed. %s"),
                 paste(extra_feature_samples, collapse = ",")
             )
         
@@ -491,7 +535,9 @@ Maaslin2 <-
             setdiff(rownames(metadata), rownames(data))
         if (length(extra_metadata_samples) > 0)
             logging::logdebug(
-                "The following samples were found to have metadata but no features. They will be removed. %s",
+                paste("The following samples were found",
+                    "to have metadata but no features.",
+                    "They will be removed. %s"),
                 paste(extra_metadata_samples, collapse = ",")
             )
         
@@ -503,7 +549,8 @@ Maaslin2 <-
         )
         
         # now order both data and metadata with the same sample ordering
-        logging::logdebug("Reordering data/metadata to use same sample ordering")
+        logging::logdebug(
+            "Reordering data/metadata to use same sample ordering")
         data <- data[intersect_samples, , drop = FALSE]
         metadata <- metadata[intersect_samples, , drop = FALSE]
         
@@ -521,7 +568,8 @@ Maaslin2 <-
             to_remove <- setdiff(fixed_effects, colnames(metadata))
             if (length(to_remove) > 0)
                 logging::logwarn(
-                    "Feature name not found in metadata so not applied to formula as fixed effect: %s",
+                    paste("Feature name not found in metadata",
+                        "so not applied to formula as fixed effect: %s"),
                     paste(to_remove, collapse = " , ")
                 )
             fixed_effects <- setdiff(fixed_effects, to_remove)
@@ -534,7 +582,8 @@ Maaslin2 <-
         if (!is.null(random_effects)) {
             # check random effects are only used with LM formula
             if (analysis_method != "LM")
-                option_not_valid_error("Random effects can only be used with the following analysis methods",
+                option_not_valid_error(paste("Random effects",
+                    "can only be used with the following analysis methods"),
                     "LM")
             
             random_effects <-
@@ -545,7 +594,8 @@ Maaslin2 <-
             to_remove <- setdiff(random_effects, colnames(metadata))
             if (length(to_remove) > 0)
                 logging::logwarn(
-                    "Feature name not found in metadata so not applied to formula as random effect: %s",
+                    paste("Feature name not found in metadata",
+                        "so not applied to formula as random effect: %s"),
                     paste(to_remove, collapse = " , ")
                 )
             random_effects <- setdiff(random_effects, to_remove)
@@ -592,7 +642,8 @@ Maaslin2 <-
                 error = function(e)
                     stop(
                         paste(
-                            "Invalid formula. Please provide a different formula: ",
+                            "Invalid formula.",
+                            "Please provide a different formula: ",
                             formula_text
                         )
                     )
@@ -606,17 +657,21 @@ Maaslin2 <-
         unfiltered_metadata <- metadata
         
         # normalize features
-        logging::loginfo("Running selected normalization method: %s", normalization)
+        logging::loginfo(
+            "Running selected normalization method: %s", normalization)
         normalized_data <-
             normalizeFeatures(data, normalization = normalization)
         
-        # require at least total samples * min prevalence values for each feature to be greater than min abundance
-        logging::loginfo("Filter data based on min abundance and min prevalence")
+        # require at least total samples * min prevalence values 
+        # for each feature to be greater than min abundance
+        logging::loginfo(
+            "Filter data based on min abundance and min prevalence")
         total_samples <- nrow(normalized_data)
         logging::loginfo("Total samples in data: %d", total_samples)
         min_samples <- total_samples * min_prevalence
         logging::loginfo(
-            "Min samples required with min abundance for a feature not to be filtered: %f",
+            paste("Min samples required with min abundance",
+                "for a feature not to be filtered: %f"),
             min_samples
         )
         
@@ -624,8 +679,9 @@ Maaslin2 <-
         data_zeros <- normalized_data
         data_zeros[is.na(data_zeros)] <- 0
         filtered_data <-
-            normalized_data[, colSums(data_zeros >= min_abundance) > min_samples, drop =
-                FALSE]
+            normalized_data[, 
+                colSums(data_zeros >= min_abundance) > min_samples,
+                drop = FALSE]
         total_filtered_features <-
             ncol(normalized_data) - ncol(filtered_data)
         logging::loginfo("Total filtered features: %d", total_filtered_features)
@@ -639,7 +695,8 @@ Maaslin2 <-
         ################################
         
         if (standardize) {
-            logging::loginfo("Applying z-score to standardize continuous metadata")
+            logging::loginfo(
+                "Applying z-score to standardize continuous metadata")
             metadata <- metadata %>% dplyr::mutate_if(is.numeric, scale)
         } else {
             logging::loginfo("Bypass z-score application to metadata")
@@ -655,7 +712,8 @@ Maaslin2 <-
             transformFeatures(filtered_data, transformation = transform)
         
         # apply the method to the data with the correction
-        logging::loginfo("Running selected analysis method: %s", analysis_method)
+        logging::loginfo(
+            "Running selected analysis method: %s", analysis_method)
         fit_data <-
             fit.data(
                 filtered_data,
@@ -695,7 +753,8 @@ Maaslin2 <-
         residuals_file = file.path(output, "residuals.rds")
         # remove residuals file if already exists (since residuals append)
         if (file.exists(residuals_file)) {
-            logging::logwarn("Deleting existing residuals file: %s", residuals_file)
+            logging::logwarn(
+                "Deleting existing residuals file: %s", residuals_file)
             unlink(residuals_file)
         }
         logging::loginfo("Writing residuals to file %s", residuals_file)
@@ -703,7 +762,8 @@ Maaslin2 <-
         
         # write all results to file
         results_file <- file.path(output, "all_results.tsv")
-        logging::loginfo("Writing all results to file (ordered by increasing q-values): %s",
+        logging::loginfo(
+            "Writing all results to file (ordered by increasing q-values): %s",
             results_file)
         ordered_results <- fit_data$results[order(fit_data$results$qval), ]
         write.table(
@@ -734,7 +794,8 @@ Maaslin2 <-
             row.names = FALSE
         )
         
-        # write results passing threshold to file (removing any that are NA for the q-value)
+        # write results passing threshold to file 
+        # (removing any that are NA for the q-value)
         significant_results <-
             ordered_results[!is.na(ordered_results$qval), ]
         significant_results <-
@@ -742,7 +803,9 @@ Maaslin2 <-
         significant_results_file <-
             file.path(output, "significant_results.tsv")
         logging::loginfo(
-            "Writing the significant results (those which are less than or equal to the threshold of %f ) to file (ordered by increasing q-values): %s",
+            paste("Writing the significant results",
+                "(those which are less than or equal to the threshold",
+                "of %f ) to file (ordered by increasing q-values): %s"),
             max_significance,
             significant_results_file
         )
@@ -780,14 +843,17 @@ Maaslin2 <-
         
         if (plot_heatmap) {
             heatmap_file <- file.path(output, "heatmap.pdf")
-            logging::loginfo("Writing heatmap of significant results to file: %s",
+            logging::loginfo(
+                "Writing heatmap of significant results to file: %s",
                 heatmap_file)
             save_heatmap(significant_results_file, heatmap_file)
         }
         
         if (plot_scatter) {
             logging::loginfo(
-                "Writing association plots (one for each significant association) to output folder: %s",
+                paste("Writing association plots",
+                    "(one for each significant association)",
+                    "to output folder: %s"),
                 output
             )
             maaslin2_association_plots(
@@ -808,14 +874,17 @@ Maaslin2 <-
 if (identical(environment(), globalenv()) &&
         !length(grep("^source\\(", sys.calls()))) {
     # get command line options and positional arguments
-    parsed_arguments = optparse::parse_args(options, positional_arguments = TRUE)
+    parsed_arguments = optparse::parse_args(options, 
+        positional_arguments = TRUE)
     current_args <- parsed_arguments[["options"]]
     positional_args <- parsed_arguments[["args"]]
     # check three positional arguments are provided
     if (length(positional_args) != 3) {
         optparse::print_help(options)
         stop(
-            "Please provide the required positional arguments <data.tsv> <metadata.tsv> <output_folder>"
+            paste("Please provide the required",
+                "positional arguments",
+                "<data.tsv> <metadata.tsv> <output_folder>")
         )
     }
     
