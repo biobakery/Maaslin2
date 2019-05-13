@@ -99,11 +99,12 @@ args$cores <- 1
 ##############################
 
 options <-
-    optparse::OptionParser(usage = paste("%prog [options]",
-                                         " <data.tsv> ",
-                                         "<metadata.tsv> ",
-                                         "<output_folder>" 
-       )
+    optparse::OptionParser(usage = paste(
+        "%prog [options]",
+        " <data.tsv> ",
+        "<metadata.tsv> ",
+        "<output_folder>" 
+        )
     )
 options <-
     optparse::add_option(
@@ -113,7 +114,7 @@ options <-
         dest = "min_abundance",
         default = args$min_abundance,
         help = paste0("The minimum abundance for each feature",
-                      " [ Default: %default ]"
+            " [ Default: %default ]"
         )
     )
 options <-
@@ -124,8 +125,8 @@ options <-
         dest = "min_prevalence",
         default = args$min_prevalence,
         help = paste0("The minimum percent of samples for which",
-                      "a feature is detected at minimum abundance",
-                      " [ Default: %default ]"
+            "a feature is detected at minimum abundance",
+            " [ Default: %default ]"
         )
     )
 options <-
@@ -136,7 +137,7 @@ options <-
         dest = "max_significance",
         default = args$max_significance,
         help = paste0("The q-value threshold for significance",
-                      " [ Default: %default ]"
+            " [ Default: %default ]"
         )
     )
 options <-
@@ -187,8 +188,8 @@ options <-
         dest = "random_effects",
         default = args$random_effects,
         help = paste("The random effects for the model, ",
-                     "comma-delimited for multiple effects",
-                     " [ Default: none ]"
+            "comma-delimited for multiple effects",
+            " [ Default: none ]"
         )
     )
 options <-
@@ -199,8 +200,8 @@ options <-
         dest = "fixed_effects",
         default = args$fixed_effects,
         help = paste("The fixed effects for the model,",
-                     " comma-delimited for multiple effects",
-                     " [ Default: all ]"
+            " comma-delimited for multiple effects",
+            " [ Default: all ]"
         )
     )
 options <-
@@ -211,7 +212,7 @@ options <-
         dest = "correction",
         default = args$correction,
         help = paste("The correction method for computing",
-                     " the q-value [ Default: %default ]"
+            " the q-value [ Default: %default ]"
         )
     )
 options <-
@@ -222,7 +223,7 @@ options <-
         dest = "standardize",
         default = args$standardize,
         help = paste("Apply z-score so continuous metadata are on",
-                     " the same scale [ Default: %default ]"
+            " the same scale [ Default: %default ]"
         )
     )
 options <-
@@ -233,7 +234,7 @@ options <-
         dest = "plot_heatmap",
         default = args$plot_heatmap,
         help = paste("Generate a heatmap for the significant ",
-                     "associations [ Default: %default ]"
+            "associations [ Default: %default ]"
         )
     )
 options <-
@@ -244,7 +245,7 @@ options <-
         dest = "plot_scatter",
         default = args$plot_scatter,
         help = paste("Generate scatter plots for the significant",
-                     " associations [ Default: %default ]"
+            " associations [ Default: %default ]"
         )
     )
 options <-
@@ -255,7 +256,7 @@ options <-
         dest = "cores",
         default = args$cores,
         help = paste("The number of R processes to ",
-                     "run in parallel [ Default: %default ]"
+            "run in parallel [ Default: %default ]"
         )
     )
 
@@ -269,22 +270,23 @@ option_not_valid_error <- function(message, valid_options) {
 #######################################################
 
 Maaslin2 <-
-    function(input_data,
-             input_metadata,
-             output,
-             min_abundance = 0.0,
-             min_prevalence = 0.1,
-             normalization = "TSS",
-             transform = "LOG",
-             analysis_method = "LM",
-             max_significance = 0.25,
-             random_effects = NULL,
-             fixed_effects = NULL,
-             correction = "BH",
-             standardize = TRUE,
-             cores = 1,
-             plot_heatmap = TRUE,
-             plot_scatter = TRUE)
+    function(
+        input_data,
+        input_metadata,
+        output,
+        min_abundance = 0.0,
+        min_prevalence = 0.1,
+        normalization = "TSS",
+        transform = "LOG",
+        analysis_method = "LM",
+        max_significance = 0.25,
+        random_effects = NULL,
+        fixed_effects = NULL,
+        correction = "BH",
+        standardize = TRUE,
+        cores = 1,
+        plot_heatmap = TRUE,
+        plot_scatter = TRUE)
     {
         #################################################################
         # Read in the data and metadata, create output folder, init log #
@@ -293,7 +295,7 @@ Maaslin2 <-
         if (is.character(input_data)) {
             data <-
                 data.frame(data.table::fread(input_data, header = TRUE, sep = "\t"),
-                           row.names = 1)
+                    row.names = 1)
             if (nrow(data) == 1) {
                 # read again to get row name
                 data <- read.table(input_data, header = TRUE, row.names = 1)
@@ -304,11 +306,11 @@ Maaslin2 <-
         if (is.character(input_metadata)) {
             metadata <-
                 data.frame(data.table::fread(input_metadata, header = TRUE, sep = "\t"),
-                           row.names = 1)
+                    row.names = 1)
             if (nrow(metadata) == 1) {
                 metadata <- read.table(input_metadata,
-                                       header = TRUE,
-                                       row.names = 1)
+                    header = TRUE,
+                    row.names = 1)
             }
         } else {
             metadata <- input_metadata
@@ -400,7 +402,7 @@ Maaslin2 <-
                 if (!normalization %in% valid_choice_combinations_method_norm[[limited_method]]) {
                     option_not_valid_error(
                         paste0("This method can only be used with a subset of normalizations. ",
-                               "Please select from the following list"
+                            "Please select from the following list"
                         ),
                         toString(valid_choice_combinations_method_norm[[limited_method]])
                     )
@@ -412,7 +414,7 @@ Maaslin2 <-
                 if (!normalization %in% valid_choice_combinations_transform_norm[[limited_transform]]) {
                     option_not_valid_error(
                         paste0("This transform can only be used with a subset of normalizations. ",
-                               "Please select from the following list"
+                            "Please select from the following list"
                         ),
                         toString(valid_choice_combinations_transform_norm[[limited_transform]])
                     )
@@ -426,7 +428,7 @@ Maaslin2 <-
             if (!analysis_method %in% valid_choice_method_transform) {
                 option_not_valid_error(
                     paste0("The transform selected can only be used with some methods. ",
-                           "Please select from the following list"
+                        "Please select from the following list"
                     ),
                     toString(valid_choice_method_transform)
                 )
@@ -468,7 +470,7 @@ Maaslin2 <-
                         logging::logdebug("Data columns: %s", paste(colnames(data), collapse = ","))
                         logging::logdebug("Metadata rows: %s", paste(rownames(metadata), collapse = ","))
                         logging::logdebug("Metadata columns: %s",
-                                          paste(colnames(data), collapse = ","))
+                            paste(colnames(data), collapse = ","))
                         stop()
                     }
                 }
@@ -533,7 +535,7 @@ Maaslin2 <-
             # check random effects are only used with LM formula
             if (analysis_method != "LM")
                 option_not_valid_error("Random effects can only be used with the following analysis methods",
-                                                             "LM")
+                    "LM")
             
             random_effects <-
                 unlist(strsplit(random_effects, ",", fixed = TRUE))
@@ -551,16 +553,17 @@ Maaslin2 <-
             # create formula
             if (length(random_effects) > 0) {
                 random_effects_formula_text <-
-                    paste("expr ~ (1 | ",
-                                paste(
-                                    random_effects,
-                                    ")",
-                                    sep = '',
-                                    collapse = " + (1 | "
-                                ),
-                                sep = '')
+                    paste(
+                        "expr ~ (1 | ",
+                        paste(
+                            random_effects,
+                            ")",
+                            sep = '',
+                            collapse = " + (1 | "
+                        ),
+                        sep = '')
                 logging::loginfo("Formula for random effects: %s",
-                                                 random_effects_formula_text)
+                    random_effects_formula_text)
                 random_effects_formula <-
                     tryCatch(
                         as.formula(random_effects_formula_text),
@@ -622,14 +625,14 @@ Maaslin2 <-
         data_zeros[is.na(data_zeros)] <- 0
         filtered_data <-
             normalized_data[, colSums(data_zeros >= min_abundance) > min_samples, drop =
-                            FALSE]
+                FALSE]
         total_filtered_features <-
             ncol(normalized_data) - ncol(filtered_data)
         logging::loginfo("Total filtered features: %d", total_filtered_features)
         filtered_feature_names <-
             setdiff(names(normalized_data), names(filtered_data))
         logging::loginfo("Filtered feature names: %s",
-                         toString(filtered_feature_names))
+            toString(filtered_feature_names))
         
         ################################
         # Standardize metadata, if set #
@@ -701,18 +704,19 @@ Maaslin2 <-
         # write all results to file
         results_file <- file.path(output, "all_results.tsv")
         logging::loginfo("Writing all results to file (ordered by increasing q-values): %s",
-                                         results_file)
+            results_file)
         ordered_results <- fit_data$results[order(fit_data$results$qval), ]
         write.table(
-            ordered_results[c("metadata",
-                              "feature",
-                              "value",
-                              "coef",
-                              "stderr",
-                              "N",
-                              "N.not.zero",
-                              "pval",
-                              "qval")],
+            ordered_results[c(
+                "metadata",
+                "feature",
+                "value",
+                "coef",
+                "stderr",
+                "N",
+                "N.not.zero",
+                "pval",
+                "qval")],
             file = results_file,
             sep = "\t",
             quote = FALSE,
@@ -743,15 +747,16 @@ Maaslin2 <-
             significant_results_file
         )
         write.table(
-            significant_results[c("metadata",
-                                  "feature",
-                                  "value",
-                                  "coef",
-                                  "stderr",
-                                  "N",
-                                  "N.not.zero",
-                                  "pval",
-                                  "qval")],
+            significant_results[c(
+                "metadata",
+                "feature",
+                "value",
+                "coef",
+                "stderr",
+                "N",
+                "N.not.zero",
+                "pval",
+                "qval")],
             file = significant_results_file,
             sep = "\t",
             quote = FALSE,
@@ -776,7 +781,7 @@ Maaslin2 <-
         if (plot_heatmap) {
             heatmap_file <- file.path(output, "heatmap.pdf")
             logging::loginfo("Writing heatmap of significant results to file: %s",
-                             heatmap_file)
+                heatmap_file)
             save_heatmap(significant_results_file, heatmap_file)
         }
         
@@ -785,10 +790,11 @@ Maaslin2 <-
                 "Writing association plots (one for each significant association) to output folder: %s",
                 output
             )
-            maaslin2_association_plots(unfiltered_metadata,
-                                       unfiltered_data,
-                                       significant_results_file,
-                                       output)
+            maaslin2_association_plots(
+                unfiltered_metadata,
+                unfiltered_data,
+                significant_results_file,
+                output)
         }
         
         return(fit_data)
