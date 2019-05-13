@@ -16,13 +16,14 @@ for (lib in c(
 
 # fit the data using the model selected and applying the correction
 fit.data <-
-    function(features,
-             metadata,
-             model,
-             formula = NULL,
-             random_effects_formula = NULL,
-             correction = "BH",
-             cores = 1) {
+    function(
+        features,
+        metadata,
+        model,
+        formula = NULL,
+        random_effects_formula = NULL,
+        correction = "BH",
+        cores = 1) {
         # set the formula default to all fixed effects if not provided
         if (is.null(formula))
             formula <-
@@ -51,10 +52,11 @@ fit.data <-
                 }
             } else {
                 formula <-
-                    paste('. ~', 
-                          paste(all.vars(formula)[-1], collapse = ' + '), 
-                          '.', 
-                          sep = ' + ')
+                    paste(
+                        '. ~', 
+                        paste(all.vars(formula)[-1], collapse = ' + '), 
+                        '.', 
+                        sep = ' + ')
                 formula <- update(random_effects_formula, formula)
                 model_function <-
                     function(formula, data, na.action) {
@@ -93,10 +95,11 @@ fit.data <-
             } else {
                 #need to be tested
                 formula <-
-                    paste('. ~', 
-                          paste(all.vars(formula)[-1], collapse = ' + '), 
-                          '.', 
-                          sep = ' + ')
+                    paste(
+                        '. ~', 
+                        paste(all.vars(formula)[-1], collapse = ' + '), 
+                        '.', 
+                        sep = ' + ')
                 formula <- update(random_effects_formula, formula)
                 model_function <-
                     function(formula, data, na.action) {
@@ -120,7 +123,7 @@ fit.data <-
                 para <- as.data.frame(cplm_summary)[-1, -3]
                 para$name <- rownames(cplm_summary)[-1]
                 logging::logdebug("Summary output\n%s", paste(cplm_out, collapse =
-                                  "\n"))
+                    "\n"))
                 return(para)
             }
         }
@@ -144,7 +147,7 @@ fit.data <-
                 para <- as.data.frame(zicp_summary)[-1, -3]
                 para$name <- rownames(zicp_summary)[-1]
                 logging::logdebug("Summary output\n%s", paste(zicp_out, collapse =
-                                  "\n"))
+                    "\n"))
                 return(para)
             }
         }
@@ -180,9 +183,10 @@ fit.data <-
                 featuresVector <- features[, x]
                 
                 # Fit Model
-                logging::loginfo("Fitting model to feature number %d, %s",
-                                 x,
-                                 colnames(features)[x])
+                logging::loginfo(
+                    "Fitting model to feature number %d, %s",
+                    x,
+                    colnames(features)[x])
                 dat_sub <-
                     data.frame(expr = as.numeric(featuresVector), metadata)
                 fit <- tryCatch({
@@ -203,9 +207,10 @@ fit.data <-
                     output$residuals <- residuals(fit)
                 }
                 else{
-                    logging::logwarn(paste("Fitting problem for feature", 
-                                            x, 
-                                           "returning NA"))
+                    logging::logwarn(paste(
+                        "Fitting problem for feature", 
+                        x, 
+                        "returning NA"))
                     output$para <-
                         as.data.frame(matrix(NA, nrow = ncol(metadata), ncol = 3))
                     output$para$name <- colnames(metadata)
@@ -251,9 +256,10 @@ fit.data <-
             metadata_names[order(nchar(metadata_names), decreasing = TRUE)]
         # find the metadata name based on the match to the beginning of the string
         extract_metadata_name <- function(name) {
-            return(metadata_names_ordered[mapply(startsWith, 
-                                                 name, 
-                                                 metadata_names_ordered)][1])
+            return(metadata_names_ordered[mapply(
+                startsWith, 
+                name, 
+                metadata_names_ordered)][1])
         }
         paras$metadata <- unlist(lapply(paras$name, extract_metadata_name))
         # compute the value as the model contrast minus metadata
@@ -271,8 +277,9 @@ fit.data <-
         
         paras <- paras[order(paras$qval, decreasing = FALSE), ]
         paras <-
-            dplyr::select(paras,
-                          c('feature', 'metadata', 'value'),
-                          dplyr::everything())
+            dplyr::select(
+                paras,
+                c('feature', 'metadata', 'value'),
+                dplyr::everything())
         return(list("results" = paras, "residuals" = residuals))
     }
