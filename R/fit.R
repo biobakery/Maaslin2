@@ -27,7 +27,10 @@ fit.data <-
         # set the formula default to all fixed effects if not provided
         if (is.null(formula))
             formula <-
-                as.formula(paste("expr ~ ", paste(colnames(metadata), collapse = "+")))
+                as.formula(paste(
+                    "expr ~ ", 
+                    paste(colnames(metadata), 
+                    collapse = "+")))
         
         #############################################################
         # Determine the function and summary for the model selected #
@@ -60,7 +63,10 @@ fit.data <-
                 formula <- update(random_effects_formula, formula)
                 model_function <-
                     function(formula, data, na.action) {
-                        return(lmerTest::lmer(formula, data = data, na.action = na.action))
+                        return(lmerTest::lmer(
+                            formula, 
+                            data = data, 
+                            na.action = na.action))
                     }
                 summary_function <- function(fit) {
                     lm_summary <- coef(summary(fit))
@@ -103,7 +109,10 @@ fit.data <-
                 formula <- update(random_effects_formula, formula)
                 model_function <-
                     function(formula, data, na.action) {
-                        return(lmerTest::lmer(formula, data = data, na.action = na.action))
+                        return(lmerTest::lmer(
+                            formula, 
+                            data = data, 
+                            na.action = na.action))
                     }
                 summary_function <- function(fit) {
                     lm_summary <- coef(summary(fit))
@@ -119,11 +128,13 @@ fit.data <-
             model_function <- cplm::cpglm
             summary_function <- function(fit) {
                 cplm_out <-
-                    capture.output(cplm_summary <- cplm::summary(fit)$coefficients)
+                    capture.output(
+                        cplm_summary <- cplm::summary(fit)$coefficients)
                 para <- as.data.frame(cplm_summary)[-1, -3]
                 para$name <- rownames(cplm_summary)[-1]
-                logging::logdebug("Summary output\n%s", paste(cplm_out, collapse =
-                    "\n"))
+                logging::logdebug(
+                    "Summary output\n%s", 
+                    paste(cplm_out, collapse = "\n"))
                 return(para)
             }
         }
@@ -141,13 +152,13 @@ fit.data <-
         if (model == "ZICP") {
             model_function <- cplm::zcpglm
             summary_function <- function(fit) {
-                zicp_out <-
-                    capture.output(zicp_summary <-
-                                                cplm::summary(fit)$coefficients$tweedie)
+                zicp_out <- capture.output(
+                    zicp_summary <- cplm::summary(fit)$coefficients$tweedie)
                 para <- as.data.frame(zicp_summary)[-1, -3]
                 para$name <- rownames(zicp_summary)[-1]
-                logging::logdebug("Summary output\n%s", paste(zicp_out, collapse =
-                    "\n"))
+                logging::logdebug(
+                    "Summary output\n%s", 
+                    paste(zicp_out, collapse = "\n"))
                 return(para)
             }
         }
@@ -191,11 +202,17 @@ fit.data <-
                     data.frame(expr = as.numeric(featuresVector), metadata)
                 fit <- tryCatch({
                     fit1 <-
-                        model_function(formula, data = dat_sub, na.action = na.exclude)
+                        model_function(
+                            formula, 
+                            data = dat_sub, 
+                            na.action = na.exclude)
                 }, error = function(err) {
                     fit1 <-
                         try({
-                            model_function(formula, data = dat_sub, na.action = na.exclude)
+                            model_function(
+                                formula, 
+                                data = dat_sub, 
+                                na.action = na.exclude)
                         })
                     return(fit1)
                 })
@@ -212,15 +229,17 @@ fit.data <-
                         x, 
                         "returning NA"))
                     output$para <-
-                        as.data.frame(matrix(NA, nrow = ncol(metadata), ncol = 3))
+                        as.data.frame(matrix(NA, 
+                            nrow = ncol(metadata), ncol = 3))
                     output$para$name <- colnames(metadata)
                     output$residuals <- NA
                 }
                 if (model == 'SLM')
                     colnames(output$para) <-
-                    c('coef', 'stderr' , 'pval', 'name', 'r2')
+                        c('coef', 'stderr' , 'pval', 'name', 'r2')
                 else
-                    colnames(output$para) <- c('coef', 'stderr' , 'pval', 'name')
+                    colnames(output$para) <- 
+                        c('coef', 'stderr' , 'pval', 'name')
                 output$para$feature <- colnames(features)[x]
                 return(output)
             })
@@ -253,8 +272,10 @@ fit.data <-
         metadata_names <- colnames(metadata)
         # order the metadata names by decreasing length
         metadata_names_ordered <-
-            metadata_names[order(nchar(metadata_names), decreasing = TRUE)]
-        # find the metadata name based on the match to the beginning of the string
+            metadata_names[order(
+                nchar(metadata_names), decreasing = TRUE)]
+        # find the metadata name based on the match 
+        # to the beginning of the string
         extract_metadata_name <- function(name) {
             return(metadata_names_ordered[mapply(
                 startsWith, 
