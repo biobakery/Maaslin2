@@ -43,7 +43,7 @@ MaAsLin2 is an R package that can be run on the command line or as an R function
 * Bioconductor packages
     * [edgeR: Empirical Analysis of Digital Gene Expression Data in R](https://bioconductor.org/packages/release/bioc/html/edgeR.html)
     * [metagenomeSeq: Statistical analysis for sparse high-throughput sequencing](https://bioconductor.org/packages/release/bioc/html/metagenomeSeq.html)
-    * These packages can be installed through Bioconductor by first sourcing biocLite with ``source("https://bioconductor.org/biocLite.R")`` and then installing each package with ``biocLite("edgeR")``.
+    * These packages can be installed through Bioconductor.
 * CRAN packages
     * [pscl: Political Science Computational Laboratory](https://cran.r-project.org/web/packages/pscl/pscl.pdf)
     * [pbapply: Adding Progress Bar to '*apply' Functions](https://cran.rstudio.com/web/packages/pbapply/index.html)
@@ -69,8 +69,7 @@ but you will need to install the MaAsLin2 dependencies.
 1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.2.tar.gz)
 2. Decompress the download: 
     * ``$ tar xzvf maaslin2.tar.gz``
-3. Install the Bioconductor dependencies: 
-    * ``$ R -q -e "source('https://bioconductor.org/biocLite.R'); biocLite('edgeR'); biocLite('metagenomeSeq')"``
+3. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 4. Install the CRAN dependencies:
     * ``$ R -q -e "install.packages(c('lmerTest','pscl','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging','data.table','MASS','MuMIn'), repos='http://cran.r-project.org')"``
 5. Install the MaAsLin2 package (only r,equired if running as an R function): 
@@ -80,8 +79,7 @@ but you will need to install the MaAsLin2 dependencies.
 
 1. Install devtools : 
     * ``> install.packages('devtools')``
-2. Install the Bioconuctor dependencies: 
-    * ``> source('https://bioconductor.org/biocLite.R'); biocLite('edgeR'); biocLite('metagenomeSeq')``
+2. Install the Bioconuctor dependencies edgeR and metagenomeSeq. 
 3. Install MaAsLin2 (and also all dependencies from CRAN): 
     * ``> devtools::install_bitbucket("biobakery/maaslin2@default", ref="0.2")``
 
