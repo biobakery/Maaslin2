@@ -198,7 +198,7 @@ fit.data <-
                 
                 # Gather Output
                 output <- list()
-                if (all(class(fit) != "try-error")) {
+                if (all(!inherits(fit, "try-error"))) {
                     output$para <- summary_function(fit)
                     output$residuals <- residuals(fit)
                 }
