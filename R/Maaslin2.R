@@ -857,8 +857,8 @@ Maaslin2 <-
                 output
             )
             maaslin2_association_plots(
-                metadata,
-                filtered_data,
+                unfiltered_metadata,
+                normalized_data,
                 significant_results_file,
                 output)
         }

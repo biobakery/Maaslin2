@@ -1,6 +1,6 @@
 
 Changes in version 0.3.0 (TBD):
-+ Plots now show normalized/filtered/transformed data
++ Plots now show normalized data
 
 Changes in version 0.2.3 (2018-12-20):
 + Move filtering to after normalization
