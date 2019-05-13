@@ -151,41 +151,41 @@ Usage: ./R/Maaslin2.R [options] <data.tsv> <metadata.tsv> <output_folder>
 
 
 Options:
-	-h, --help
-		Show this help message and exit
+    -h, --help
+        Show this help message and exit
 
-	-a MIN_ABUNDANCE, --min_abundance=MIN_ABUNDANCE
-		The minimum abundance for each feature [ Default: 0 ]
+    -a MIN_ABUNDANCE, --min_abundance=MIN_ABUNDANCE
+        The minimum abundance for each feature [ Default: 0 ]
 
-	-p MIN_PREVALENCE, --min_prevalence=MIN_PREVALENCE
-		The minimum percent of samples for which a feature is detected at minimum abundance [ Default: 0.1 ]
+    -p MIN_PREVALENCE, --min_prevalence=MIN_PREVALENCE
+        The minimum percent of samples for which a feature is detected at minimum abundance [ Default: 0.1 ]
 
-	-s MAX_SIGNIFICANCE, --max_significance=MAX_SIGNIFICANCE
-		The q-value threshold for significance [ Default: 0.25 ]
+    -s MAX_SIGNIFICANCE, --max_significance=MAX_SIGNIFICANCE
+        The q-value threshold for significance [ Default: 0.25 ]
 
-	-n NORMALIZATION, --normalization=NORMALIZATION
-		The normalization method to apply [ Default: TSS ] [ Choices: TSS, CLR, CSS, NONE, TMM ]
+    -n NORMALIZATION, --normalization=NORMALIZATION
+        The normalization method to apply [ Default: TSS ] [ Choices: TSS, CLR, CSS, NONE, TMM ]
 
-	-t TRANSFORM, --transform=TRANSFORM
-		The transform to apply [ Default: LOG ] [ Choices: LOG, LOGIT, AST, NONE ]
+    -t TRANSFORM, --transform=TRANSFORM
+        The transform to apply [ Default: LOG ] [ Choices: LOG, LOGIT, AST, NONE ]
 
-	-m ANALYSIS_METHOD, --analysis_method=ANALYSIS_METHOD
-		The analysis method to apply [ Default: LM ] [ Choices: LM, CPLM, ZICP, NEGBIN, ZINB ]
+    -m ANALYSIS_METHOD, --analysis_method=ANALYSIS_METHOD
+        The analysis method to apply [ Default: LM ] [ Choices: LM, CPLM, ZICP, NEGBIN, ZINB ]
 
-	-r RANDOM_EFFECTS, --random_effects=RANDOM_EFFECTS
-		The random effects for the model, comma-delimited for multiple effects [ Default: none ]
+    -r RANDOM_EFFECTS, --random_effects=RANDOM_EFFECTS
+        The random effects for the model, comma-delimited for multiple effects [ Default: none ]
 
-	-f FIXED_EFFECTS, --fixed_effects=FIXED_EFFECTS
-		The fixed effects for the model, comma-delimited for multiple effects [ Default: all ]
+    -f FIXED_EFFECTS, --fixed_effects=FIXED_EFFECTS
+        The fixed effects for the model, comma-delimited for multiple effects [ Default: all ]
 
-	-c CORRECTION, --correction=CORRECTION
-		The correction method for computing the q-value [ Default: BH ]
+    -c CORRECTION, --correction=CORRECTION
+        The correction method for computing the q-value [ Default: BH ]
 
-	-z STANDARDIZE, --standardize=STANDARDIZE
-		Apply z-score so continuous metadata are on the same scale [ Default: TRUE ]
+    -z STANDARDIZE, --standardize=STANDARDIZE
+        Apply z-score so continuous metadata are on the same scale [ Default: TRUE ]
 
-	-e CORES, --cores=CORES
-		The number of R processes to run in parallel [ Default: 1 ]
+    -e CORES, --cores=CORES
+        The number of R processes to run in parallel [ Default: 1 ]
 
 ```
 
