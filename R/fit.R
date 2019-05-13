@@ -17,12 +17,12 @@ for (lib in c(
 # fit the data using the model selected and applying the correction
 fit.data <-
     function(features,
-                     metadata,
-                     model,
-                     formula = NULL,
-                     random_effects_formula = NULL,
-                     correction = "BH",
-                     cores = 1) {
+             metadata,
+             model,
+             formula = NULL,
+             random_effects_formula = NULL,
+             correction = "BH",
+             cores = 1) {
         # set the formula default to all fixed effects if not provided
         if (is.null(formula))
             formula <-
