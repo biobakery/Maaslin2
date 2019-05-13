@@ -53,16 +53,18 @@ nature_theme <-
 
 # MaAsLin2 heatmap function for overall view of associations
 maaslin2_heatmap <-
-    function(output_results,
-                     title = NA,
-                     cell_value = 'qval',
-                     data_label = 'data',
-                     metadata_label = 'metadata',
-                     border_color = 'grey93',
-                     format =    NA,
-                     color = colorRampPalette(c("darkblue", "grey90", "darkred"))(50),
-                     col_rotate = 90,
-                     first_n =    NA) {
+    function(
+        output_results,
+        title = NA,
+        cell_value = 'qval',
+        data_label = 'data',
+        metadata_label = 'metadata',
+        border_color = 'grey93',
+        format =    NA,
+        color = colorRampPalette(c("darkblue", "grey90", "darkred"))(50),
+        col_rotate = 90,
+        first_n =    NA) {
+
         # read MaAsLin output
         df <- read.table(
             output_results,
@@ -173,24 +175,27 @@ maaslin2_heatmap <-
     }
 
 save_heatmap <-
-    function(results_file,
-                     heatmap_file,
-                     title = NULL,
-                     cell_value = "qval",
-                     data_label = 'data',
-                     metadata_label = 'metadata',
-                     border_color = "grey93",
-                     format =    NA,
-                     color = colorRampPalette(c("blue", "grey90", "red"))(50)) {
+    function(
+        results_file,
+        heatmap_file,
+        title = NULL,
+        cell_value = "qval",
+        data_label = 'data',
+        metadata_label = 'metadata',
+        border_color = "grey93",
+        format =    NA,
+        color = colorRampPalette(c("blue", "grey90", "red"))(50)) {
+
         # generate a heatmap and save it to a pdf
         heatmap <-
-            maaslin2_heatmap(results_file,
-                             title,
-                             cell_value,
-                             data_label,
-                             metadata_label,
-                             border_color,
-                             color)
+            maaslin2_heatmap(
+                results_file,
+                title,
+                cell_value,
+                data_label,
+                metadata_label,
+                border_color,
+                color)
         
         if (!is.null(heatmap)) {
             pdf(heatmap_file)
@@ -201,10 +206,11 @@ save_heatmap <-
     }
 
 maaslin2_association_plots <-
-    function(metadata,
-                     features,
-                     output_results,
-                     write_to = './')
+    function(
+        metadata,
+        features,
+        output_results,
+        write_to = './')
     {
         #MaAslin2 scatter plot function and theme
         
@@ -266,20 +272,22 @@ maaslin2_association_plots <-
         for (label in metadata_labels) {
             # for file name replace any non alphanumeric with underscore
             plot_file <-
-                paste(write_to,
-                     "/",
-                     gsub("[^[:alnum:]_]", "_", label),
-                     ".pdf",
-                     sep = "")
+                paste(
+                    write_to,
+                    "/",
+                    gsub("[^[:alnum:]_]", "_", label),
+                    ".pdf",
+                    sep = "")
             data_index <- which(label == metadata_types)
             logging::loginfo("Plotting data for metadata number %s, %s",
-                                             metadata_number,
-                                             label)
-            pdf(plot_file,
-                    width = 2.65,
-                    height = 2.5,
-                    onefile = TRUE)
-         
+                metadata_number,
+                label)
+            pdf(
+                plot_file,
+                width = 2.65,
+                height = 2.5,
+                onefile = TRUE)
+
             x <- NULL
             y <- NULL 
             for (i in data_index) {
@@ -296,52 +304,53 @@ maaslin2_association_plots <-
                 if (is.numeric(input_df[1, 'x']) &
                         length(unique(input_df[['x']])) > 2) {
                     logging::loginfo("Creating scatter plot for continuous data, %s vs %s",
-                                                     x_label,
-                                                     y_label)
-                    temp_plot <- ggplot2::ggplot(data = input_df,
-                                                 ggplot2::aes(
-                                                 as.numeric(as.character(x)),
-                                                 as.numeric(as.character(y))
-                                                 )) +
-                        ggplot2::geom_point(
-                            fill = 'darkolivegreen4',
-                            color = 'black',
-                            alpha = .5,
-                            shape = 21,
-                            size = 1,
-                            stroke = 0.15
-                        ) +
-                        ggplot2::scale_x_continuous(limits = c(min(input_df['x']), max(input_df['x']))) +
-                        ggplot2::scale_y_continuous(limits = c(min(input_df['y']), max(input_df['y']))) +
-                        ggplot2::stat_smooth(
-                            method = "glm",
-                            size = 0.5,
-                            color = 'blue',
-                            na.rm = TRUE
-                        ) +
-                        ggplot2::guides(alpha = 'none') + ggplot2::labs("") +
-                        ggplot2::xlab(x_label) +    ggplot2::ylab(y_label) + nature_theme +
-                        ggplot2::annotate(
-                            geom = "text",
-                            x = Inf,
-                            y = Inf,
-                            hjust = 1,
-                            vjust = 1,
-                            label = sprintf(
-                                "FDR: %s\nCoefficient: %s",
-                                formatC(qval, format = "e", digits = 3),
-                                formatC(coef_val, format = "e", digits = 2)
-                            ) ,
-                            color = "black",
-                            size = 2,
-                            fontface = "italic"
-                        )
+                        x_label,
+                        y_label)
+                    temp_plot <- ggplot2::ggplot(
+                        data = input_df,
+                            ggplot2::aes(
+                                as.numeric(as.character(x)),
+                                as.numeric(as.character(y))
+                                )) +
+                            ggplot2::geom_point(
+                                fill = 'darkolivegreen4',
+                                color = 'black',
+                                alpha = .5,
+                                shape = 21,
+                                size = 1,
+                                stroke = 0.15
+                            ) +
+                            ggplot2::scale_x_continuous(limits = c(min(input_df['x']), max(input_df['x']))) +
+                            ggplot2::scale_y_continuous(limits = c(min(input_df['y']), max(input_df['y']))) +
+                            ggplot2::stat_smooth(
+                                method = "glm",
+                                size = 0.5,
+                                color = 'blue',
+                                na.rm = TRUE
+                            ) +
+                            ggplot2::guides(alpha = 'none') + ggplot2::labs("") +
+                            ggplot2::xlab(x_label) +    ggplot2::ylab(y_label) + nature_theme +
+                            ggplot2::annotate(
+                                geom = "text",
+                                x = Inf,
+                                y = Inf,
+                                hjust = 1,
+                                vjust = 1,
+                                label = sprintf(
+                                    "FDR: %s\nCoefficient: %s",
+                                    formatC(qval, format = "e", digits = 3),
+                                    formatC(coef_val, format = "e", digits = 2)
+                                ) ,
+                                color = "black",
+                                size = 2,
+                                fontface = "italic"
+                            )
                 } else{
                     # if Metadata is categorical generate a boxplot
                     ### check if the variable is categorical
                     logging::loginfo("Creating boxplot for catgorical data, %s vs %s",
-                                      x_label,
-                                      y_label)
+                        x_label,
+                        y_label)
                     input_df['x'] <- sapply(input_df['x'], as.character)
                     
                     temp_plot <-
