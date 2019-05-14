@@ -649,9 +649,9 @@ Maaslin2 <-
                     )
             )
         
-        #########################################################
+        #######################################################################
         # Normalize and filter data based on min abundance and min prevalence #
-        #########################################################
+        #######################################################################
         
         unfiltered_data <- data
         unfiltered_metadata <- metadata
@@ -858,7 +858,7 @@ Maaslin2 <-
             )
             maaslin2_association_plots(
                 unfiltered_metadata,
-                normalized_data,
+                filtered_data,
                 significant_results_file,
                 output)
         }
