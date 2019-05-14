@@ -1,10 +1,16 @@
 \name{Maaslin2}
 \alias{Maaslin2}
 \title{
-MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate statistical framework that finds associations between clinical metadata and potentially high-dimensional experimental data.
+MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate
+    statistical framework that finds associations between clinical 
+    metadata and potentially high-dimensional experimental data.
 }
 \description{
-MaAsLin2 was developed to find associations between microbiome multi'omics features and complex metadata in population-scale epidemiological studies. The software includes multiple analysis methods, normalization, and transform options to customize analysis for your specific study.
+MaAsLin2 was developed to find associations between microbiome 
+    multi'omics features and complex metadata in population-scale 
+    epidemiological studies. The software includes multiple 
+    analysis methods, normalization, and transform options to 
+    customize analysis for your specific study.
 }
 \usage{
 Maaslin2(
@@ -40,7 +46,8 @@ Maaslin2(
     The minimum abundance for each feature.
 }
     \item{min_prevalence}{
-    The minimum percent of samples for which a feature is detected at minimum abundance.
+    The minimum percent of samples for which a feature 
+        is detected at minimum abundance.
 }
     \item{max_significance}{
     The q-value threshold for significance.
@@ -85,7 +92,10 @@ Maaslin2(
     Maintainers: Lauren McIver<lauren.j.mciver@gmail.com>,\cr
 }
 \examples{
-    input_data <- system.file('extdata','example1_features.txt', package="Maaslin2")
-    input_metadata <-system.file('extdata','example1_metadata.txt', package="Maaslin2")
-    fit_data <- Maaslin2(input_data, input_metadata,'maaslin2_example_output')
+    input_data <- system.file(
+        'extdata','example1_features.txt', package="Maaslin2")
+    input_metadata <-system.file(
+        'extdata','example1_metadata.txt', package="Maaslin2")
+    fit_data <- Maaslin2(
+        input_data, input_metadata,'maaslin2_example_output')
 }
