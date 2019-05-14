@@ -137,7 +137,8 @@ CSSnorm = function(features) {
     # Trigger metagenomeSeq to calculate its Cumulative Sum scaling factor.
     MGS = metagenomeSeq::cumNorm(MGS, p = metagenomeSeq::cumNormStat(MGS))
     # Save the normalized data as data.frame
-    features_CSS = as.data.frame(t(metagenomeSeq::MRcounts(MGS, norm = TRUE, log = FALSE)))
+    features_CSS = as.data.frame(t(
+        metagenomeSeq::MRcounts(MGS, norm = TRUE, log = FALSE)))
     
     # Rename the True Positive Features - Same Format as Before
     colnames(features_CSS) <- dd
@@ -161,7 +162,7 @@ TMMnorm = function(features) {
     # TMM Normalizing the Data
     X <- t(features_norm)
     
-    libSize = edgeR::calcNormFactors(X, method = "TMM") #Calculate normaization factors
+    libSize = edgeR::calcNormFactors(X, method = "TMM")
     eff.lib.size = colSums(X) * libSize
     
     ref.lib.size = mean(eff.lib.size)
