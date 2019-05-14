@@ -1,6 +1,7 @@
 
-Changes in version 0.3.0 (TBD):
+Changes in version 0.3.0 (2019-05-14):
 + Plots now show normalized/filtered/transformed data
++ Package modifications for submission to bioconductor
 
 Changes in version 0.2.3 (2018-12-20):
 + Move filtering to after normalization
