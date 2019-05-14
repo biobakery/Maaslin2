@@ -85,7 +85,7 @@ maaslin2_heatmap <-
         }
         
         if (dim(df)[1] < 2) {
-            print('There is no enough association to plot!')
+            print('There are no associations to plot!')
             return(NULL)
         }
         
@@ -116,16 +116,20 @@ maaslin2_heatmap <-
         
         if (n < 2) {
             print(
-                'There is no enough features in associations to make a heatmap plot of associations.
-                Please look at association in text output file!'
+                paste(
+                    "There is not enough features in the associations",
+                    "to create a heatmap plot.",
+                    "Please review the associations in text output file.")
             )
             return(NULL)
         }
         
         if (m < 2) {
             print(
-                'There is no enough metadata in associations to make a heatmap plot of associations.
-                Please look at association in text output file!'
+                paste(
+                    "There is not enough metadata in the associations",
+                    "to create a heatmap plot.",
+                    "Please review the associations in text output file.")
             )
             return(NULL)
         }
@@ -136,7 +140,8 @@ maaslin2_heatmap <-
         rownames(a) <- unique(data)
         colnames(a) <- unique(metadata)
         for (i in 1:dim(df)[1]) {
-            if (abs(a[as.character(data[i]), as.character(metadata[i])]) > abs(value[i]))
+            if (abs(a[as.character(data[i]), 
+                    as.character(metadata[i])]) > abs(value[i]))
                 next
             a[as.character(data[i]), as.character(metadata[i])] <- value[i]
         }
@@ -165,7 +170,8 @@ maaslin2_heatmap <-
                     color = color,
                     treeheight_row = 0,
                     treeheight_col = 0,
-                    display_numbers = matrix(ifelse(a > 0.0, "+", ifelse(a < 0.0, "-", "")),    nrow(a))
+                    display_numbers = matrix(ifelse(
+                        a > 0.0, "+", ifelse(a < 0.0, "-", "")), nrow(a))
                 )
         }, error = function(err) {
             logging::logerror("Unable to plot heatmap")
@@ -241,7 +247,8 @@ maaslin2_association_plots <-
         
         common_rows <- intersect(rownames(features), rownames(metadata))
         input_df_all <-
-            cbind(features[common_rows, , drop = FALSE], metadata[common_rows, , drop = FALSE])
+            cbind(features[common_rows, , drop = FALSE], 
+                metadata[common_rows, , drop = FALSE])
         
         # read MaAsLin output
         if (is.character(output_results)) {
@@ -259,11 +266,14 @@ maaslin2_association_plots <-
         }
         
         if (dim(output_df_all)[1] < 1) {
-            print('There is no association to plot!')
+            print('There are no associations to plot!')
             return(NULL)
         }
         
-        logging::loginfo("Plotting associations from most to least significant, grouped by metadata")
+        logging::loginfo(
+            paste("Plotting associations from most",
+                  "to least significant,",
+                  "grouped by metadata"))
         metadata_types <- unlist(output_df_all[, 'metadata'])
         metadata_labels <-
             unlist(metadata_types[!duplicated(metadata_types)])
@@ -299,11 +309,13 @@ maaslin2_association_plots <-
                 colnames(input_df) <- c("x", "y")
                 
                 # if Metadata is continuous generate a scatter plot
-                # Continuous is defined as numerical with more than 2 values (to exclude binary data)
+                # Continuous is defined as numerical with more than 
+                # 2 values (to exclude binary data)
                 temp_plot <- NULL
                 if (is.numeric(input_df[1, 'x']) &
                         length(unique(input_df[['x']])) > 2) {
-                    logging::loginfo("Creating scatter plot for continuous data, %s vs %s",
+                    logging::loginfo(
+                        "Creating scatter plot for continuous data, %s vs %s",
                         x_label,
                         y_label)
                     temp_plot <- ggplot2::ggplot(
@@ -320,16 +332,22 @@ maaslin2_association_plots <-
                                 size = 1,
                                 stroke = 0.15
                             ) +
-                            ggplot2::scale_x_continuous(limits = c(min(input_df['x']), max(input_df['x']))) +
-                            ggplot2::scale_y_continuous(limits = c(min(input_df['y']), max(input_df['y']))) +
+                            ggplot2::scale_x_continuous(
+                                limits = c(min(
+                                    input_df['x']), max(input_df['x']))) +
+                            ggplot2::scale_y_continuous(
+                                limits = c(min(
+                                    input_df['y']), max(input_df['y']))) +
                             ggplot2::stat_smooth(
                                 method = "glm",
                                 size = 0.5,
                                 color = 'blue',
                                 na.rm = TRUE
                             ) +
-                            ggplot2::guides(alpha = 'none') + ggplot2::labs("") +
-                            ggplot2::xlab(x_label) +    ggplot2::ylab(y_label) + nature_theme +
+                            ggplot2::guides(alpha = 'none') + 
+                            ggplot2::labs("") +
+                            ggplot2::xlab(x_label) + 
+                            ggplot2::ylab(y_label) + nature_theme +
                             ggplot2::annotate(
                                 geom = "text",
                                 x = Inf,
@@ -348,13 +366,15 @@ maaslin2_association_plots <-
                 } else{
                     # if Metadata is categorical generate a boxplot
                     ### check if the variable is categorical
-                    logging::loginfo("Creating boxplot for catgorical data, %s vs %s",
+                    logging::loginfo(
+                        "Creating boxplot for catgorical data, %s vs %s",
                         x_label,
                         y_label)
                     input_df['x'] <- sapply(input_df['x'], as.character)
                     
                     temp_plot <-
-                        ggplot2::ggplot(data = input_df, ggplot2::aes(factor(x), y)) +
+                        ggplot2::ggplot(
+                            data = input_df, ggplot2::aes(factor(x), y)) +
                         ggplot2::geom_boxplot(
                             ggplot2::aes(fill = x),
                             outlier.alpha = 0.0,
@@ -373,7 +393,8 @@ maaslin2_association_plots <-
                         ) +
                         ggplot2::scale_fill_brewer(palette = "Spectral")
                     
-                    # format the figure to default nature format, remove legend, add x/y labels
+                    # format the figure to default nature format
+                    # remove legend, add x/y labels
                     temp_plot <- temp_plot + nature_theme +
                         ggplot2::theme(
                             panel.grid.major = ggplot2::element_blank(),
