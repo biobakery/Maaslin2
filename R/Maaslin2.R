@@ -500,7 +500,8 @@ Maaslin2 <-
                     } else {
                         logging::logerror(
                             paste("Unable to find samples in data and",
-                                  "metadata files. Rows/columns do not match."))
+                                "metadata files.",
+                                "Rows/columns do not match."))
                         logging::logdebug(
                             "Data rows: %s", 
                             paste(rownames(data), collapse = ","))

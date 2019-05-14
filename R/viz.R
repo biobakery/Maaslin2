@@ -272,8 +272,8 @@ maaslin2_association_plots <-
         
         logging::loginfo(
             paste("Plotting associations from most",
-                  "to least significant,",
-                  "grouped by metadata"))
+                "to least significant,",
+                "grouped by metadata"))
         metadata_types <- unlist(output_df_all[, 'metadata'])
         metadata_labels <-
             unlist(metadata_types[!duplicated(metadata_types)])
