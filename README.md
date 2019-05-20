@@ -2,17 +2,14 @@
 
 MaAsLin2 is the next generation of MaAsLin.
 
-[MaAsLin](http://huttenhower.sph.harvard.edu/maaslin) is a multivariate
-statistical framework that finds associations between clinical 
-metadata and potentially high-dimensional experimental data.
+[MaAsLin](http://huttenhower.sph.harvard.edu/maaslin) is a multivariable statistical framework that finds associations between clinical metadata and potentially high-dimensional experimental data.
 
 If you use the MaAsLin2 software, please cite our manuscript: 
-Himel Mallick, Timothy L. Tickle, Lauren J. McIver, 
-Gholamali Rahnavard, George Weingart, Joseph N. Paulson, 
-Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, 
-Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. 
+Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Long H. Nguyen, 
+Gholamali Rahnavard, George Weingart, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, 
+Joseph N. Paulson, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. 
 "Multivariable Association in Population-scale Meta'omic Surveys" 
-(In Preparation).
+(In Submission).
 
 If you have questions, please email the google group
 [MaAsLin Users](https://groups.google.com/forum/#!forum/maaslin-users).
@@ -36,14 +33,14 @@ If you have questions, please email the google group
 MaAsLin2 was developed to find associations between microbiome
 multi'omics features and complex metadata in population-scale 
 epidemiological studies. The software includes multiple analysis 
-methods, normalization, and transform options to customize 
+methods, normalization, and transformation options to customize 
 analysis for your specific study. 
 
 ## Requirements ##
 
 MaAsLin2 is an R package that can be run on the command line or 
-as an R function. It requires the following R packages included 
-in Biocondutor and CRAN (Comprehensive R Archive Network). 
+within R. It requires the following R packages included 
+in Bioconductor and CRAN (Comprehensive R Archive Network). 
 Please install these packages before running MaAsLin2.
 
 * Bioconductor packages: edgeR and metagenomeSeq
@@ -59,22 +56,22 @@ the MaAsLin2 dependencies.
 
 ### From command line ###
 
-1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.2.tar.gz)
+1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.3.tar.gz)
 2. Decompress the download: 
     * ``$ tar xzvf maaslin2.tar.gz``
 3. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 4. Install the CRAN dependencies:
     * ``$ R -q -e "install.packages(c('lmerTest','pscl','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging','data.table','MASS','MuMIn'), repos='http://cran.r-project.org')"``
-5. Install the MaAsLin2 package (only r,equired if running as an R function): 
+5. Install the MaAsLin2 package (only required if running as an R function): 
     * ``$ R CMD INSTALL maaslin2``
 
 ### From R ###
 
 1. Install devtools : 
     * ``> install.packages('devtools')``
-2. Install the Bioconuctor dependencies edgeR and metagenomeSeq. 
+2. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 3. Install MaAsLin2 (and also all dependencies from CRAN): 
-    * ``> devtools::install_bitbucket("biobakery/maaslin2@default", ref="0.2")``
+    * ``> devtools::install_bitbucket("biobakery/maaslin2@default", ref="0.3")``
 
 ## How to Run ##
 
@@ -104,17 +101,17 @@ MaAsLin2 requires two input files.
 1. Data (or features) file
     * This file is tab-delimited.
     * Formatted with features as columns and samples as rows.
-    * The transpose of this format is also okay.
-    * Possible features in this file include taxonomy or genes.
+    * The transpose of this format is also accepted.
+    * Possible features in this file include taxonomic or gene abundances.
 2. Metadata file
     * This file is tab-delimited.
     * Formatted with features as columns and samples as rows.
-    * The transpose of this format is also okay.
-    * Possible metadata in this file include gender or age.
+    * The transpose of this format is also accepted.
+    * Possible metadata in this file include covariates such as gender and/or age.
 
 The data file can contain samples not included in the metadata file
-(along with the reverse case). For both cases, those samples not 
-included in both files will be removed from the analysis. 
+(and vice versa). For both cases, samples not 
+included in both files will be removed from the subsequent analysis. 
 Also the samples do not need to be in the same order in the two files.
 
 NOTE: If running MaAsLin2 as a function, the data and metadata 
@@ -126,31 +123,31 @@ MaAsLin2 generates two types of output files: data and visualization.
 
 1. Data output files
     * ``all_results.tsv``
-        * This includes the same data as the data.frame returned.
+        * This includes the same data.frame returned by the MaAsLin2 function.
         * This file contains all results ordered by increasing q-value.
-        * The first columns are the metadata and feature names.
-        * The next two columns are the value and coefficient from the model.
-        * The next column is the standard deviation from the model.
-        * The ``N`` column is the total number of data points.
-        * The ``N.not.zero`` column is the total of non-zero data points.
-        * The pvalue from the calculation is the second to last column.
-        * The qvalue is computed with `p.adjust` with the correction method.
+        * The first two columns are metadata and feature names.
+        * The next two columns are the metadata value (i.e. name of the tested level for categorical metadata and name of the variable for continuous metadata) and pairwise feature-metadata beta coefficients from the model.
+        * The next column is the standard deviation of the corresponding beta coefficient.
+        * The ``N`` column is the total number of samples per feature.
+        * The ``N.not.zero`` column is the total of non-zero samples per feature.
+        * The p-value derived from the Wald's test is the second to last column.
+        * The q-value is computed with `p.adjust` with the user-defined correction method (default is BH).
     * ``significant_results.tsv``
         * This file is a subset of the results in the first file.
-        * It only includes associations with q-values <= to the threshold.
+        * It only includes associations with q-values below the user-defined threshold (default is 0.25).
     * ``residuals.rds``
-        * This file contains a data frame with residuals for each feature.
+        * This file contains a data frame with Pearson residuals per feature.
     * ``maaslin2.log``
-        * This file contains all log information for the run.
+        * This file contains all log information from the full MaAsLin2 run.
         * It includes all settings, warnings, errors, and steps run.
 2. Visualization output files
     * ``heatmap.pdf``
         * This file contains a heatmap of the significant associations.
     * ``[a-z/0-9]+.pdf``
-        * A plot is generated for each significant association.
+        * A plot is generated for each pairwise significant association.
         * Scatter plots are used for continuous metadata.
-        * Box plots are for categorical data.
-        * Data points plotted are after normalization, filtering, and transform.
+        * Box plots are plotted for categorical data.
+        * Data points plotted are after normalization, filtering, and transformation.
 
 ### Run a Demo ###
 
