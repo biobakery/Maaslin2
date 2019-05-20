@@ -1,5 +1,5 @@
 
-Changes in version 0.3.0 (2019-05-14):
+Changes in version 0.3.0 (2019-05-20):
 + Plots now show normalized/filtered/transformed data
 + Package modifications for submission to bioconductor
 
