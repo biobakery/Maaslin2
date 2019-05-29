@@ -101,10 +101,14 @@ To run from the command line: ``$ Maaslin2.R $DATA $METADATA $OUTPUT``
 
 To run from R as a function: 
 
-```
-$ R
-> library(Maaslin2)
-> fit_data <- Maaslin2(data, metadata, output)
+```{r}
+library(Maaslin2)
+input_data <- system.file(
+    'extdata','example1_features.txt', package="Maaslin2")
+input_metadata <-system.file(
+    'extdata','example1_metadata.txt', package="Maaslin2")
+fit_data <- Maaslin2(
+    input_data, input_metadata,'maaslin2_example_output')
 ```
 
 ### Input Files ###
@@ -191,7 +195,6 @@ to a folder named ``demo_output``.
 Run MaAsLin2 help to print a list of the options and the default settings.
 
 
-```
 $ Maaslin2.R --help
 Usage: ./R/Maaslin2.R [options] <data.tsv> <metadata.tsv> <output_folder>
 
@@ -241,8 +244,6 @@ Options:
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
-
-```
 
 ## Visualization ##
 
