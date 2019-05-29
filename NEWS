@@ -1,4 +1,7 @@
 
+Changes in version 0.99.1 (2019-05-29):
++ Bioconductor build error/warnings updates: Vignette sections format, R depends, and test path sep
+
 Changes in version 0.99.0 (2019-05-24):
 + Only show the top 50 associations in the heatmaps
 + Use static heatmap plot colors
