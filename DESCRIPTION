@@ -6,7 +6,7 @@ Authors@R: c(
   person("Ali", "Rahnavard", email = "rah@broadinstitute.org", role = "aut"),
   person("Lauren", "McIver", email = "lauren.j.mciver@gmail.com", role = c("aut", "cre"))
   )
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.6)
 Description: MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate statistical framework that finds associations between clinical metadata and microbial community abundance or function. 
 License: MIT + file LICENSE
 LazyData: true
