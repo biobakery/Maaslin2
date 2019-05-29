@@ -34,11 +34,27 @@ for (lib in c('ggplot2', "grid", 'pheatmap')) {
 }
 
 # MaAsLin2 theme based on Nature journal requirements
-nature_theme <-
-    ggplot2::theme_bw() + ggplot2::theme(
-        axis.text.x = ggplot2::element_text(size = 8, vjust = 1),
+nature_theme <- function(x_axis_labels, y_label) {
+    # set default text format based on categorical and length
+    angle = NULL
+    hjust = NULL
+    size = 8
+    if (max(nchar(x_axis_labels)) > 5) {
+        angle = 45
+        hjust = 1
+        size = 6
+    }
+    axis_title_size = 10
+    if (nchar(y_label) > 15) {
+        axis_title_size = 8
+    }
+    if (nchar(y_label) > 25) {
+        axis_title_size = 6
+    }
+    return ( ggplot2::theme_bw() + ggplot2::theme(
+        axis.text.x = ggplot2::element_text(size = size, vjust = 1, hjust = hjust, angle = angle),
         axis.text.y = ggplot2::element_text(size = 8, hjust = 1),
-        axis.title = ggplot2::element_text(size = 10),
+        axis.title = ggplot2::element_text(size = axis_title_size),
         plot.title = ggplot2::element_text(size = 7, face = 'bold'),
         legend.title = ggplot2::element_text(size = 6, face = 'bold'),
         legend.text = ggplot2::element_text(size = 6),
@@ -47,8 +63,9 @@ nature_theme <-
         axis.line.y = ggplot2::element_line(colour = 'black', size = .25),
         panel.border = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
-        panel.grid.minor = ggplot2::element_blank()
-    )
+        panel.grid.minor = ggplot2::element_blank())
+   )
+}
 
 
 # MaAsLin2 heatmap function for overall view of associations
@@ -61,9 +78,9 @@ maaslin2_heatmap <-
         metadata_label = 'metadata',
         border_color = 'grey93',
         format =    NA,
-        color = colorRampPalette(c("darkblue", "grey90", "darkred"))(50),
+        color = colorRampPalette(c("darkblue", "grey90", "darkred")),
         col_rotate = 90,
-        first_n =    NA) {
+        first_n = 50) {
 
         # read MaAsLin output
         df <- read.table(
@@ -74,7 +91,10 @@ maaslin2_heatmap <-
             comment.char = "" ,
             check.names = FALSE
         )
+
+        title_additional <- ""
         
+        title_additional <- ""
         if (!is.na(first_n) & first_n > 0 & first_n < dim(df)[1]) {
             if (cell_value == 'coef') {
                 df <- df[order(-abs(df[cell_value])) , ]
@@ -82,6 +102,7 @@ maaslin2_heatmap <-
                 df <- df[order(df[cell_value]), ]
             }
             df <- df[1:first_n,]
+            title_additional <- paste("Top", first_n, sep=" ")
         }
         
         if (dim(df)[1] < 2) {
@@ -99,18 +120,24 @@ maaslin2_heatmap <-
             value <- -log(df$pval) * sign(df$coef)
             value <- pmax(-20, pmin(20, value))
             if (is.null(title))
-                title <- "Significant associations (-log(pval)*sign(coeff))"
+                title <- "(-log(pval)*sign(coeff))"
         } else if (cell_value == "qval") {
             value <- -log(df$qval) * sign(df$coef)
             value <- pmax(-20, pmin(20, value))
             if (is.null(title))
-                title <- "Significant associations (-log(qval)*sign(coeff))"
+                title <- "(-log(qval)*sign(coeff))"
         } else if (cell_value == "coef") {
             value <- df$coef
             if (is.null(title))
-                title <- "Significant associations (coeff)"
+                title <- "(coeff)"
         }
-        
+   
+        if (title_additional!="") {
+            title <- paste(title_additional, "significant associations", title, sep=" ")
+        } else {
+            title <- paste("Significant associations", title, sep=" ")
+        }
+
         n <- length(unique(data))
         m <- length(unique(metadata))
         
@@ -145,7 +172,13 @@ maaslin2_heatmap <-
                 next
             a[as.character(data[i]), as.character(metadata[i])] <- value[i]
         }
-        
+       
+        # get the range for the colorbar
+        max_value <- ceiling(max(a))
+        min_value <- ceiling(min(a))
+        range_value <- max(c(abs(max_value),abs(min_value)))
+        breaks <- seq(-1*range_value, range_value, by = 1)
+
         p <- NULL
         tryCatch({
             p <-
@@ -167,7 +200,8 @@ maaslin2_heatmap <-
                     clustering_distance_cols = "euclidean",
                     legend = TRUE,
                     border_color = border_color,
-                    color = color,
+                    color = color(range_value*2),
+                    breaks = breaks,
                     treeheight_row = 0,
                     treeheight_col = 0,
                     display_numbers = matrix(ifelse(
@@ -190,7 +224,7 @@ save_heatmap <-
         metadata_label = 'metadata',
         border_color = "grey93",
         format =    NA,
-        color = colorRampPalette(c("blue", "grey90", "red"))(50)) {
+        color = colorRampPalette(c("blue", "grey90", "red"))) {
 
         # generate a heatmap and save it to a pdf
         heatmap <-
@@ -347,7 +381,8 @@ maaslin2_association_plots <-
                             ggplot2::guides(alpha = 'none') + 
                             ggplot2::labs("") +
                             ggplot2::xlab(x_label) + 
-                            ggplot2::ylab(y_label) + nature_theme +
+                            ggplot2::ylab(y_label) + 
+                            nature_theme(input_df[, 'x'], y_label) +
                             ggplot2::annotate(
                                 geom = "text",
                                 x = Inf,
@@ -355,9 +390,10 @@ maaslin2_association_plots <-
                                 hjust = 1,
                                 vjust = 1,
                                 label = sprintf(
-                                    "FDR: %s\nCoefficient: %s",
+                                    "FDR: %s\nCoefficient: %s\nN: %s",
                                     formatC(qval, format = "e", digits = 3),
-                                    formatC(coef_val, format = "e", digits = 2)
+                                    formatC(coef_val, format = "e", digits = 2),
+                                    formatC(length(input_df[, 'x']))
                                 ) ,
                                 color = "black",
                                 size = 2,
@@ -366,12 +402,20 @@ maaslin2_association_plots <-
                 } else{
                     # if Metadata is categorical generate a boxplot
                     ### check if the variable is categorical
+                    
                     logging::loginfo(
                         "Creating boxplot for catgorical data, %s vs %s",
                         x_label,
                         y_label)
                     input_df['x'] <- sapply(input_df['x'], as.character)
-                    
+
+                    # count the Ns for each group
+                    x_axis_label_names <- unique(input_df[['x']])
+                    for (name in x_axis_label_names) {
+                        total <- length(which(input_df[['x']] == name))
+                        new_n <- paste(name, " (n=", total, ")", sep="")
+                        input_df[which(input_df[['x']] == name),'x'] <- new_n
+                    }
                     temp_plot <-
                         ggplot2::ggplot(
                             data = input_df, ggplot2::aes(factor(x), y)) +
@@ -395,7 +439,8 @@ maaslin2_association_plots <-
                     
                     # format the figure to default nature format
                     # remove legend, add x/y labels
-                    temp_plot <- temp_plot + nature_theme +
+                    temp_plot <- temp_plot + 
+                        nature_theme(input_df[, 'x'], y_label) +
                         ggplot2::theme(
                             panel.grid.major = ggplot2::element_blank(),
                             panel.grid.minor = ggplot2::element_blank(),

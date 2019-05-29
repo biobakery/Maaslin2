@@ -1,4 +1,11 @@
 
+Changes in version 0.99.0 (2019-05-24):
++ Only show the top 50 associations in the heatmaps
++ Use static heatmap plot colors
++ In boxplots, use angle for x axis text for long text strings (if any in set is over 5 chars)
++ For larger y axis labels reduce the font size (if over 15 chars)
++ Add Ns to plots in annotation for continuous and x axis label for categorical
+
 Changes in version 0.3.0 (2019-05-20):
 + Plots now show normalized/filtered/transformed data
 + Package modifications for submission to bioconductor

@@ -173,7 +173,8 @@ To run (command line):
 
 To run (in R):
 
-```
+```{r}
+library(Maaslin2)
 input_data <- system.file(
     'extdata','example1_features.txt', package="Maaslin2")
 input_metadata <-system.file(

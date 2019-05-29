@@ -288,6 +288,12 @@ Maaslin2 <-
         plot_heatmap = TRUE,
         plot_scatter = TRUE)
     {
+        # Allow for lower case variables
+        normalization <- toupper(normalization)
+        transform <- toupper(transform)
+        analysis_method <- toupper(analysis_method)
+        correction <- toupper(correction)
+
         #################################################################
         # Read in the data and metadata, create output folder, init log #
         #################################################################

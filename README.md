@@ -43,6 +43,7 @@ within R. It requires the following R packages included
 in Bioconductor and CRAN (Comprehensive R Archive Network). 
 Please install these packages before running MaAsLin2.
 
+* R (>= 3.5.0)
 * Bioconductor packages: edgeR and metagenomeSeq
 * CRAN packages: pscl, pbapply, car, dplyr, vegan, chemometrics, 
 ggplot2, pheatmap, cplm, logging, data.table, and lmerTest
@@ -56,7 +57,7 @@ the MaAsLin2 dependencies.
 
 ### From command line ###
 
-1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.3.tar.gz)
+1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.99.0.tar.gz)
 2. Decompress the download: 
     * ``$ tar xzvf maaslin2.tar.gz``
 3. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
@@ -71,7 +72,7 @@ the MaAsLin2 dependencies.
     * ``> install.packages('devtools')``
 2. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 3. Install MaAsLin2 (and also all dependencies from CRAN): 
-    * ``> devtools::install_bitbucket("biobakery/maaslin2@default", ref="0.3")``
+    * ``> devtools::install_bitbucket("biobakery/maaslin2@default", ref="0.99.0")``
 
 ## How to Run ##
 
