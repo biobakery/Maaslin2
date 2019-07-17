@@ -1,15 +1,17 @@
+
 # MaAsLin2 User Manual #
 
 MaAsLin2 is the next generation of MaAsLin.
 
-[MaAsLin](http://huttenhower.sph.harvard.edu/maaslin) is a multivariable statistical framework that finds associations between clinical metadata and potentially high-dimensional experimental data.
+[MaAsLin](http://huttenhower.sph.harvard.edu/maaslin) is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta'omic features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, and offers a variety of data exploration, normalization, and transformation methods.
 
 If you use the MaAsLin2 software, please cite our manuscript: 
-Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Long H. Nguyen, 
-Gholamali Rahnavard, George Weingart, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, 
-Joseph N. Paulson, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. 
+Himel Mallick, Timothy L. Tickle, Lauren J. McIver, 
+Gholamali Rahnavard, George Weingart, Joseph N. Paulson, 
+Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, 
+Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. 
 "Multivariable Association in Population-scale Meta'omic Surveys" 
-(In Submission).
+(In Preparation).
 
 If you have questions, please email the google group
 [MaAsLin Users](https://groups.google.com/forum/#!forum/maaslin-users).
@@ -33,17 +35,16 @@ If you have questions, please email the google group
 MaAsLin2 was developed to find associations between microbiome
 multi'omics features and complex metadata in population-scale 
 epidemiological studies. The software includes multiple analysis 
-methods, normalization, and transformation options to customize 
+methods, normalization, and transform options to customize 
 analysis for your specific study. 
 
 ## Requirements ##
 
 MaAsLin2 is an R package that can be run on the command line or 
-within R. It requires the following R packages included 
-in Bioconductor and CRAN (Comprehensive R Archive Network). 
+as an R function. It requires the following R packages included 
+in Biocondutor and CRAN (Comprehensive R Archive Network). 
 Please install these packages before running MaAsLin2.
 
-* R (>= 3.5.0)
 * Bioconductor packages: edgeR and metagenomeSeq
 * CRAN packages: pscl, pbapply, car, dplyr, vegan, chemometrics, 
 ggplot2, pheatmap, cplm, logging, data.table, and lmerTest
@@ -57,43 +58,31 @@ the MaAsLin2 dependencies.
 
 ### From command line ###
 
-1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.99.0.tar.gz)
+1. Download the source: [MaAsLin2.tar.gz](https://bitbucket.org/biobakery/maaslin2/get/0.2.tar.gz)
 2. Decompress the download: 
     * ``$ tar xzvf maaslin2.tar.gz``
 3. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 4. Install the CRAN dependencies:
     * ``$ R -q -e "install.packages(c('lmerTest','pscl','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging','data.table','MASS','MuMIn'), repos='http://cran.r-project.org')"``
-5. Install the MaAsLin2 package (only required if running as an R function): 
+5. Install the MaAsLin2 package (only r,equired if running as an R function): 
     * ``$ R CMD INSTALL maaslin2``
 
 ### From R ###
 
-1. Install devtools : 
-    * ``> install.packages('devtools')``
-2. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
-3. Install MaAsLin2 (and also all dependencies from CRAN): 
-    * ``> devtools::install_bitbucket("biobakery/maaslin2@default", ref="0.99.0")``
+Install Bioconductor and then install Maaslin2
+
+```
+if(!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("Maaslin2")
+
+```
 
 ## How to Run ##
 
 MaAsLin2 can be run from the command line or as an R function. Both 
 methods require the same arguments, have the same options, 
 and use the same default settings.
-
-To run from the command line: ``$ Maaslin2.R $DATA $METADATA $OUTPUT``
-
-* Provide the full path to the MaAsLin2 executable (ie ./R/Maaslin2.R).
-* Replace ``$DATA`` with the path to your data (or features) file. 
-* Replace ``$METADATA`` with the path to your metadata file.
-* Replace ``$OUTPUT`` with the path to the folder to write the output.
-
-To run from R as a function: 
-
-```
-$ R
-> library(Maaslin2)
-> fit_data <- Maaslin2(data, metadata, output)
-```
 
 ### Input Files ###
 
@@ -102,17 +91,17 @@ MaAsLin2 requires two input files.
 1. Data (or features) file
     * This file is tab-delimited.
     * Formatted with features as columns and samples as rows.
-    * The transpose of this format is also accepted.
-    * Possible features in this file include taxonomic or gene abundances.
+    * The transpose of this format is also okay.
+    * Possible features in this file include taxonomy or genes.
 2. Metadata file
     * This file is tab-delimited.
     * Formatted with features as columns and samples as rows.
-    * The transpose of this format is also accepted.
-    * Possible metadata in this file include covariates such as gender and/or age.
+    * The transpose of this format is also okay.
+    * Possible metadata in this file include gender or age.
 
 The data file can contain samples not included in the metadata file
-(and vice versa). For both cases, samples not 
-included in both files will be removed from the subsequent analysis. 
+(along with the reverse case). For both cases, those samples not 
+included in both files will be removed from the analysis. 
 Also the samples do not need to be in the same order in the two files.
 
 NOTE: If running MaAsLin2 as a function, the data and metadata 
@@ -124,44 +113,52 @@ MaAsLin2 generates two types of output files: data and visualization.
 
 1. Data output files
     * ``all_results.tsv``
-        * This includes the same data.frame returned by the MaAsLin2 function.
+        * This includes the same data as the data.frame returned.
         * This file contains all results ordered by increasing q-value.
-        * The first two columns are metadata and feature names.
-        * The next two columns are the metadata value (i.e. name of the tested level for categorical metadata and name of the variable for continuous metadata) and pairwise feature-metadata beta coefficients from the model.
-        * The next column is the standard deviation of the corresponding beta coefficient.
-        * The ``N`` column is the total number of samples per feature.
-        * The ``N.not.zero`` column is the total of non-zero samples per feature.
-        * The p-value derived from the Wald's test is the second to last column.
-        * The q-value is computed with `p.adjust` with the user-defined correction method (default is BH).
+        * The first columns are the metadata and feature names.
+        * The next two columns are the value and coefficient from the model.
+        * The next column is the standard deviation from the model.
+        * The ``N`` column is the total number of data points.
+        * The ``N.not.zero`` column is the total of non-zero data points.
+        * The pvalue from the calculation is the second to last column.
+        * The qvalue is computed with `p.adjust` with the correction method.
     * ``significant_results.tsv``
         * This file is a subset of the results in the first file.
-        * It only includes associations with q-values below the user-defined threshold (default is 0.25).
+        * It only includes associations with q-values <= to the threshold.
     * ``residuals.rds``
-        * This file contains a data frame with Pearson residuals per feature.
+        * This file contains a data frame with residuals for each feature.
     * ``maaslin2.log``
-        * This file contains all log information from the full MaAsLin2 run.
+        * This file contains all log information for the run.
         * It includes all settings, warnings, errors, and steps run.
 2. Visualization output files
     * ``heatmap.pdf``
         * This file contains a heatmap of the significant associations.
     * ``[a-z/0-9]+.pdf``
-        * A plot is generated for each pairwise significant association.
+        * A plot is generated for each significant association.
         * Scatter plots are used for continuous metadata.
-        * Box plots are plotted for categorical data.
-        * Data points plotted are after normalization, filtering, and transformation.
+        * Box plots are for categorical data.
+        * Data points plotted are after normalization, filtering, and transform.
 
 ### Run a Demo ###
 
 Example input files can be found in the ``inst/extdata`` folder 
 of the MaAsLin2 source. 
 
-To run (command line): 
+#### Command line ####
 
 ``$ Maaslin2.R example1_features.txt example1_metadata.txt demo_output``
 
-To run (in R):
+* Make sure to provide the full path to the MaAsLin2 executable (ie ./R/Maaslin2.R).
+* In the demo command:
+    * ``example1_features.txt`` is the path to your data (or features) file
+    * ``example1_metadata.txt`` is the path to your metadata file
+    * ``demo_output`` is the path to the folder to write the output
 
-```
+
+#### In R ####
+
+```{r}
+library(Maaslin2)
 input_data <- system.file(
     'extdata','example1_features.txt', package="Maaslin2")
 input_metadata <-system.file(
@@ -172,6 +169,46 @@ fit_data <- Maaslin2(
 
 When running this command, all output files will be written
 to a folder named ``demo_output``.
+
+##### Session Info #####
+
+Session info from running the demo in R is as follows.
+```
+> sessionInfo()
+R version 3.6.1 (2019-07-05)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 16.04.5 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/libblas/libblas.so.3.6.0
+LAPACK: /usr/lib/lapack/liblapack.so.3.6.0
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] Maaslin2_0.99.2
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.1        magrittr_1.5      usethis_1.5.1     devtools_2.1.0   
+ [5] tidyselect_0.2.5  pkgload_1.0.2     getopt_1.20.3     R6_2.4.0         
+ [9] rlang_0.4.0       dplyr_0.8.3       tools_3.6.1       pkgbuild_1.0.3   
+[13] sessioninfo_1.1.1 cli_1.1.0         withr_2.1.2       remotes_2.1.0    
+[17] assertthat_0.2.1  digest_0.6.20     rprojroot_1.3-2   tibble_2.1.3     
+[21] optparse_1.6.2    crayon_1.3.4      processx_3.4.0    purrr_0.3.2      
+[25] callr_3.3.0       fs_1.3.1          ps_1.3.0          testthat_2.1.1   
+[29] memoise_1.1.0     glue_1.3.1        pillar_1.4.2      compiler_3.6.1   
+[33] desc_1.2.0        backports_1.1.4   prettyunits_1.0.2 pkgconfig_2.0.2  
+```
+
 
 ### Options ###
 
@@ -230,39 +267,6 @@ Options:
         [ Default: 1 ]
 
 ```
-
-## Visualization ##
-
-There are two functions in MaAsLin2 which visualize the outputs and provide 
-ggplot2 plots that can be used to generate manuscript/report quality figures. 
-
-* ``maaslin2_heatmap``: Plots a heatmap of all associations, arguments are:
-
-``output_path`` : the path to the MaAsLin2 output
-
-``title``: a title for the plot
-
-``cell_value``: default 'Q.value' 
-
-``data_label``: default 'Data'
-
-``metadata_label``: default 'Metadata'
-
-``border_color``: default "grey93"
-
-``color``: default colorRampPalette(c("blue","grey90", "red"))(500) 
-
-* ``maaslin2_association_plots``: Plots scatter/boxplot, arguments are:
-
-``metadata_path``: '/path-to-metadata-file/'
-
-``features_path``: '/path-to-features-file/'
-
-``output_path``: 'the path to the MaAsLin2 output'
-
-``write_to_file``: default True
-
-``write_to``: '~/path-to-output/' 
 
 ## Troubleshooting ##
 

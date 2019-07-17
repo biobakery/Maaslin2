@@ -1,3 +1,0 @@
-
-BiocGenerics:::testPackage('Maaslin2')
-

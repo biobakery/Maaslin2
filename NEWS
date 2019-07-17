@@ -1,9 +1,12 @@
 
-Changes in version 0.99.2 (2019-05-29):
-+ Bioconductor build error/warnings updates: Test file path now relative to package
+Changes in version 0.99.3 (2019-07-17):
++ Modifications to package based on feedback from bioconductor review (additions to description, notes on data files, update testing to testthat, condensing vignette sections and updating install to bioconductor method, remove tests for packages, use seq_len and lapply)
 
-Changes in version 0.99.1 (2019-05-29):
-+ Bioconductor build error/warnings updates: Vignette sections format, R depends, and test path sep
+Changes in version 0.99.2 (2019-06-27):
++ Show top N features in heatmap instead of top N associations
+
+Changes in version 0.99.1 (2019-06-05):
++ Fix plots to allow for NAs in values
 
 Changes in version 0.99.0 (2019-05-24):
 + Only show the top 50 associations in the heatmaps

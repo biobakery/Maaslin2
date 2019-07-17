@@ -29,8 +29,7 @@
 
 # Load libararies
 for (lib in c('ggplot2', "grid", 'pheatmap')) {
-    if (!suppressPackageStartupMessages(require(lib, character.only = TRUE)))
-        stop(paste("Please install the R package: ", lib))
+    suppressPackageStartupMessages(require(lib, character.only = TRUE))
 }
 
 # MaAsLin2 theme based on Nature journal requirements
@@ -39,7 +38,7 @@ nature_theme <- function(x_axis_labels, y_label) {
     angle = NULL
     hjust = NULL
     size = 8
-    if (max(nchar(x_axis_labels)) > 5) {
+    if (max(nchar(x_axis_labels), na.rm=TRUE) > 5) {
         angle = 45
         hjust = 1
         size = 6
@@ -101,7 +100,17 @@ maaslin2_heatmap <-
             } else{
                 df <- df[order(df[cell_value]), ]
             }
-            df <- df[1:first_n,]
+            # get the top n features with significant associations
+            df_sub <- df[1:first_n,]
+            for (first_n_index in seq(first_n, dim(df)[1]))
+            {
+                if (length(unique(df_sub$feature)) == first_n)
+                {
+                    break
+                }
+                df_sub <- df[1:first_n_index,]
+            }
+            df <- df_sub
             title_additional <- paste("Top", first_n, sep=" ")
         }
         
@@ -133,7 +142,7 @@ maaslin2_heatmap <-
         }
    
         if (title_additional!="") {
-            title <- paste(title_additional, "significant associations", title, sep=" ")
+            title <- paste(title_additional, "features with significant associations", title, sep=" ")
         } else {
             title <- paste("Significant associations", title, sep=" ")
         }
@@ -166,7 +175,7 @@ maaslin2_heatmap <-
         
         rownames(a) <- unique(data)
         colnames(a) <- unique(metadata)
-        for (i in 1:dim(df)[1]) {
+        for (i in seq_len(dim(df)[1])) {
             if (abs(a[as.character(data[i]), 
                     as.character(metadata[i])]) > abs(value[i]))
                 next
@@ -407,7 +416,7 @@ maaslin2_association_plots <-
                         "Creating boxplot for catgorical data, %s vs %s",
                         x_label,
                         y_label)
-                    input_df['x'] <- sapply(input_df['x'], as.character)
+                    input_df['x'] <- lapply(input_df['x'], as.character)
 
                     # count the Ns for each group
                     x_axis_label_names <- unique(input_df[['x']])

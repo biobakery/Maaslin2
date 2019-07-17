@@ -1,7 +1,6 @@
 # Load Required Packages
 for (lib in c('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')) {
-    if (!suppressPackageStartupMessages(require(lib, character.only = TRUE)))
-        stop(paste("Please install the R package: ", lib))
+    suppressPackageStartupMessages(require(lib, character.only = TRUE))
 }
 
 

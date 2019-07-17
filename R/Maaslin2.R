@@ -27,8 +27,7 @@
 # load in the required libraries, report an error if they are not installed
 
 for (lib in c('optparse', 'logging', 'data.table', 'dplyr')) {
-    if (!suppressPackageStartupMessages(require(lib, character.only = TRUE)))
-        stop(paste("Please install the R package: ", lib))
+    suppressPackageStartupMessages(require(lib, character.only = TRUE))
 }
 
 ###############################################################

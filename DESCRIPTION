@@ -1,18 +1,21 @@
 Package: Maaslin2
 Title: Maaslin2
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: c(
   person("Himel", "Mallick", email = "hmallick@broadinstitute.org", role = "aut"), 
   person("Ali", "Rahnavard", email = "rah@broadinstitute.org", role = "aut"),
   person("Lauren", "McIver", email = "lauren.j.mciver@gmail.com", role = c("aut", "cre"))
   )
-Depends: R (>= 3.6)
-Description: MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate statistical framework that finds associations between clinical metadata and microbial community abundance or function. 
-License: MIT + file LICENSE
-LazyData: true
+Depends: R (>= 3.5.0)
+Description: MaAsLin2 is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta'omic features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, and offers a variety of data exploration, normalization, and transformation methods. MaAsLin2 is the next generation of MaAsLin.
+License: MIT
+LazyData: false
 Imports: edgeR, metagenomeSeq, pscl, pbapply, car, dplyr, vegan, chemometrics, ggplot2, pheatmap, cplm, logging, data.table, lmerTest, hash, optparse, MASS, MuMIn, grDevices, stats, utils
-Suggests: knitr, BiocGenerics
+Suggests: 
+    knitr,
+    testthat (>= 2.1.0)
 VignetteBuilder: knitr
 Collate: fit.R utility_scripts.R viz.R  Maaslin2.R
 URL: http://huttenhower.sph.harvard.edu/maaslin2
 biocViews: Metagenomics, Software, Microbiome, Normalization
+BugReports: https://bitbucket.org/biobakery/maaslin2/issues

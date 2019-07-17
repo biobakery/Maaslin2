@@ -10,8 +10,7 @@ for (lib in c(
     'parallel',
     'MuMIn'
 )) {
-    if (!suppressPackageStartupMessages(require(lib, character.only = TRUE)))
-        stop(paste("Please install the R package: ", lib))
+    suppressPackageStartupMessages(require(lib, character.only = TRUE))
 }
 
 # fit the data using the model selected and applying the correction
@@ -189,7 +188,7 @@ fit.data <-
         # Apply per-feature modeling #
         ##############################
         outputs <-
-            pbapply::pblapply(1:ncol(features), cl = cluster, function(x) {
+            pbapply::pblapply(seq_len(ncol(features)), cl = cluster, function(x) {
                 # Extract Features One by One
                 featuresVector <- features[, x]
                 
