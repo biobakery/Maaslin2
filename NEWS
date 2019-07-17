@@ -1,3 +1,6 @@
+Changes in version 0.99.4 (2019-07-17):
++ Update required R version.
++ Modifications in vignette format for bioconductor build.
 
 Changes in version 0.99.3 (2019-07-17):
 + Modifications to package based on feedback from bioconductor review (additions to description, notes on data files, update testing to testthat, condensing vignette sections and updating install to bioconductor method, remove tests for packages, use seq_len and lapply)
