@@ -87,11 +87,10 @@ the MaAsLin2 dependencies.
 
 Install Bioconductor and then install Maaslin2
 
-```
+```{r}
 if(!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("Maaslin2")
-
 ```
 
 ## How to Run ##
@@ -189,8 +188,8 @@ to a folder named ``demo_output``.
 ##### Session Info #####
 
 Session info from running the demo in R is as follows.
-```
-> sessionInfo()
+```{r}
+sessionInfo()
 R version 3.6.1 (2019-07-05)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 16.04.5 LTS
