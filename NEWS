@@ -1,3 +1,6 @@
+Changes in version 0.99.7 (2019-07-17):
++ Change file paths to relative to package for windows tests.
+
 Changes in version 0.99.6 (2019-07-17):
 + Fix format of R sections in vignette to pass tests.
 
