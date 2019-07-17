@@ -231,7 +231,6 @@ loaded via a namespace (and not attached):
 Run MaAsLin2 help to print a list of the options and the default settings.
 
 
-```
 $ Maaslin2.R --help
 Usage: ./R/Maaslin2.R [options] <data.tsv> <metadata.tsv> <output_folder>
 
@@ -281,8 +280,6 @@ Options:
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
-
-```
 
 ## Troubleshooting ##
 
