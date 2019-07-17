@@ -6,7 +6,7 @@ Authors@R: c(
   person("Ali", "Rahnavard", email = "rah@broadinstitute.org", role = "aut"),
   person("Lauren", "McIver", email = "lauren.j.mciver@gmail.com", role = c("aut", "cre"))
   )
-Depends: R (>= 3.5.0)
+Depends: R (>= 3.6)
 Description: MaAsLin2 is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta'omic features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, and offers a variety of data exploration, normalization, and transformation methods. MaAsLin2 is the next generation of MaAsLin.
 License: MIT
 LazyData: false
