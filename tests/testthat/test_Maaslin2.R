@@ -3,8 +3,8 @@ library(Maaslin2)
 
 expected_results <- read.table("expected_results.tsv", header = TRUE, stringsAsFactors=FALSE)
 
-features <- read.table(file.path("..","..","Maaslin2","extdata","example1_features.txt"), header = TRUE, row.names = 1)
-metadata <- read.table(file.path("..","..","Maaslin2","extdata","example1_metadata.txt"), header = TRUE, row.names = 1)
+features <- read.table(system.file(package="Maaslin2","extdata","example1_features.txt"), header = TRUE, row.names = 1)
+metadata <- read.table(system.file(package="Maaslin2","extdata","example1_metadata.txt"), header = TRUE, row.names = 1)
 
 fit_data <- Maaslin2(features, metadata, 'output')
 maaslin_results = read.table(file.path("output","significant_results.tsv"), header = TRUE, stringsAsFactors=FALSE)
