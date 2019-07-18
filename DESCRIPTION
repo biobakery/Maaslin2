@@ -1,6 +1,6 @@
 Package: Maaslin2
 Title: Maaslin2
-Version: 0.99.7
+Version: 0.99.8
 Authors@R: c(
   person("Himel", "Mallick", email = "hmallick@broadinstitute.org", role = "aut"), 
   person("Ali", "Rahnavard", email = "rah@broadinstitute.org", role = "aut"),
