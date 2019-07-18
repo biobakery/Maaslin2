@@ -41,13 +41,7 @@ analysis for your specific study.
 ## Requirements ##
 
 MaAsLin2 is an R package that can be run on the command line or 
-as an R function. It requires the following R packages included 
-in Biocondutor and CRAN (Comprehensive R Archive Network). 
-Please install these packages before running MaAsLin2.
-
-* Bioconductor packages: edgeR and metagenomeSeq
-* CRAN packages: pscl, pbapply, car, dplyr, vegan, chemometrics, 
-ggplot2, pheatmap, cplm, logging, data.table, and lmerTest
+as an R function.
 
 ## Installation ##
 
