@@ -71,12 +71,9 @@ the MaAsLin2 dependencies.
 
 Install Bioconductor and then install Maaslin2
 
-```
 if(!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("Maaslin2")
-
-```
 
 ## How to Run ##
 
@@ -173,8 +170,11 @@ to a folder named ``demo_output``.
 ##### Session Info #####
 
 Session info from running the demo in R is as follows.
+
+```{r}
+sessionInfo()
 ```
-> sessionInfo()
+
 R version 3.6.1 (2019-07-05)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: Ubuntu 16.04.5 LTS
@@ -207,7 +207,6 @@ loaded via a namespace (and not attached):
 [25] callr_3.3.0       fs_1.3.1          ps_1.3.0          testthat_2.1.1   
 [29] memoise_1.1.0     glue_1.3.1        pillar_1.4.2      compiler_3.6.1   
 [33] desc_1.2.0        backports_1.1.4   prettyunits_1.0.2 pkgconfig_2.0.2  
-```
 
 
 ### Options ###
@@ -215,7 +214,6 @@ loaded via a namespace (and not attached):
 Run MaAsLin2 help to print a list of the options and the default settings.
 
 
-```
 $ Maaslin2.R --help
 Usage: ./R/Maaslin2.R [options] <data.tsv> <metadata.tsv> <output_folder>
 
@@ -265,8 +263,6 @@ Options:
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
-
-```
 
 ## Troubleshooting ##
 
