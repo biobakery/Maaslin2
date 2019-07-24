@@ -1,3 +1,6 @@
+Changes in version 0.99.11 (2019-07-24):
++ Update demo to data from HMP2 (provided by Himel).
+
 Changes in version 0.99.10 (2019-07-19):
 + Small modifications to documentation to update dependency install notes to match bioconductor.
 
