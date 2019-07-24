@@ -93,9 +93,12 @@ Maaslin2(
 }
 \examples{
     input_data <- system.file(
-        'extdata','example1_features.txt', package="Maaslin2")
+        'extdata','HMP2_taxonomy.tsv', package="Maaslin2")
     input_metadata <-system.file(
-        'extdata','example1_metadata.txt', package="Maaslin2")
+        'extdata','HMP2_metadata.tsv', package="Maaslin2")
     fit_data <- Maaslin2(
-        input_data, input_metadata,'maaslin2_example_output')
+        input_data, input_metadata,'demo_output', transform = "AST",
+        fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
+        random_effects = c('site', 'subject'),
+        standardize = FALSE)
 }

@@ -133,16 +133,22 @@ MaAsLin2 generates two types of output files: data and visualization.
 ### Run a Demo ###
 
 Example input files can be found in the ``inst/extdata`` folder 
-of the MaAsLin2 source. 
+of the MaAsLin2 source. The files provided were generated from
+the HMP2 data which can be downloaded from https://ibdmdb.org/ .
+
+``HMP2_taxonomy.tsv``: is a tab-demilited file with species as columns and samples as rows. It is a subset of the taxonomy file so it just includes the species abundances for all samples.
+
+``HMP2_metadata.tsv``: is a tab-delimited file with samples as rows and metadata as columns. It is a subset of the metadata file so that it just includes some of the fields.
+
 
 #### Command line ####
 
-``$ Maaslin2.R example1_features.txt example1_metadata.txt demo_output``
+``$ Maaslin2.R --transform=AST --fixed_effects="diagnosis,dysbiosisnonIBD,dysbiosisUC,dysbiosisCD,antibiotics,age" --random_effects="site,subject" --standardize=FALSE inst/extdata/HMP2_taxonomy.tsv inst/extdata/HMP2_metadata.tsv demo_output``
 
 * Make sure to provide the full path to the MaAsLin2 executable (ie ./R/Maaslin2.R).
 * In the demo command:
-    * ``example1_features.txt`` is the path to your data (or features) file
-    * ``example1_metadata.txt`` is the path to your metadata file
+    * ``HMP2_taxonomy.tsv`` is the path to your data (or features) file
+    * ``HMP2_metadata.tsv`` is the path to your metadata file
     * ``demo_output`` is the path to the folder to write the output
 
 
@@ -151,15 +157,15 @@ of the MaAsLin2 source.
 ```{r}
 library(Maaslin2)
 input_data <- system.file(
-    'extdata','example1_features.txt', package="Maaslin2")
+    'extdata','HMP2_taxonomy.tsv', package="Maaslin2")
 input_metadata <-system.file(
-    'extdata','example1_metadata.txt', package="Maaslin2")
+    'extdata','HMP2_metadata.tsv', package="Maaslin2")
 fit_data <- Maaslin2(
-    input_data, input_metadata,'maaslin2_example_output')
+    input_data, input_metadata, 'demo_output', transform = "AST",
+    fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
+    random_effects = c('site', 'subject'),
+    standardize = FALSE)
 ```
-
-When running this command, all output files will be written
-to a folder named ``demo_output``.
 
 ##### Session Info #####
 
