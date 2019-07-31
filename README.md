@@ -65,7 +65,7 @@ the MaAsLin2 dependencies.
 
 Install Bioconductor and then install Maaslin2
 
-```{r, eval = false}
+```{r, eval=FALSE}
 if(!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("Maaslin2")
