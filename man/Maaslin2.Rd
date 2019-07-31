@@ -29,8 +29,8 @@ Maaslin2(
     standardize = TRUE,
     cores = 1,
     plot_heatmap = TRUE,
-    heatmap_first_n = 50,
-    plot_scatter = TRUE
+    plot_scatter = TRUE,
+    heatmap_first_n = 50
 )
 }
 \arguments{
