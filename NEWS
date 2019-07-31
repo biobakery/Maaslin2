@@ -1,5 +1,6 @@
 Changes in version 0.99.13 (2019-07-31):
 + Iterations for addition to bioconductor: Add back in license file and small changes to coding sections of vignette.
++ Modifications to man page to include new option.
 
 Changes in version 0.99.12 (2019-07-26):
 + Add new option to set the max number of features shown in heatmap.
