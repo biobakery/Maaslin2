@@ -1,3 +1,7 @@
+Changes in version 0.99.12 (2019-07-26):
++ Add new option to set the max number of features shown in heatmap.
++ Fix heatmap to include all rows of significant values for the top N features instead of only including the rows after finding the top N features.
+
 Changes in version 0.99.11 (2019-07-24):
 + Update demo to data from HMP2 (provided by Himel).
 

@@ -90,6 +90,7 @@ args$fixed_effects <- NULL
 args$correction <- correction_choices[1]
 args$standardize <- TRUE
 args$plot_heatmap <- TRUE
+args$heatmap_first_n <- 50
 args$plot_scatter <- TRUE
 args$cores <- 1
 
@@ -239,6 +240,17 @@ options <-
 options <-
     optparse::add_option(
         options,
+        c("-i", "--heatmap_first_n"),
+        type = "double",
+        dest = "heatmap_first_n",
+        default = args$heatmap_first_n,
+        help = paste("In heatmap, plot top N features with significant ",
+            "associations [ Default: %default ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
         c("-o", "--plot_scatter"),
         type = "logical",
         dest = "plot_scatter",
@@ -285,7 +297,8 @@ Maaslin2 <-
         standardize = TRUE,
         cores = 1,
         plot_heatmap = TRUE,
-        plot_scatter = TRUE)
+        plot_scatter = TRUE,
+        heatmap_first_n = 50)
     {
         # Allow for lower case variables
         normalization <- toupper(normalization)
@@ -852,7 +865,7 @@ Maaslin2 <-
             logging::loginfo(
                 "Writing heatmap of significant results to file: %s",
                 heatmap_file)
-            save_heatmap(significant_results_file, heatmap_file)
+            save_heatmap(significant_results_file, heatmap_file, first_n = heatmap_first_n)
         }
         
         if (plot_scatter) {
@@ -912,6 +925,7 @@ if (identical(environment(), globalenv()) &&
             current_args$standardize,
             current_args$cores,
             current_args$plot_heatmap,
-            current_args$plot_scatter
+            current_args$plot_scatter,
+            current_args$heatmap_first_n
         )
 }

@@ -260,6 +260,18 @@ Options:
         Apply z-score so continuous metadata are 
         on the same scale [ Default: TRUE ]
 
+    -l PLOT_HEATMAP, --plot_heatmap=PLOT_HEATMAP
+        Generate a heatmap for the significant 
+        associations [ Default: TRUE ]
+
+    -i HEATMAP_FIRST_N, --heatmap_first_n=HEATMAP_FIRST_N
+        In heatmap, plot top N features with significant 
+        associations [ Default: TRUE ]
+
+    -o PLOT_SCATTER, --plot_scatter=PLOT_SCATTER
+        Generate scatter plots for the significant
+        associations [ Default: TRUE ]
+
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]

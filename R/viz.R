@@ -76,7 +76,6 @@ maaslin2_heatmap <-
         data_label = 'data',
         metadata_label = 'metadata',
         border_color = 'grey93',
-        format =    NA,
         color = colorRampPalette(c("darkblue", "grey90", "darkred")),
         col_rotate = 90,
         first_n = 50) {
@@ -110,7 +109,8 @@ maaslin2_heatmap <-
                 }
                 df_sub <- df[1:first_n_index,]
             }
-            df <- df_sub
+            # get all rows that have the top N features
+            df <- df[which(df$feature %in% df_sub$feature),]
             title_additional <- paste("Top", first_n, sep=" ")
         }
         
@@ -232,8 +232,8 @@ save_heatmap <-
         data_label = 'data',
         metadata_label = 'metadata',
         border_color = "grey93",
-        format =    NA,
-        color = colorRampPalette(c("blue", "grey90", "red"))) {
+        color = colorRampPalette(c("blue", "grey90", "red")),
+        first_n = 50) {
 
         # generate a heatmap and save it to a pdf
         heatmap <-
@@ -244,7 +244,8 @@ save_heatmap <-
                 data_label,
                 metadata_label,
                 border_color,
-                color)
+                color,
+                first_n)
         
         if (!is.null(heatmap)) {
             pdf(heatmap_file)
