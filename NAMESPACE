@@ -1,5 +1,7 @@
 export(Maaslin2)
 
+import("biglm")
+import("pcaPP")
 import("lpsymphony")
 import("optparse")
 importFrom("grDevices", "colorRampPalette", "dev.off", "pdf")
