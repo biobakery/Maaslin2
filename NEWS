@@ -1,3 +1,6 @@
+Changes in version 0.99.15 (2019-07-31):
++ Adding another dependency required by bioconductor MacOS automated build/test
+
 Changes in version 0.99.14 (2019-07-31):
 + Adding two more dependencies required by bioconductor MacOS automated build/test
 
