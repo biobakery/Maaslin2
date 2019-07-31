@@ -29,6 +29,7 @@ Maaslin2(
     standardize = TRUE,
     cores = 1,
     plot_heatmap = TRUE,
+    heatmap_first_n = 50,
     plot_scatter = TRUE
 )
 }
@@ -75,6 +76,9 @@ Maaslin2(
 }
     \item{plot_heatmap}{
     Generate a heatmap for the significant associations.
+}
+    \item{heatmap_first_n){
+    In heatmap, plot top N features with significant associations.
 }
     \item{plot_scatter}{
     Generate scatter plots for the significant associations.
