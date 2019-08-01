@@ -347,6 +347,7 @@ maaslin2_association_plots <-
             for (i in data_index) {
                 x_label <- as.character(output_df_all[i, 'metadata'])
                 y_label <- as.character(output_df_all[i, 'feature'])
+                results_value <- as.character(output_df_all[i, 'value'])
                 qval <- as.numeric(output_df_all[i, 'qval'])
                 coef_val <- as.numeric(output_df_all[i, 'coef'])
                 input_df <- input_df_all[c(x_label, y_label)]
@@ -467,9 +468,10 @@ maaslin2_association_plots <-
                             hjust = 1,
                             vjust = 1,
                             label = sprintf(
-                                "FDR: %s\nCoefficient: %s",
+                                "FDR: %s\nCoefficient: %s\nValue: %s",
                                 formatC(qval, format = "e", digits = 3),
-                                formatC(coef_val, format = "e", digits = 2)
+                                formatC(coef_val, format = "e", digits = 2),
+                                results_value
                             ) ,
                             color = "black",
                             size = 2,
