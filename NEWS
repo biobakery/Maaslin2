@@ -1,3 +1,6 @@
+Changes in version 0.99.15 (2019-08-05):
++ Add value to categorical plots.
+
 Changes in version 0.99.15 (2019-07-31):
 + Adding another dependency required by bioconductor MacOS automated build/test
 
