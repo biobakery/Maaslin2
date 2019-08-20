@@ -699,7 +699,7 @@ Maaslin2 <-
         data_zeros[is.na(data_zeros)] <- 0
         filtered_data <-
             normalized_data[, 
-                colSums(data_zeros >= min_abundance) > min_samples,
+                colSums(data_zeros > min_abundance) > min_samples,
                 drop = FALSE]
         total_filtered_features <-
             ncol(normalized_data) - ncol(filtered_data)
