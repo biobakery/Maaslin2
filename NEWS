@@ -1,4 +1,7 @@
-Changes in version 0.99.15 (2019-08-05):
+Changes in version 0.99.17 (2019-08-20):
++ Filtering by min abundance is limited to greater than (prior was greater than and equal to)
+
+Changes in version 0.99.16 (2019-08-05):
 + Add value to categorical plots.
 
 Changes in version 0.99.15 (2019-07-31):
