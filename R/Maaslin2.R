@@ -537,7 +537,10 @@ Maaslin2 <-
                 }
             }
         }
-        
+       
+        # replace unexpected characters in feature names
+        colnames(data) <- make.names(colnames(data))
+ 
         # check for samples without metadata
         extra_feature_samples <-
             setdiff(rownames(data), rownames(metadata))
