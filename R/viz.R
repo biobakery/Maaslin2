@@ -227,6 +227,7 @@ save_heatmap <-
     function(
         results_file,
         heatmap_file,
+        figures_folder,
         title = NULL,
         cell_value = "qval",
         data_label = 'data',
@@ -235,7 +236,7 @@ save_heatmap <-
         color = colorRampPalette(c("blue", "grey90", "red")),
         first_n = 50) {
 
-        # generate a heatmap and save it to a pdf
+        # generate a heatmap and save it to a pdf and as a jpg
         heatmap <-
             maaslin2_heatmap(
                 results_file,
@@ -251,8 +252,13 @@ save_heatmap <-
             pdf(heatmap_file)
             print(heatmap)
             dev.off()
+
+            jpg_file <- file.path(figures_folder,"heatmap.jpg")
+            jpeg(jpg_file)
+            print(heatmap)
+            dev.off()
         }
-        
+
     }
 
 maaslin2_association_plots <-
@@ -260,7 +266,9 @@ maaslin2_association_plots <-
         metadata,
         features,
         output_results,
-        write_to = './')
+        write_to = './',
+        figures_folder = './figures/',
+        max_jpgs = 3)
     {
         #MaAslin2 scatter plot function and theme
         
@@ -323,6 +331,7 @@ maaslin2_association_plots <-
             unlist(metadata_types[!duplicated(metadata_types)])
         metadata_number <- 1
         
+        saved_plots <- vector('list', max_jpgs)
         for (label in metadata_labels) {
             # for file name replace any non alphanumeric with underscore
             plot_file <-
@@ -344,6 +353,7 @@ maaslin2_association_plots <-
 
             x <- NULL
             y <- NULL 
+            count <- 1
             for (i in data_index) {
                 x_label <- as.character(output_df_all[i, 'metadata'])
                 y_label <- as.character(output_df_all[i, 'feature'])
@@ -481,8 +491,21 @@ maaslin2_association_plots <-
                 stdout <- capture.output(print(temp_plot), type = "message")
                 if (length(stdout) > 0)
                     logging::logdebug(stdout)
+                if (count < max_jpgs + 1)
+                    saved_plots[[count]] <- temp_plot
+                count <- count + 1
             }
             dev.off()
+            # print the saved figures
+            for (plot_number in seq(1,max_jpgs)) {
+                jpg_file <- file.path(figures_folder,
+                    paste0(
+                        substr(basename(plot_file),1,nchar(basename(plot_file))-4),
+                        "_",plot_number,".jpg"))
+                jpeg(jpg_file)
+                stdout <- capture.output(print(saved_plots[[plot_number]]))
+                dev.off()
+            }
             metadata_number <- metadata_number + 1
         }
     }

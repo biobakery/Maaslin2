@@ -337,10 +337,16 @@ Maaslin2 <-
             metadata <- input_metadata
         }
         
-        # create an output folder if it does not exist
+        # create an output folder and figures folder if it does not exist
         if (!file.exists(output)) {
             print("Creating output folder")
             dir.create(output)
+        }
+
+        figures_folder <- file.path(output,"figures")
+        if (!file.exists(figures_folder)) {
+            print("Creating output figures folder")
+            dir.create(figures_folder)
         }
         
         # create log file (write info to stdout and debug level to log file)
@@ -868,7 +874,8 @@ Maaslin2 <-
             logging::loginfo(
                 "Writing heatmap of significant results to file: %s",
                 heatmap_file)
-            save_heatmap(significant_results_file, heatmap_file, first_n = heatmap_first_n)
+            save_heatmap(significant_results_file, heatmap_file, figures_folder,
+                first_n = heatmap_first_n)
         }
         
         if (plot_scatter) {
@@ -882,7 +889,8 @@ Maaslin2 <-
                 unfiltered_metadata,
                 filtered_data,
                 significant_results_file,
-                output)
+                output,
+                figures_folder)
         }
         
         return(fit_data)
