@@ -1,3 +1,7 @@
+
+Changes in version 0.99.19 (2019-09-27):
++ Add figures folder of jpgs including heatmap and most significant scatter/box plots per metadata to be used in auto-generated workflow reports.
+
 Changes in version 0.99.18 (2019-09-27):
 + For log function if x is zero use half of min value instead of one (merged changed function from Tommi Vatanen's fork).
 
