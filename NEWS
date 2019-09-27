@@ -1,3 +1,6 @@
+Changes in version 0.99.18 (2019-09-27):
++ For log function if x is zero use half of min value instead of one (merged changed function from Tommi Vatanen's fork).
+
 Changes in version 0.99.17 (2019-08-20):
 + Filtering by min abundance is limited to greater than (prior was greater than and equal to)
 
