@@ -254,7 +254,7 @@ save_heatmap <-
             dev.off()
 
             jpg_file <- file.path(figures_folder,"heatmap.jpg")
-            jpeg(jpg_file)
+            jpeg(jpg_file, res = 150, height = 800, width = 1100)
             print(heatmap)
             dev.off()
         }
@@ -502,7 +502,7 @@ maaslin2_association_plots <-
                     paste0(
                         substr(basename(plot_file),1,nchar(basename(plot_file))-4),
                         "_",plot_number,".jpg"))
-                jpeg(jpg_file)
+                jpeg(jpg_file, res = 300, width = 960, height = 960)
                 stdout <- capture.output(print(saved_plots[[plot_number]]))
                 dev.off()
             }
