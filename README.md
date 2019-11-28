@@ -1,12 +1,11 @@
 
 # MaAsLin2 User Manual #
 
-MaAsLin2 is the next generation of MaAsLin.
+MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association with Linear Models).
 
-[MaAsLin](http://huttenhower.sph.harvard.edu/maaslin) is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta'omic features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, and offers a variety of data exploration, normalization, and transformation methods.
+[MaAsLin](http://huttenhower.sph.harvard.edu/maaslin) is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta-omics features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, along with a variety of data exploration, normalization, and transformation methods.
 
-If you use the MaAsLin2 software, please cite our manuscript: 
-Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Gholamali Rahnavard, Long H. Nguyen, George Weingart, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, Joseph N. Paulson, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. "Multivariable Association in Population-scale Meta-omics Studies" (In Preparation).
+If you use the MaAsLin2 software, please cite our manuscript: Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Gholamali Rahnavard, Long H. Nguyen, George Weingart, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, Joseph N. Paulson, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. "Multivariable Association in Population-scale Meta-omics Studies" (In Submission).
 
 If you have questions, please email the google group
 [MaAsLin Users](https://groups.google.com/forum/#!forum/maaslin-users).
@@ -27,23 +26,17 @@ If you have questions, please email the google group
 
 ## Description ##
 
-MaAsLin2 was developed to find associations between microbiome
-multi'omics features and complex metadata in population-scale 
-epidemiological studies. The software includes multiple analysis 
-methods, normalization, and transform options to customize 
-analysis for your specific study. 
+MaAsLin2 was developed to find associations between microbiome multi-omics features and complex metadata in population-scale epidemiological studies. The software includes multiple analysis methods, normalization, and transform options to customize analysis for your specific study. 
 
 ## Requirements ##
 
-MaAsLin2 is an R package that can be run on the command line or 
-as an R function.
+MaAsLin2 is an R package that can be run on the command line or as an R function.
 
 ## Installation ##
 
-MaAsLin2 can be run from the command line or as an R function. 
-If only running from the command line, you do not need to 
-install the MaAsLin2 package but you will need to install 
-the MaAsLin2 dependencies.
+MaAsLin2 can be run from the command line or as an R function.
+
+If only running from the command line, you do not need to install the MaAsLin2 package but you will need to install the MaAsLin2 dependencies.
 
 ### From command line ###
 
