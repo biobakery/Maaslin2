@@ -1,6 +1,6 @@
 Package: Maaslin2
 Title: Maaslin2
-Version: 0.99.19
+Version: 1.1.1
 Authors@R: c(
   person("Himel", "Mallick", email = "hmallick@broadinstitute.org", role = "aut"), 
   person("Ali", "Rahnavard", email = "rah@broadinstitute.org", role = "aut"),
@@ -18,4 +18,4 @@ VignetteBuilder: knitr
 Collate: fit.R utility_scripts.R viz.R  Maaslin2.R
 URL: http://huttenhower.sph.harvard.edu/maaslin2
 biocViews: Metagenomics, Software, Microbiome, Normalization
-BugReports: https://bitbucket.org/biobakery/maaslin2/issues
+BugReports: https://github.com/biobakery/maaslin2/issues
