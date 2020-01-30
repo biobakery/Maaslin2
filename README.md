@@ -7,7 +7,7 @@ MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association
 
 If you use the MaAsLin2 software, please cite our manuscript: Himel Mallick, Timothy L. Tickle, Lauren J. McIver, Gholamali Rahnavard, Long H. Nguyen, George Weingart, Siyuan Ma, Boyu Ren, Emma Schwager, Ayshwarya Subramanian, Joseph N. Paulson, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower. "Multivariable Association in Population-scale Meta-omics Studies" (In Submission).
 
-If you have questions,  
+If you have questions, please direct it to :   
 [MaAsLin Forum](https://forum.biobakery.org/c/Downstream-analysis-and-statistics/MaAsLin2)    
 [Google Groups](https://groups.google.com/forum/#!forum/maaslin-users) (Read only)  
 
