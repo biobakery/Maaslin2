@@ -425,7 +425,7 @@ maaslin2_association_plots <-
                     ### check if the variable is categorical
                     
                     logging::loginfo(
-                        "Creating boxplot for catgorical data, %s vs %s",
+                        "Creating boxplot for categorical data, %s vs %s",
                         x_label,
                         y_label)
                     input_df['x'] <- lapply(input_df['x'], as.character)
