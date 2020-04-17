@@ -1,4 +1,8 @@
 
+
+Changes in version 1.1.2 (04-17-2020):
++ Small changes to pass build tests for latest bioconductor release.
+
 Changes in version 1.1.1 (01-20-2020):
 + Updated reference to sync up with manuscript.
 
