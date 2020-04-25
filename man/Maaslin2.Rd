@@ -91,8 +91,8 @@ Maaslin2(
     Data.frame containing the results from applying the model.
 }
 \author{
-    Himel Mallick<hmallick@broadinstitute.org>,\cr
-    Ali Rahnavard<rah@broadinstitute.org>,\cr
+    Himel Mallick<himel.stat.iitk@gmail.com>,\cr
+    Ali Rahnavard<gholamali.rahnavard@gmail.com>,\cr
     Maintainers: Lauren McIver<lauren.j.mciver@gmail.com>,\cr
 }
 \examples{
