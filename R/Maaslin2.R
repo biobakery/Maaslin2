@@ -713,7 +713,7 @@ Maaslin2 <-
             toString(filtered_feature_names))
         
         ######################
-        # normalize features #
+        # Normalize features #
         ######################
         
         logging::loginfo(
@@ -734,9 +734,9 @@ Maaslin2 <-
             logging::loginfo("Bypass z-score application to metadata")
         }
         
-        #################################################################
+        ######################################################
         # Transform and run method writing residuals to file #
-        #################################################################
+        ######################################################
         
         # transform features
         logging::loginfo("Running selected transform method: %s", transform)
@@ -757,9 +757,9 @@ Maaslin2 <-
                 cores = cores
             )
         
-        ###########################################
-        # Count the total values for each feature #
-        ###########################################
+        #################################################################
+        # Count the total values for each feature (untransformed space) #
+        #################################################################
         
         logging::loginfo("Counting total values for each feature")
         fit_data$results$N <-
