@@ -736,7 +736,7 @@ Maaslin2 <-
         
         # transform features
         logging::loginfo("Running selected transform method: %s", transform)
-        filtered_data <-
+        filtered_data_transformed <-
             transformFeatures(filtered_data, transformation = transform)
         
         # apply the method to the data with the correction
@@ -744,7 +744,7 @@ Maaslin2 <-
             "Running selected analysis method: %s", analysis_method)
         fit_data <-
             fit.data(
-                filtered_data,
+                filtered_data_transformed,
                 metadata,
                 analysis_method,
                 formula = formula,
@@ -763,14 +763,14 @@ Maaslin2 <-
                 fit_data$results,
                 1,
                 FUN = function(x)
-                    length(filtered_data[, x[1]])
+                    length(filtered_data_transformed[, x[1]])
             )
         fit_data$results$N.not.zero <-
             apply(
                 fit_data$results,
                 1,
                 FUN = function(x)
-                    length(which(filtered_data[, x[1]] > 0))
+                    length(which(filtered_data_transformed[, x[1]] > 0))
             )
         
         #########################
