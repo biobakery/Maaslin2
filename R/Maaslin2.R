@@ -677,24 +677,18 @@ Maaslin2 <-
                     )
             )
         
-        #######################################################################
-        # Normalize and filter data based on min abundance and min prevalence #
-        #######################################################################
+        #########################################################
+        # Filter data based on min abundance and min prevalence #
+        #########################################################
         
         unfiltered_data <- data
         unfiltered_metadata <- metadata
-        
-        # normalize features
-        logging::loginfo(
-            "Running selected normalization method: %s", normalization)
-        normalized_data <-
-            normalizeFeatures(data, normalization = normalization)
         
         # require at least total samples * min prevalence values 
         # for each feature to be greater than min abundance
         logging::loginfo(
             "Filter data based on min abundance and min prevalence")
-        total_samples <- nrow(normalized_data)
+        total_samples <- nrow(unfiltered_data)
         logging::loginfo("Total samples in data: %d", total_samples)
         min_samples <- total_samples * min_prevalence
         logging::loginfo(
@@ -704,19 +698,29 @@ Maaslin2 <-
         )
         
         # Filter by abundance using zero as value for NAs
-        data_zeros <- normalized_data
+        data_zeros <- unfiltered_data
         data_zeros[is.na(data_zeros)] <- 0
         filtered_data <-
-            normalized_data[, 
+            unfiltered_data[, 
                 colSums(data_zeros > min_abundance) > min_samples,
                 drop = FALSE]
         total_filtered_features <-
-            ncol(normalized_data) - ncol(filtered_data)
+            ncol(unfiltered_data) - ncol(filtered_data)
         logging::loginfo("Total filtered features: %d", total_filtered_features)
         filtered_feature_names <-
-            setdiff(names(normalized_data), names(filtered_data))
+            setdiff(names(unfiltered_data), names(filtered_data))
         logging::loginfo("Filtered feature names: %s",
             toString(filtered_feature_names))
+        
+        ######################
+        # normalize features #
+        ######################
+        
+        logging::loginfo(
+            "Running selected normalization method: %s", normalization)
+        filtered_data_norm <-
+            normalizeFeatures(filtered_data, normalization = normalization)
+        
         
         ################################
         # Standardize metadata, if set #
@@ -736,15 +740,15 @@ Maaslin2 <-
         
         # transform features
         logging::loginfo("Running selected transform method: %s", transform)
-        filtered_data_transformed <-
-            transformFeatures(filtered_data, transformation = transform)
+        filtered_data_norm_transformed <-
+            transformFeatures(filtered_data_norm, transformation = transform)
         
         # apply the method to the data with the correction
         logging::loginfo(
             "Running selected analysis method: %s", analysis_method)
         fit_data <-
             fit.data(
-                filtered_data_transformed,
+                filtered_data_norm_transformed,
                 metadata,
                 analysis_method,
                 formula = formula,
@@ -763,14 +767,14 @@ Maaslin2 <-
                 fit_data$results,
                 1,
                 FUN = function(x)
-                    length(filtered_data_transformed[, x[1]])
+                    length(filtered_data_norm[, x[1]])
             )
         fit_data$results$N.not.zero <-
             apply(
                 fit_data$results,
                 1,
                 FUN = function(x)
-                    length(which(filtered_data_transformed[, x[1]] > 0))
+                    length(which(filtered_data_norm[, x[1]] > 0))
             )
         
         #########################
