@@ -5,7 +5,9 @@ MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association
 
 [MaAsLin2](http://huttenhower.sph.harvard.edu/maaslin2) is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta-omics features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, along with a variety of data exploration, normalization, and transformation methods.
 
-If you use the MaAsLin2 software, please cite our manuscript: Mallick et al. (2020+) "Multivariable Association in Population-scale Meta-omics Studies" (In Submission).
+If you use the MaAsLin2 software, please cite our manuscript: 
+
+Mallick et al. (2020+) "Multivariable Association in Population-scale Meta-omics Studies" (In Submission).
 
 If you have questions, please direct it to :   
 [MaAsLin2 Forum](https://forum.biobakery.org/c/Downstream-analysis-and-statistics/MaAsLin2)    
