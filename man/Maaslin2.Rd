@@ -10,7 +10,7 @@ MaAsLin2 finds associations between microbiome
     meta-omics features and complex metadata in population-scale 
     epidemiological studies. The software includes multiple 
     analysis methods (including support for multiple covariates and repeated measures),
-    filtering, normalization, and transformation options to customize analysis for your specific study.
+    filtering, normalization, and transform options to customize analysis for your specific study.
 }
 \usage{
 Maaslin2(
