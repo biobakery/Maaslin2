@@ -1,16 +1,16 @@
 \name{Maaslin2}
 \alias{Maaslin2}
 \title{
-MaAsLin2 is the next generation of MaAsLin. MaAsLin is a multivariate
-    statistical framework that finds associations between clinical 
-    metadata and potentially high-dimensional experimental data.
+MaAsLin2 is the next generation of MaAsLin, a multivariable
+    statistical framework for finding associations between clinical 
+    metadata and potentially high-dimensional microbial muli-omics data.
 }
 \description{
-MaAsLin2 was developed to find associations between microbiome 
-    multi'omics features and complex metadata in population-scale 
+MaAsLin2 finds associations between microbiome 
+    meta-omics features and complex metadata in population-scale 
     epidemiological studies. The software includes multiple 
-    analysis methods, normalization, and transform options to 
-    customize analysis for your specific study.
+    analysis methods (including support for multiple covariates and repeated measures),
+    filtering, normalization, and transformation options to customize analysis for your specific study.
 }
 \usage{
 Maaslin2(
