@@ -29,7 +29,7 @@ If you have questions, please direct it to :
 
 ## Description ##
 
-MaAsLin2 finds associations between microbiome multi-omics features and complex metadata in population-scale epidemiological studies. The software includes multiple analysis methods (including support for multiple covariates and repeated measures), filtering, normalization, and transfor options to customize analysis for your specific study. 
+MaAsLin2 finds associations between microbiome multi-omics features and complex metadata in population-scale epidemiological studies. The software includes multiple analysis methods (including support for multiple covariates and repeated measures), filtering, normalization, and transform options to customize analysis for your specific study. 
 
 ## Requirements ##
 
