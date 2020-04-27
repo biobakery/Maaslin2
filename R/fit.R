@@ -301,5 +301,6 @@ fit.data <-
                 paras,
                 c('feature', 'metadata', 'value'),
                 dplyr::everything())
+        rownames(paras)<-NULL
         return(list("results" = paras, "residuals" = residuals))
     }
