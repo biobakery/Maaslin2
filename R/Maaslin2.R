@@ -343,10 +343,12 @@ Maaslin2 <-
             dir.create(output)
         }
 
-        figures_folder <- file.path(output,"figures")
+        if (plot_heatmap || plot_scatter){
+            figures_folder <- file.path(output,"figures")
         if (!file.exists(figures_folder)) {
             print("Creating output figures folder")
             dir.create(figures_folder)
+        }
         }
         
         # create log file (write info to stdout and debug level to log file)
