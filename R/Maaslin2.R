@@ -800,8 +800,8 @@ Maaslin2 <-
         ordered_results <- fit_data$results[order(fit_data$results$qval), ]
         write.table(
             ordered_results[c(
-                "metadata",
                 "feature",
+                "metadata",
                 "value",
                 "coef",
                 "stderr",
@@ -813,8 +813,8 @@ Maaslin2 <-
             sep = "\t",
             quote = FALSE,
             col.names = c(
-                "metadata",
                 "feature",
+                "metadata",
                 "value",
                 "coef",
                 "stderr",
@@ -843,8 +843,8 @@ Maaslin2 <-
         )
         write.table(
             significant_results[c(
-                "metadata",
                 "feature",
+                "metadata",
                 "value",
                 "coef",
                 "stderr",
@@ -856,8 +856,8 @@ Maaslin2 <-
             sep = "\t",
             quote = FALSE,
             col.names = c(
-                "metadata",
                 "feature",
+                "metadata",
                 "value",
                 "coef",
                 "stderr",
