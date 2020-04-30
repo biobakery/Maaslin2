@@ -800,6 +800,9 @@ Maaslin2 <-
             "Writing all results to file (ordered by increasing q-values): %s",
             results_file)
         ordered_results <- fit_data$results[order(fit_data$results$qval), ]
+        # Remove any that are NA for the q-value
+        ordered_results <-
+            ordered_results[!is.na(ordered_results$qval), ]
         write.table(
             ordered_results[c(
                 "feature",
@@ -829,11 +832,8 @@ Maaslin2 <-
         )
         
         # write results passing threshold to file 
-        # (removing any that are NA for the q-value)
         significant_results <-
-            ordered_results[!is.na(ordered_results$qval), ]
-        significant_results <-
-            significant_results[significant_results$qval <= max_significance, ]
+            ordered_results[ordered_results$qval <= max_significance, ]
         significant_results_file <-
             file.path(output, "significant_results.tsv")
         logging::loginfo(
