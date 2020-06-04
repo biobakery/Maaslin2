@@ -48,7 +48,7 @@ If only running from the command line, you do not need to install the MaAsLin2 p
     * ``$ tar xzvf Maaslin2-master.zip``
 3. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 4. Install the CRAN dependencies:
-    * ``$ R -q -e "install.packages(c('lmerTest','pscl','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','cplm','hash','logging','data.table','MASS','MuMIn'), repos='http://cran.r-project.org')"``
+    * ``$ R -q -e "install.packages(c('lmerTest','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','hash','logging','data.table','MuMIn','glmmTMB'), repos='http://cran.r-project.org')"``
 5. Install the MaAsLin2 package (only r,equired if running as an R function): 
     * ``$ R CMD INSTALL maaslin2``
 

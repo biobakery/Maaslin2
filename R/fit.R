@@ -2,13 +2,11 @@
 for (lib in c(
     'dplyr',
     'pbapply',
-    'MASS',
     'lmerTest',
     'car',
-    'cplm',
-    'pscl',
     'parallel',
-    'MuMIn'
+    'MuMIn',
+    'glmmTMB'
 )) {
     suppressPackageStartupMessages(require(lib, character.only = TRUE))
 }
@@ -122,53 +120,79 @@ fit.data <-
                 }
             }
         }
-        
+       
+        if (!(is.null(random_effects_formula))) {
+	    formula <- update(random_effects_formula, formula)
+	}
+   	
         if (model == "CPLM") {
-            model_function <- cplm::cpglm
+	    model_function <-
+                function(formula, data, na.action) {
+                    return(glmmTMB::glmmTMB(
+                        formula,
+                        data = data,
+                        family=glmmTMB::tweedie(link = "log"),
+			ziformula = ~0,
+                        na.action = na.action
+                    ))
+                }
             summary_function <- function(fit) {
-                cplm_out <-
-                    capture.output(
-                        cplm_summary <- cplm::summary(fit)$coefficients)
-                para <- as.data.frame(cplm_summary)[-1, -3]
-                para$name <- rownames(cplm_summary)[-1]
-                logging::logdebug(
-                    "Summary output\n%s", 
-                    paste(cplm_out, collapse = "\n"))
+		glmmTMB_summary <- coef(summary(fit))
+	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
                 return(para)
             }
         }
         
         if (model == "NEGBIN") {
-            model_function <- MASS::glm.nb
+	    model_function <-
+                function(formula, data, na.action) {
+                    return(glmmTMB::glmmTMB(
+                        formula,
+                        data = data,
+                        family=glmmTMB::nbinom2(link = "log"),
+			ziformula = ~0,
+                        na.action = na.action
+                    ))
+                }
             summary_function <- function(fit) {
-                glm_summary <- summary(fit)$coefficients
-                para <- as.data.frame(glm_summary)[-1, -3]
-                para$name <- rownames(glm_summary)[-1]
+		glmmTMB_summary <- coef(summary(fit))
+	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
                 return(para)
             }
         }
         
         if (model == "ZICP") {
-            model_function <- cplm::zcpglm
+	    model_function <-
+                function(formula, data, na.action) {
+                    return(glmmTMB::glmmTMB(
+                        formula,
+                        data = data,
+                        family=glmmTMB::tweedie(link = "log"),
+			ziformula = ~1,
+                        na.action = na.action
+                    ))
+                }
             summary_function <- function(fit) {
-                zicp_out <- capture.output(
-                    zicp_summary <- cplm::summary(fit)$coefficients$tweedie)
-                para <- as.data.frame(zicp_summary)[-1, -3]
-                para$name <- rownames(zicp_summary)[-1]
-                logging::logdebug(
-                    "Summary output\n%s", 
-                    paste(zicp_out, collapse = "\n"))
+		glmmTMB_summary <- coef(summary(fit))
+	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
                 return(para)
             }
         }
         
         if (model == "ZINB") {
-            model_function <- pscl::zeroinfl
+	    model_function <-
+                function(formula, data, na.action) {
+                    return(glmmTMB::glmmTMB(
+                        formula,
+                        data = data,
+                        family=glmmTMB::nbinom2(link = "log"),
+			ziformula = ~1,
+                        na.action = na.action
+                    ))
+                }
             summary_function <- function(fit) {
-                pscl_summary <- summary(fit)$coefficients$count
-                para <-
-                    as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
-                para$name <- rownames(pscl_summary)[c(2:11)]
+		glmmTMB_summary <- coef(summary(fit))
+	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
                 return(para)
             }
         }

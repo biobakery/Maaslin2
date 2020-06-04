@@ -610,12 +610,6 @@ Maaslin2 <-
         }
         
         if (!is.null(random_effects)) {
-            # check random effects are only used with LM formula
-            if (analysis_method != "LM")
-                option_not_valid_error(paste("Random effects",
-                    "can only be used with the following analysis methods"),
-                    "LM")
-            
             random_effects <-
                 unlist(strsplit(random_effects, ",", fixed = TRUE))
             # subtract random effects from fixed effects
