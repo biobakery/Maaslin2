@@ -21,6 +21,7 @@ fit.data <-
         random_effects_formula = NULL,
         correction = "BH",
         cores = 1) {
+
         # set the formula default to all fixed effects if not provided
         if (is.null(formula))
             formula <-
@@ -28,6 +29,16 @@ fit.data <-
                     "expr ~ ", 
                     paste(colnames(metadata), 
                     collapse = "+")))
+
+        if (!(is.null(random_effects_formula))) {
+            formula <-
+                paste(
+                    '. ~', 
+                    paste(all.vars(formula)[-1], collapse = ' + '), 
+                    '.', 
+                    sep = ' + ')
+	    formula <- update(random_effects_formula, formula)
+	}
         
         #############################################################
         # Determine the function and summary for the model selected #
@@ -51,13 +62,6 @@ fit.data <-
                     return(para)
                 }
             } else {
-                formula <-
-                    paste(
-                        '. ~', 
-                        paste(all.vars(formula)[-1], collapse = ' + '), 
-                        '.', 
-                        sep = ' + ')
-                formula <- update(random_effects_formula, formula)
                 model_function <-
                     function(formula, data, na.action) {
                         return(lmerTest::lmer(
@@ -97,13 +101,6 @@ fit.data <-
                 }
             } else {
                 #need to be tested
-                formula <-
-                    paste(
-                        '. ~', 
-                        paste(all.vars(formula)[-1], collapse = ' + '), 
-                        '.', 
-                        sep = ' + ')
-                formula <- update(random_effects_formula, formula)
                 model_function <-
                     function(formula, data, na.action) {
                         return(lmerTest::lmer(
@@ -121,16 +118,6 @@ fit.data <-
             }
         }
        
-        if (!(is.null(random_effects_formula))) {
-            formula <-
-                paste(
-                    '. ~', 
-                    paste(all.vars(formula)[-1], collapse = ' + '), 
-                    '.', 
-                    sep = ' + ')
-	    formula <- update(random_effects_formula, formula)
-	}
-   	
         if (model == "CPLM") {
 	    model_function <-
                 function(formula, data, na.action) {
