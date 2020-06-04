@@ -1,4 +1,6 @@
 
+Changes in version 1.2.0 (TBD):
++ Normalization is now performed after filtering and N.not.zero is calculated on the untransformed space. Also includes minor edits to synchronize with the manuscript.
 
 Changes in version 1.1.2 (04-17-2020):
 + Small changes to pass build tests for latest bioconductor release.
