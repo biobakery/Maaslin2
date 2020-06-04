@@ -19,6 +19,7 @@ Maaslin2(
     output,
     min_abundance = 0.0,
     min_prevalence = 0.1,
+    min_variance = 0.0,
     normalization = "TSS",
     transform = "LOG",
     analysis_method = "LM",
@@ -49,6 +50,9 @@ Maaslin2(
     \item{min_prevalence}{
     The minimum percent of samples for which a feature 
         is detected at minimum abundance.
+}
+    \item{min_variance}{
+    Keep features with variance greater than.
 }
     \item{max_significance}{
     The q-value threshold for significance.

@@ -81,6 +81,7 @@ args$input_metadata <- NULL
 args$output <- NULL
 args$min_abundance <- 0.0
 args$min_prevalence <- 0.1
+args$min_variance <- 0.0
 args$max_significance <- 0.25
 args$normalization <- normalization_choices[1]
 args$transform <- transform_choices[1]
@@ -126,6 +127,18 @@ options <-
         default = args$min_prevalence,
         help = paste0("The minimum percent of samples for which",
             "a feature is detected at minimum abundance",
+            " [ Default: %default ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
+        c("-b", "--min_variance"),
+        type = "double",
+        dest = "min_variance",
+        default = args$min_variance,
+        help = paste0("Keep features with variances",
+            "greater than value",
             " [ Default: %default ]"
         )
     )
@@ -287,6 +300,7 @@ Maaslin2 <-
         output,
         min_abundance = 0.0,
         min_prevalence = 0.1,
+	min_variance = 0.0,
         normalization = "TSS",
         transform = "LOG",
         analysis_method = "LM",
@@ -705,9 +719,9 @@ Maaslin2 <-
         logging::loginfo("Total filtered features: %d", total_filtered_features)
         filtered_feature_names <-
             setdiff(names(unfiltered_data), names(filtered_data))
-        logging::loginfo("Filtered feature names: %s",
+        logging::loginfo("Filtered feature names from abundance and prevalence filtering: %s",
             toString(filtered_feature_names))
-        
+       
         ######################
         # Normalize features #
         ######################
@@ -717,6 +731,18 @@ Maaslin2 <-
         filtered_data_norm <-
             normalizeFeatures(filtered_data, normalization = normalization)
         
+        #################################
+        # Filter data based on variance #
+        #################################
+
+        sds <- apply(filtered_data_norm, 2, sd)
+        filtered_data_norm_var <-filtered_data_norm[, which(sds >min_variance), drop = FALSE]
+        total_filtered_features_var <- ncol(filtered_data_norm) - ncol(filtered_data_norm_var)
+        logging::loginfo("Total filtered features with variance filtering: %d", total_filtered_features_var)
+        filtered_feature_names_var <- setdiff(names(filtered_data_norm), names(filtered_data_norm_var))
+        logging::loginfo("Filtered feature names from variance filtering: %s",
+                         toString(filtered_feature_names_var))
+	filtered_data_norm <- filtered_data_norm_var
         
         ################################
         # Standardize metadata, if set #
@@ -926,6 +952,7 @@ if (identical(environment(), globalenv()) &&
             positional_args[3],
             current_args$min_abundance,
             current_args$min_prevalence,
+            current_args$min_variance,
             current_args$normalization,
             current_args$transform,
             current_args$analysis_method,

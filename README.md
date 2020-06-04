@@ -183,11 +183,15 @@ Options:
         Show this help message and exit
 
     -a MIN_ABUNDANCE, --min_abundance=MIN_ABUNDANCE
-        The minimum abundance for each feature [ Default: 0 ]
+        The minimum abundance for each feature [ Default: 0 ]   
 
     -p MIN_PREVALENCE, --min_prevalence=MIN_PREVALENCE
         The minimum percent of samples for which a feature 
         is detected at minimum abundance [ Default: 0.1 ]
+
+    -b MIN_VARIANCE, --min_variance=MIN_VARIANCE
+       Keep features with variance greater than
+       [ Default: 0.0 ]
 
     -s MAX_SIGNIFICANCE, --max_significance=MAX_SIGNIFICANCE
         The q-value threshold for significance [ Default: 0.25 ]
