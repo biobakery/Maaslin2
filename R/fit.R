@@ -122,6 +122,12 @@ fit.data <-
         }
        
         if (!(is.null(random_effects_formula))) {
+            formula <-
+                paste(
+                    '. ~', 
+                    paste(all.vars(formula)[-1], collapse = ' + '), 
+                    '.', 
+                    sep = ' + ')
 	    formula <- update(random_effects_formula, formula)
 	}
    	
