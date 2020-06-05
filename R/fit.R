@@ -6,7 +6,10 @@ for (lib in c(
     'car',
     'parallel',
     'MuMIn',
-    'glmmTMB'
+    'glmmTMB',
+    'MASS',
+    'cplm',
+    'pscl'
 )) {
     suppressPackageStartupMessages(require(lib, character.only = TRUE))
 }
@@ -119,76 +122,126 @@ fit.data <-
         }
        
         if (model == "CPLM") {
-	    model_function <-
-                function(formula, data, na.action) {
-                    return(glmmTMB::glmmTMB(
-                        formula,
-                        data = data,
-                        family=glmmTMB::tweedie(link = "log"),
-			ziformula = ~0,
-                        na.action = na.action
-                    ))
+            if (is.null(random_effects_formula)) {
+                model_function <- cplm::cpglm
+                summary_function <- function(fit) {
+                    cplm_out <-
+                        capture.output(
+                            cplm_summary <- cplm::summary(fit)$coefficients)
+                    para <- as.data.frame(cplm_summary)[-1, -3]
+                    para$name <- rownames(cplm_summary)[-1]
+                    logging::logdebug(
+                        "Summary output\n%s", 
+                        paste(cplm_out, collapse = "\n"))
+                    return(para)
                 }
-            summary_function <- function(fit) {
-		glmmTMB_summary <- coef(summary(fit))
-	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
-                return(para)
-            }
+            } else {
+	        model_function <-
+                    function(formula, data, na.action) {
+                        return(glmmTMB::glmmTMB(
+                            formula,
+                            data = data,
+                            family=glmmTMB::tweedie(link = "log"),
+                            ziformula = ~0,
+                            na.action = na.action
+                        ))
+                    }
+                summary_function <- function(fit) {
+		    glmmTMB_summary <- coef(summary(fit))
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+                    return(para)
+                }
+	    }
         }
         
         if (model == "NEGBIN") {
-	    model_function <-
-                function(formula, data, na.action) {
-                    return(glmmTMB::glmmTMB(
-                        formula,
-                        data = data,
-                        family=glmmTMB::nbinom2(link = "log"),
-			ziformula = ~0,
-                        na.action = na.action
-                    ))
+            if (is.null(random_effects_formula)) {
+                model_function <- MASS::glm.nb
+                summary_function <- function(fit) {
+                    glm_summary <- summary(fit)$coefficients
+                    para <- as.data.frame(glm_summary)[-1, -3]
+                    para$name <- rownames(glm_summary)[-1]
+                    return(para)
                 }
-            summary_function <- function(fit) {
-		glmmTMB_summary <- coef(summary(fit))
-	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
-                return(para)
-            }
+            } else {
+	        model_function <-
+                    function(formula, data, na.action) {
+                        return(glmmTMB::glmmTMB(
+                            formula,
+                            data = data,
+                            family=glmmTMB::nbinom2(link = "log"),
+			    ziformula = ~0,
+                            na.action = na.action
+                        ))
+                    }
+                summary_function <- function(fit) {
+		    glmmTMB_summary <- coef(summary(fit))
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+                    return(para)
+                }
+	    }
         }
         
         if (model == "ZICP") {
-	    model_function <-
-                function(formula, data, na.action) {
-                    return(glmmTMB::glmmTMB(
-                        formula,
-                        data = data,
-                        family=glmmTMB::tweedie(link = "log"),
-			ziformula = ~1,
-                        na.action = na.action
-                    ))
+            if (is.null(random_effects_formula)) {
+                model_function <- cplm::zcpglm
+                summary_function <- function(fit) {
+                    zicp_out <- capture.output(
+                        zicp_summary <- cplm::summary(fit)$coefficients$tweedie)
+                    para <- as.data.frame(zicp_summary)[-1, -3]
+                    para$name <- rownames(zicp_summary)[-1]
+                    logging::logdebug(
+                        "Summary output\n%s", 
+                        paste(zicp_out, collapse = "\n"))
+                    return(para)
                 }
-            summary_function <- function(fit) {
-		glmmTMB_summary <- coef(summary(fit))
-	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
-                return(para)
-            }
+            } else {
+	        model_function <-
+                    function(formula, data, na.action) {
+                        return(glmmTMB::glmmTMB(
+                            formula,
+                            data = data,
+                            family=glmmTMB::tweedie(link = "log"),
+			    ziformula = ~1,
+                            na.action = na.action
+                        ))
+                    }
+                summary_function <- function(fit) {
+		    glmmTMB_summary <- coef(summary(fit))
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+                    return(para)
+                }
+	    }
         }
         
         if (model == "ZINB") {
-	    model_function <-
-                function(formula, data, na.action) {
-                    return(glmmTMB::glmmTMB(
-                        formula,
-                        data = data,
-                        family=glmmTMB::nbinom2(link = "log"),
-			ziformula = ~1,
-                        na.action = na.action
-                    ))
+            if (is.null(random_effects_formula)) {
+                model_function <- pscl::zeroinfl
+                summary_function <- function(fit) {
+                    pscl_summary <- summary(fit)$coefficients$count
+                    para <-
+                        as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
+                   para$name <- rownames(pscl_summary)[c(2:11)]
+                    return(para)
                 }
-            summary_function <- function(fit) {
-		glmmTMB_summary <- coef(summary(fit))
-	        para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
-                return(para)
+            } else {
+	        model_function <-
+                    function(formula, data, na.action) {
+                        return(glmmTMB::glmmTMB(
+                            formula,
+                            data = data,
+                            family=glmmTMB::nbinom2(link = "log"),
+			    ziformula = ~1,
+                            na.action = na.action
+                        ))
+                    }
+                summary_function <- function(fit) {
+		    glmmTMB_summary <- coef(summary(fit))
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+                    return(para)
+                }
             }
-        }
+	}
         
         #######################################
         # Init cluster for parallel computing #
