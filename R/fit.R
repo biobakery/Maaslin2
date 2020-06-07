@@ -148,7 +148,8 @@ fit.data <-
                     }
                 summary_function <- function(fit) {
 		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; 
+		    para$name <- rownames(glmmTMB_summary$cond)[-1];
                     return(para)
                 }
 	    }
@@ -176,7 +177,8 @@ fit.data <-
                     }
                 summary_function <- function(fit) {
 		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; 
+		    para$name <- rownames(glmmTMB_summary$cond)[-1];
                     return(para)
                 }
 	    }
@@ -208,7 +210,8 @@ fit.data <-
                     }
                 summary_function <- function(fit) {
 		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]
+		    para$name <- rownames(glmmTMB_summary$cond)[-1]
                     return(para)
                 }
 	    }
@@ -219,9 +222,8 @@ fit.data <-
                 model_function <- pscl::zeroinfl
                 summary_function <- function(fit) {
                     pscl_summary <- summary(fit)$coefficients$count
-                    para <-
-                        as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
-                   para$name <- rownames(pscl_summary)[c(2:11)]
+                    para <-as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
+	            para$name <- rownames(pscl_summary)[c(2:11)]
                     return(para)
                 }
             } else {
@@ -237,7 +239,8 @@ fit.data <-
                     }
                 summary_function <- function(fit) {
 		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; para$name <- rownames(glmmTMB_summary$cond)[-1];
+	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]
+		    para$name <- rownames(glmmTMB_summary$cond)[-1]
                     return(para)
                 }
             }
