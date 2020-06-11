@@ -7,7 +7,7 @@ MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association
 
 If you use the MaAsLin2 software, please cite our manuscript: 
 
-Mallick et al. (2020+). ["Multivariable Association in Population-scale Meta-omics Studies"](https://huttenhower.sph.harvard.edu/maaslin2/) (In Submission).
+Mallick et al. (2020+). ["Multivariable Association Discovery in Population-scale Meta-omics Studies" (https://huttenhower.sph.harvard.edu/maaslin2/) (In Submission).
 
 If you have questions, please direct it to :   
 [MaAsLin2 Forum](https://forum.biobakery.org/c/Downstream-analysis-and-statistics/MaAsLin2)    
