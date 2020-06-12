@@ -121,6 +121,7 @@ maaslin2_heatmap <-
         
         metadata <- df$metadata
         data <- df$feature
+        dfvalue <- df$value
         value <- NA
         
         # values to use for coloring the heatmap
@@ -147,9 +148,24 @@ maaslin2_heatmap <-
             title <- paste("Significant associations", title, sep=" ")
         }
 
+        # identify variables with more than one level present
+        verbose_metadata <- c()
+        metadata_multi_level <- c()
+        for (i in unique(metadata)) {
+            levels <- unique(df$value[df$metadata == i])
+            if (length(levels) > 1) {
+                metadata_multi_level <- c(metadata_multi_level, i)
+                for (j in levels) {
+                    verbose_metadata <- c(verbose_metadata, paste(i, j))
+                }
+            } else {
+               verbose_metadata <- c(verbose_metadata, i)
+            }
+        }
+
         n <- length(unique(data))
-        m <- length(unique(metadata))
-        
+        m <- length(unique(verbose_metadata))
+
         if (n < 2) {
             print(
                 paste(
@@ -174,14 +190,19 @@ maaslin2_heatmap <-
         a <- as.data.frame(a)
         
         rownames(a) <- unique(data)
-        colnames(a) <- unique(metadata)
+        colnames(a) <- unique(verbose_metadata)
+
         for (i in seq_len(dim(df)[1])) {
+            current_metadata <- metadata[i]
+            if (current_metadata %in% metadata_multi_level) {
+                current_metadata <- paste(metadata[i], dfvalue[i])
+            }
             if (abs(a[as.character(data[i]), 
-                    as.character(metadata[i])]) > abs(value[i]))
+                    as.character(current_metadata)]) > abs(value[i]))
                 next
-            a[as.character(data[i]), as.character(metadata[i])] <- value[i]
+            a[as.character(data[i]), as.character(current_metadata)] <- value[i]
         }
-       
+      
         # get the range for the colorbar
         max_value <- ceiling(max(a))
         min_value <- ceiling(min(a))
