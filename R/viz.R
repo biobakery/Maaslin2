@@ -453,14 +453,18 @@ maaslin2_association_plots <-
 
                     # count the Ns for each group
                     x_axis_label_names <- unique(input_df[['x']])
+                    renamed_levels <- as.character(levels(metadata[,x_label]))
                     for (name in x_axis_label_names) {
                         total <- length(which(input_df[['x']] == name))
                         new_n <- paste(name, " (n=", total, ")", sep="")
                         input_df[which(input_df[['x']] == name),'x'] <- new_n
+                        renamed_levels <- replace(renamed_levels, renamed_levels == name, new_n)
                     }
+                    input_df$xnames <- factor(input_df[['x']], levels=renamed_levels)
+
                     temp_plot <-
                         ggplot2::ggplot(
-                            data = input_df, ggplot2::aes(factor(x), y)) +
+                            data = input_df, ggplot2::aes(xnames, y)) +
                         ggplot2::geom_boxplot(
                             ggplot2::aes(fill = x),
                             outlier.alpha = 0.0,

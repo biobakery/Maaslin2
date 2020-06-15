@@ -11,6 +11,7 @@ metadata <- read.table(system.file(package="Maaslin2","extdata","HMP2_metadata.t
 fit_data <- Maaslin2(features, metadata, 'output', transform = "AST",
     fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
     random_effects = c('site', 'subject'),
+    reference = 'diagnosis,nonIBD',
     standardize = FALSE, plot_heatmap = FALSE, plot_scatter = FALSE)
 maaslin_results = read.table(file.path("output","significant_results.tsv"), header = TRUE, stringsAsFactors=FALSE)
 
@@ -25,6 +26,7 @@ expect_that(expected_results_run1$qval.value,equals(maaslin_results$qval.value))
 fit_data <- Maaslin2(features, metadata, 'output2', normalization = "NONE", transform = "AST",
     fixed_effects = c('diagnosis', 'dysbiosis', 'antibiotics', 'age'),
     random_effects = c('site', 'subject'),
+    reference = 'diagnosis,nonIBD',
     standardize = FALSE, plot_heatmap = FALSE, plot_scatter = FALSE)
 maaslin_results = read.table(file.path("output2","significant_results.tsv"), header = TRUE, stringsAsFactors=FALSE)
 

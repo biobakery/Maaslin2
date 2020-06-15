@@ -258,6 +258,12 @@ Options:
         The number of R processes to run in parallel
         [ Default: 1 ]
 
+    -d REFERENCE, --reference=REFERENCE
+        The factor to use as a reference for a variable 
+        with more than two levels provided as a string  
+        of 'variable,reference' semi-colon delimited 
+        for multiple variables [ Default: NA ] 
+
 ## Troubleshooting ##
 
 1. Question: When I run from the command line I see the error ``Maaslin2.R: command not found``. How do I fix this? 

@@ -31,7 +31,8 @@ Maaslin2(
     cores = 1,
     plot_heatmap = TRUE,
     plot_scatter = TRUE,
-    heatmap_first_n = 50
+    heatmap_first_n = 50,
+    reference = NULL
 )
 }
 \arguments{
@@ -90,6 +91,11 @@ Maaslin2(
     \item{cores}{
     The number of R processes to run in parallel.
 }
+    \item{reference}{
+    The factor to use as a reference for a variable with more than two levels
+    provided as a string of 'variable,reference'
+    semi-colon delimited for multiple variables.
+}
 }
 \value{
     Data.frame containing the results from applying the model.
@@ -109,5 +115,6 @@ Maaslin2(
         fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
         random_effects = c('site', 'subject'),
         normalization = 'NONE',
+        reference = 'diagnosis,nonIBD',
         standardize = FALSE)
 }

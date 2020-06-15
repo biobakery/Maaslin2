@@ -239,6 +239,12 @@ Options:
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
+    
+    -d REFERENCE, --reference=REFERENCE
+        The factor to use as a reference for a variable 
+        with more than two levels provided as a string 
+        of 'variable,reference' semi-colon delimited 
+        for multiple variables [ Default: NA ] 
 
 ## Troubleshooting ##
 

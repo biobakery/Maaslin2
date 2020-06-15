@@ -94,6 +94,7 @@ args$plot_heatmap <- TRUE
 args$heatmap_first_n <- 50
 args$plot_scatter <- TRUE
 args$cores <- 1
+args$reference <- NULL
 
 ##############################
 # Add command line arguments #
@@ -284,6 +285,20 @@ options <-
         )
     )
 
+options <-
+    optparse::add_option(
+        options,
+        c("-d", "--reference"),
+        type = "character",
+        dest = "reference",
+        default = args$reference,
+        help = paste("The factor to use as a reference for",
+            "a variable with more than two levels",
+            "provided as a string of 'variable,reference'",
+            "semi-colon delimited for multiple variables [ Default: NA ]"
+        )
+    )
+
 option_not_valid_error <- function(message, valid_options) {
     logging::logerror(paste(message, ": %s"), toString(valid_options))
     stop("Option not valid", call. = FALSE)
@@ -312,7 +327,8 @@ Maaslin2 <-
         cores = 1,
         plot_heatmap = TRUE,
         plot_scatter = TRUE,
-        heatmap_first_n = 50)
+        heatmap_first_n = 50,
+        reference = NULL)
     {
         # Allow for lower case variables
         normalization <- toupper(normalization)
@@ -690,7 +706,33 @@ Maaslin2 <-
         #########################################################
         # Filter data based on min abundance and min prevalence #
         #########################################################
-        
+
+        # use ordered factor for variables with more than two levels
+        # find variables with more than two levels
+        if (is.null(reference)) {
+            reference <- ","
+        }
+
+        for ( i in colnames(metadata) ) {
+            mlevels <- unique(na.omit(metadata[,i]))
+            if ( ( length(mlevels) > 2 ) &&
+                 ( is.factor(mlevels) ) &&
+                 ( i %in% fixed_effects ) ) {
+                 split_reference <- unlist(strsplit(reference, "[,;]"))
+                if (! i %in% split_reference ) {
+                    stop(
+                      paste("Please provide the reference for the variable '",
+                        i, "' which includes more than 2 levels: ",
+                        paste(as.character(mlevels), collapse=", "), ".", sep="")
+                    )
+                } else {
+                    ref <- split_reference[match(i,split_reference)+1]
+                    other_levels <- as.character(mlevels)[! as.character(mlevels) == ref]
+                    metadata[,i] = factor(metadata[,i], levels=c(ref, other_levels))
+                }
+            }
+        }       
+ 
         unfiltered_data <- data
         unfiltered_metadata <- metadata
         
@@ -759,7 +801,7 @@ Maaslin2 <-
         ######################################################
         # Transform and run method writing residuals to file #
         ######################################################
-        
+       
         # transform features
         logging::loginfo("Running selected transform method: %s", transform)
         filtered_data_norm_transformed <-
@@ -964,6 +1006,7 @@ if (identical(environment(), globalenv()) &&
             current_args$cores,
             current_args$plot_heatmap,
             current_args$plot_scatter,
-            current_args$heatmap_first_n
+            current_args$heatmap_first_n,
+            current_args$reference
         )
 }
