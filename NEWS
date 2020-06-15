@@ -3,6 +3,8 @@ Changes in version 1.2.0 (TBD):
 + Add random effects capability to all the other non-LM models.
 + Add variance filtering option with default set to 0.
 + Normalization is now performed after filtering and N.not.zero is calculated on the untransformed space. Also includes minor edits to synchronize with the manuscript.
++ Add reference option required for fixed effects variables with more than two levels. Reference used in model and for boxplots.
++ Update heatmap to include all categorical levels.
 
 Changes in version 1.1.2 (04-17-2020):
 + Small changes to pass build tests for latest bioconductor release.
