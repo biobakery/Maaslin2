@@ -1,5 +1,5 @@
 
-Changes in version 1.4.0 (06-16-2020):
+Changes in version 1.3.1 (06-16-2020):
 + Add random effects capability to all the other non-LM models.
 + Add variance filtering option with default set to 0.
 + Normalization is now performed after filtering and N.not.zero is calculated on the untransformed space. Also includes minor edits to synchronize with the manuscript.
