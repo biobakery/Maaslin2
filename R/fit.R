@@ -219,11 +219,17 @@ fit.data <-
         
         if (model == "ZINB") {
             if (is.null(random_effects_formula)) {
-                model_function <- pscl::zeroinfl
+                model_function <-
+                    function(formula, data, na.action) {
+                        return(pscl::zeroinfl(
+				formula,
+				data = data,
+				dist = "negbin",
+				na.action = na.action))
                 summary_function <- function(fit) {
                     pscl_summary <- summary(fit)$coefficients$count
                     para <-as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
-	            para$name <- rownames(pscl_summary)[c(2:11)]
+	            para$name <- rownames(pscl_summary)[-c(1, (ncol(metadata) + 2))]
                     return(para)
                 }
             } else {
