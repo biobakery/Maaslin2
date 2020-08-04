@@ -226,6 +226,7 @@ fit.data <-
 				data = data,
 				dist = "negbin",
 				na.action = na.action))
+                     }
                 summary_function <- function(fit) {
                     pscl_summary <- summary(fit)$coefficients$count
                     para <-as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
