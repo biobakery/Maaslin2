@@ -1,0 +1,30 @@
+
+name: build and test
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: biobakery/maaslin2:latest
+
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: build and install
+      run: cd $GITHUB_WORKSPACE && R CMD build . && R CMD install Maaslin2_*.tar.gz
+
+    - name: R test
+      run: R CMD check Maaslin2_*.tar.gz
+    
+    - name: Bioc test
+      run: R CMD BiocCheck Maaslin2_*.tar.gz
+      
