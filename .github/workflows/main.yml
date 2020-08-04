@@ -19,6 +19,9 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
+    - name: install build and test dependencies
+      run: R -q -e "install.packages(c('knitr'), repos='http://cran.r-project.org')"
+
     - name: build
       run: cd $GITHUB_WORKSPACE && R CMD build .
     
