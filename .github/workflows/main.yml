@@ -20,7 +20,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: install build and test dependencies
-      run: R -q -e "install.packages(c('knitr'), repos='http://cran.r-project.org')"
+      run: R -q -e "install.packages(c('knitr','glmmTMB'), repos='http://cran.r-project.org')"
 
     - name: build
       run: cd $GITHUB_WORKSPACE && R CMD build .
