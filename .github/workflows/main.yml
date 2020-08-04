@@ -19,8 +19,11 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: build and install
-      run: cd $GITHUB_WORKSPACE && R CMD build . && R CMD install Maaslin2_*.tar.gz
+    - name: build
+      run: cd $GITHUB_WORKSPACE && R CMD build .
+    
+    - name: install
+      run: R CMD install Maaslin2_*.tar.gz
 
     - name: R test
       run: R CMD check Maaslin2_*.tar.gz
