@@ -26,11 +26,11 @@ jobs:
       run: cd $GITHUB_WORKSPACE && R CMD build .
     
     - name: install
-      run: R CMD install Maaslin2_*.tar.gz
+      run: R CMD install .
 
     - name: R test
-      run: R CMD check Maaslin2_*.tar.gz
+      run: R CMD check .
     
     - name: Bioc test
-      run: R CMD BiocCheck Maaslin2_*.tar.gz
+      run: R CMD BiocCheck .
       
