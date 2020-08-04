@@ -26,7 +26,7 @@ jobs:
       run: cd $GITHUB_WORKSPACE && R CMD build .
     
     - name: install
-      run: R CMD install .
+      run: R CMD INSTALL .
 
     - name: R test
       run: R CMD check .
