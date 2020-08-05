@@ -13,6 +13,8 @@ If you have questions, please direct it to :
 [MaAsLin2 Forum](https://forum.biobakery.org/c/Downstream-analysis-and-statistics/MaAsLin2)    
 [Google Groups](https://groups.google.com/forum/#!forum/maaslin-users) (Read only)  
 
+![](https://github.com/biobakery/Maaslin2/workflows/build%20and%20test/badge.svg)
+
 --------------------------------------------
 
 ## Contents ##
