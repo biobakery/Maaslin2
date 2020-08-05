@@ -20,12 +20,12 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install build and test dependencies from dist
-      run: apt-get update -y && apt-get install -y libssl-dev texlive
+      run: apt-get update -y && apt-get install -y libssl-dev libxml2-dev libcurl4-openssl-dev texlive
 
-    - name: install build and test dependencies from CRAN
+    - name: install build and test dependencies from bioconductor
       run: R -q -e "BiocManager::install('BiocCheck')"
 
-    - name: Install build and test dependencies from bioconductor
+    - name: Install build and test dependencies from CRAN
       run: R -q -e "install.packages(c('knitr','glmmTMB'), repos='http://cran.r-project.org')" 
 
     - name: Build
