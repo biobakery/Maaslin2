@@ -30,13 +30,16 @@ jobs:
 
     - name: Build
       run: cd $GITHUB_WORKSPACE && R CMD build .
+
+    - name: Get version
+      run: export VERSION=$(grep Version DESCRIPTION | cut -d" " -f2)
     
     - name: Install maaslin2
-      run: R CMD INSTALL Maaslin2_1.3.1.tar.gz
+      run: R CMD INSTALL "Maaslin2_${VERSION}.tar.gz"
 
     - name: R test
-      run: R CMD check Maaslin2_1.3.1.tar.gz
+      run: R CMD check "Maaslin2_${VERSION}.tar.gz"
     
     - name: Bioc test
-      run: R CMD BiocCheck Maaslin2_1.3.1.tar.gz
+      run: R CMD BiocCheck "Maaslin2_${VERSION}.tar.gz"
       
