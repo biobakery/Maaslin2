@@ -19,13 +19,19 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
 
-    - name: install build and test dependencies
-      run: R -q -e "install.packages(c('knitr','glmmTMB'), repos='http://cran.r-project.org')" && R -q -e "BiocManager::install('BiocCheck')" && apt-get update -y && apt-get install -y texlive
+    - name: Install build and test dependencies from dist
+      run: apt-get update -y && apt-get install -y libssl-dev texlive
 
-    - name: build
+    - name: install build and test dependencies from CRAN
+      run: R -q -e "BiocManager::install('BiocCheck')"
+
+    - name: Install build and test dependencies from bioconductor
+      run: R -q -e "install.packages(c('knitr','glmmTMB'), repos='http://cran.r-project.org')" 
+
+    - name: Build
       run: cd $GITHUB_WORKSPACE && R CMD build .
     
-    - name: install
+    - name: Install maaslin2
       run: R CMD INSTALL Maaslin2_1.3.1.tar.gz
 
     - name: R test
