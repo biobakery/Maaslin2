@@ -289,7 +289,7 @@ maaslin2_association_plots <-
         output_results,
         write_to = './',
         figures_folder = './figures/',
-        max_jpgs = 3)
+        max_jpgs = 10)
     {
         #MaAslin2 scatter plot function and theme
         
@@ -454,6 +454,9 @@ maaslin2_association_plots <-
                     # count the Ns for each group
                     x_axis_label_names <- unique(input_df[['x']])
                     renamed_levels <- as.character(levels(metadata[,x_label]))
+                    if (length(renamed_levels) == 0) {
+                        renamed_levels <- x_axis_label_names
+                    }
                     for (name in x_axis_label_names) {
                         total <- length(which(input_df[['x']] == name))
                         new_n <- paste(name, " (n=", total, ")", sep="")
