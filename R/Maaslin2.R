@@ -715,7 +715,7 @@ Maaslin2 <-
 
         for ( i in colnames(metadata) ) {
             mlevels <- unique(na.omit(metadata[,i]))
-            numeric_levels <- grep('^-?[0-9.]+[eE+-]?', mlevels, val = T)
+            numeric_levels <- grep('^-?[0-9.]+[eE+-]?', mlevels, value = T)
             if ( ( length(mlevels[! (mlevels %in% c("UNK"))]) > 2 ) &&
                  ( i %in% fixed_effects ) &&
                  ( length(numeric_levels) == 0)) {
