@@ -715,9 +715,10 @@ Maaslin2 <-
 
         for ( i in colnames(metadata) ) {
             mlevels <- unique(na.omit(metadata[,i]))
-            if ( ( length(mlevels) > 2 ) &&
-                 ( is.factor(mlevels) ) &&
-                 ( i %in% fixed_effects ) ) {
+            numeric_levels <- grep('^-?[0-9.]+[eE+-]?', mlevels, val = T)
+            if ( ( length(mlevels[! (mlevels %in% c("UNK"))]) > 2 ) &&
+                 ( i %in% fixed_effects ) &&
+                 ( length(numeric_levels) == 0)) {
                  split_reference <- unlist(strsplit(reference, "[,;]"))
                 if (! i %in% split_reference ) {
                     stop(
