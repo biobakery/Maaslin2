@@ -1,6 +1,6 @@
 Package: Maaslin2
 Title: Maaslin2
-Version: 1.3.1
+Version: 1.3.2
 Authors@R: c(
   person("Himel", "Mallick", email = "himel.stat.iitk@gmail.com", role = "aut"), 
   person("Ali", "Rahnavard", email = "gholamali.rahnavard@gmail.com", role = "aut"),
