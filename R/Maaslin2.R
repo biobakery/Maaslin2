@@ -348,7 +348,7 @@ Maaslin2 <-
                         row.names = 1)
             if (nrow(data) == 1) {
                 # read again to get row name
-                data <- read.table(input_data, header = TRUE, row.names = 1)
+                data <- read.table(input_data, header = TRUE, row.names = 1, check.names=FALSE)
             }
         } else {
             data <- input_data
@@ -361,7 +361,8 @@ Maaslin2 <-
             if (nrow(metadata) == 1) {
                 metadata <- read.table(input_metadata,
                     header = TRUE,
-                    row.names = 1)
+                    row.names = 1,
+                    check.names=FALSE)
             }
         } else {
             metadata <- input_metadata
