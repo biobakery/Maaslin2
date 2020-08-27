@@ -5,7 +5,7 @@ import("biglm")
 import("pcaPP")
 import("lpsymphony")
 import("optparse")
-importFrom("grDevices", "colorRampPalette", "dev.off", "pdf", "jpeg")
+importFrom("grDevices", "colorRampPalette", "dev.off", "pdf", "jpeg","png")
 importFrom("stats", "as.formula", "coef", "glm", "lm", "na.exclude",
     "p.adjust", "update")
 importFrom("utils", "capture.output", "read.table", "write.table")
