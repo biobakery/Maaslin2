@@ -257,7 +257,7 @@ save_heatmap <-
         color = colorRampPalette(c("blue", "grey90", "red")),
         first_n = 50) {
 
-        # generate a heatmap and save it to a pdf and as a jpg
+        # generate a heatmap and save it to a pdf and as a png
         heatmap <-
             maaslin2_heatmap(
                 results_file,
@@ -274,8 +274,8 @@ save_heatmap <-
             print(heatmap)
             dev.off()
 
-            jpg_file <- file.path(figures_folder,"heatmap.jpg")
-            jpeg(jpg_file, res = 150, height = 800, width = 1100)
+            png_file <- file.path(figures_folder,"heatmap.png")
+            png(png_file, res = 150, height = 800, width = 1100)
             print(heatmap)
             dev.off()
         }
@@ -289,7 +289,7 @@ maaslin2_association_plots <-
         output_results,
         write_to = './',
         figures_folder = './figures/',
-        max_jpgs = 10)
+        max_pngs = 10)
     {
         #MaAslin2 scatter plot function and theme
         
@@ -352,7 +352,7 @@ maaslin2_association_plots <-
             unlist(metadata_types[!duplicated(metadata_types)])
         metadata_number <- 1
         
-        saved_plots <- vector('list', max_jpgs)
+        saved_plots <- vector('list', max_pngs)
         for (label in metadata_labels) {
             # for file name replace any non alphanumeric with underscore
             plot_file <-
@@ -519,18 +519,18 @@ maaslin2_association_plots <-
                 stdout <- capture.output(print(temp_plot), type = "message")
                 if (length(stdout) > 0)
                     logging::logdebug(stdout)
-                if (count < max_jpgs + 1)
+                if (count < max_pngs + 1)
                     saved_plots[[count]] <- temp_plot
                 count <- count + 1
             }
             dev.off()
             # print the saved figures
-            for (plot_number in seq(1,max_jpgs)) {
-                jpg_file <- file.path(figures_folder,
+            for (plot_number in seq(1,max_pngs)) {
+                png_file <- file.path(figures_folder,
                     paste0(
                         substr(basename(plot_file),1,nchar(basename(plot_file))-4),
-                        "_",plot_number,".jpg"))
-                jpeg(jpg_file, res = 300, width = 960, height = 960)
+                        "_",plot_number,".png"))
+                png(png_file, res = 300, width = 960, height = 960)
                 stdout <- capture.output(print(saved_plots[[plot_number]]))
                 dev.off()
             }
