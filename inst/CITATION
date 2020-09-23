@@ -1,6 +1,7 @@
 bibentry(bibtype = "Article",
          title = "Multivariable Association in Population-scale Meta-omics Studies.",
-         author = personList(as.person("Mallick H et al.")),
+          author = personList(as.person("Himel Mallick"),
+                              as.person("et al.")),
          year = 2021,
          journal = "Nature Methods",
          volume = "In Submission",
