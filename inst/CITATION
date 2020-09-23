@@ -1,3 +1,15 @@
+bibentry(bibtype = "Article",
+         title = "Multivariable Association in Population-scale Meta-omics Studies.",
+         author = personList(as.person("Mallick H et al.")),
+         year = 2021,
+         journal = "Nature Methods",
+         volume = "In Submission",
+         pages = "",
+         doi = "",
+         url = "http://huttenhower.sph.harvard.edu/maaslin2",
+         header = "To cite MaAsLin 2 in publications, please use:"
+         )
+     
 bibentry(bibtype = "Manual",
          title = "MaAsLin 2: Multivariable Association in Population-scale Meta-omics Studies.",
          author = personList(as.person("Himel Mallick"),
@@ -6,5 +18,6 @@ bibentry(bibtype = "Manual",
          year = 2020,
          note = "R/Bioconductor package",
          url = "http://huttenhower.sph.harvard.edu/maaslin2",
-         header = "To cite the MaAsLin 2 software/vignette guide use:")
+         header = "To cite the MaAsLin 2 software/vignette guide use:"
+         )
          
