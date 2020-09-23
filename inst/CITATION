@@ -19,7 +19,7 @@ bibentry(bibtype = "Manual",
          year = 2020,
          note = "R/Bioconductor package",
          url = "http://huttenhower.sph.harvard.edu/maaslin2",
-         header = "To cite the MaAsLin 2 software use:",
+         header = "To cite the MaAsLin 2 software, please use:",
          textVersion = "Mallick H, Rahnavard A, McIver LJ (2020). MaAsLin 2: Multivariable Association in Population-scale Meta-omics Studies. R/Bioconductor package, http://huttenhower.sph.harvard.edu/maaslin2."
          )
          
