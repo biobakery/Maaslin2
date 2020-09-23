@@ -1,10 +1,10 @@
 bibentry(bibtype = "Manual",
-         title = MaAsLin 2: Multivariable Association in Population-scale Meta-omics Studies,
+         title = "MaAsLin 2: Multivariable Association in Population-scale Meta-omics Studies",
          author = personList(as.person("Himel Mallick"),
                              as.person("Ali Rahnavard"),
                              as.person("Lauren J. McIver")),
          year = 2020,
-         note = "Bioconductor package",
+         note = "R/Bioconductor package",
          url = "http://huttenhower.sph.harvard.edu/maaslin2",
          header = "To cite the MaAsLin 2 software/vignette guide use")
          
