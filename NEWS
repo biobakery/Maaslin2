@@ -1,4 +1,7 @@
 
+Changes in version 1.3.3 (TBD):
+* Update log from base 10 to base 2.
+
 Changes in version 1.3.2 (08-12-2020):
 * Resolve issue with x labels missing from boxplots for metadata variables without levels and increase max jpgs written. 
 * Update the check for variables with more than two levels that will require a reference provided by the user for the model and the boxplots to be more strict (ignore UNK in the level count, don't check if it is a factor, and check to see if all of the levels are numeric to ignore continuous variables).

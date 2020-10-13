@@ -214,5 +214,5 @@ LOGIT <- function(x) {
 # Log Transformation
 LOG <- function(x) {
     y <- replace(x, x == 0, min(x[x>0]) / 2)
-    return(log10(y))
+    return(log2(y))
 }
