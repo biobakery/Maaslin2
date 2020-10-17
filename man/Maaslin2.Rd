@@ -3,7 +3,7 @@
 \title{
 MaAsLin2 is the next generation of MaAsLin, a multivariable
     statistical framework for finding associations between clinical 
-    metadata and potentially high-dimensional microbial muli-omics data.
+    metadata and potentially high-dimensional microbial multi-omics data.
 }
 \description{
 MaAsLin2 finds associations between microbiome 
