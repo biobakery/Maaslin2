@@ -18,16 +18,16 @@ If you have questions, please direct it to :
 --------------------------------------------
 
 ## Contents ##
-* [Description](#markdown-header-description)
-* [Requirements](#markdown-header-requirements)
-* [Installation](#markdown-header-installation)
-* [How to Run](#markdown-header-how-to-run)
-    * [Input Files](#markdown-header-input-files)
-    * [Output Files](#markdown-header-output-files)
-    * [Run a Demo](#markdown-header-run-a-demo)
-    * [Options](#markdown-header-options)
-* [Visualization](#markdown-header-visualization)
-* [Troubleshooting](#markdown-header-troubleshooting)
+* [Description](#description)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [How to Run](#how-to-run)
+    * [Input Files](#input-files)
+    * [Output Files](#output-files)
+    * [Run a Demo](#run-a-demo)
+    * [Options](#options)
+* [Visualization](#visualization)
+* [Troubleshooting](#troubleshooting)
 
 ## Description ##
 
