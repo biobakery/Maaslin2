@@ -228,8 +228,8 @@ fit.data <-
                 if (all(!inherits(fit, "try-error"))) {
                     output$para <- summary_function(fit)
                     output$residuals <- residuals(fit)
-		    output$fitted <- fitted(fit)
-		}
+                    output$fitted <- fitted(fit)
+                    }
                 else{
                     logging::logwarn(paste(
                         "Fitting problem for feature", 
@@ -240,12 +240,12 @@ fit.data <-
                             nrow = ncol(metadata), ncol = 3))
                     output$para$name <- colnames(metadata)
                     output$residuals <- NA
-		    output$fitted <- NA
-                }
+                    output$fitted <- NA
+                    }
                 colnames(output$para) <- c('coef', 'stderr' , 'pval', 'name')
                 output$para$feature <- colnames(features)[x]
                 return(output)
-            })
+                })
         
         # stop the cluster
         if (!is.null(cluster))
@@ -261,11 +261,11 @@ fit.data <-
                 return(x$residuals)
             }))
         row.names(residuals) <- colnames(features)
-	    
-	fitted <-
-            do.call(rbind, lapply(outputs, function(x) {
-                return(x$fitted)
-            }))
+        
+        fitted <-
+          do.call(rbind, lapply(outputs, function(x) {
+            return(x$fitted)
+          }))
         row.names(fitted) <- colnames(features)    
         
         ################################

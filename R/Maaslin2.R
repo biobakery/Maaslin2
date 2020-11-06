@@ -799,9 +799,9 @@ Maaslin2 <-
             logging::loginfo("Bypass z-score application to metadata")
         }
         
-        ######################################################
-        # Transform and run method writing residuals to file #
-        ######################################################
+        ############################
+        # Transform and run method #
+        ############################
        
         # transform features
         logging::loginfo("Running selected transform method: %s", transform)
@@ -856,6 +856,17 @@ Maaslin2 <-
         }
         logging::loginfo("Writing residuals to file %s", residuals_file)
         saveRDS(fit_data$residuals, file = residuals_file)
+        
+        # write fitted values to file
+        fitted_file = file.path(output, "fitted.rds")
+        # remove fitted file if already exists (since fitted append)
+        if (file.exists(fitted_file)) {
+          logging::logwarn(
+            "Deleting existing fitted file: %s", fitted_file)
+          unlink(fitted_file)
+        }
+        logging::loginfo("Writing fitted to file %s", fitted_file)
+        saveRDS(fit_data$fitted, file = fitted_file)
         
         # write all results to file
         results_file <- file.path(output, "all_results.tsv")
