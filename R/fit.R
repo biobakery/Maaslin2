@@ -242,12 +242,7 @@ fit.data <-
                     output$residuals <- NA
 		    output$fitted <- NA
                 }
-                if (model == 'SLM')
-                    colnames(output$para) <-
-                        c('coef', 'stderr' , 'pval', 'name', 'r2')
-                else
-                    colnames(output$para) <- 
-                        c('coef', 'stderr' , 'pval', 'name')
+                colnames(output$para) <- c('coef', 'stderr' , 'pval', 'name')
                 output$para$feature <- colnames(features)[x]
                 return(output)
             })
