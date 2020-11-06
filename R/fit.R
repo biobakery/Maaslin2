@@ -167,15 +167,14 @@ fit.data <-
                             formula,
                             data = data,
                             family=glmmTMB::nbinom2(link = "log"),
-			    ziformula = ~1,
-                            na.action = na.action
-                        ))
+                            ziformula = ~1,
+                            na.action = na.action))
                     }
                 summary_function <- function(fit) {
-		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]
-		    para$name <- rownames(glmmTMB_summary$cond)[-1]
-                    return(para)
+                  glmmTMB_summary <- coef(summary(fit))
+                  para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]
+                  para$name <- rownames(glmmTMB_summary$cond)[-1]
+                  return(para)
                 }
             }
 	}
@@ -229,11 +228,10 @@ fit.data <-
                     output$para <- summary_function(fit)
                     output$residuals <- residuals(fit)
                     output$fitted <- fitted(fit)
-                    if (!(is.null(random_effects_formula))) {
-                      output$ranef <- ranef(fit)
-                      }
+                    if (!(is.null(random_effects_formula))) output$ranef <- ranef(fit)
                     }
-                else{
+                else
+                  {
                     logging::logwarn(paste(
                         "Fitting problem for feature", 
                         x, 
@@ -244,9 +242,8 @@ fit.data <-
                     output$para$name <- colnames(metadata)
                     output$residuals <- NA
                     output$fitted <- NA
-                    if (!(is.null(random_effects_formula))) {
-                      output$ranef <- NA
-                      }
+                    output$ranef <- NA
+                    }
                 colnames(output$para) <- c('coef', 'stderr' , 'pval', 'name')
                 output$para$feature <- colnames(features)[x]
                 return(output)
@@ -331,5 +328,5 @@ fit.data <-
         } else {
           return(list("results" = paras, "residuals" = residuals, "fitted" = fitted))
         }
-        
+    }        
           
