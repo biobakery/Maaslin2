@@ -80,47 +80,7 @@ fit.data <-
                 }
             }
         }
-        
-        
-        if (model == "SLM") {
-            # simple "lm" linear model
-            if (is.null(random_effects_formula)) {
-                model_function <-
-                    function(formula, data, na.action) {
-                        return(lm(
-                            formula,
-                            data = data,
-                            family = 'gaussian',
-                            na.action = na.action
-                        ))
-                    }
-                summary_function <- function(fit) {
-                    lm_summary <- summary(fit)$coefficients
-                    r2 <- summary(fit)$r.squared
-                    para <- as.data.frame(lm_summary)[-1, -3]
-                    para$name <- rownames(lm_summary)[-1]
-                    para$r2 <- r2
-                    return(para)
-                }
-            } else {
-                #need to be tested
-                model_function <-
-                    function(formula, data, na.action) {
-                        return(lmerTest::lmer(
-                            formula, 
-                            data = data, 
-                            na.action = na.action))
-                    }
-                summary_function <- function(fit) {
-                    lm_summary <- coef(summary(fit))
-                    para <- as.data.frame(lm_summary)[-1, -c(3:4)]
-                    para$name <- rownames(lm_summary)[-1]
-                    para$r2 <- MuMIn::r.squaredGLMM(fit)
-                    return(para)
-                }
-            }
-        }
-       
+      
         if (model == "CPLM") {
             if (is.null(random_effects_formula)) {
                 model_function <- cplm::cpglm
@@ -179,39 +139,6 @@ fit.data <-
 		    glmmTMB_summary <- coef(summary(fit))
 	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; 
 		    para$name <- rownames(glmmTMB_summary$cond)[-1];
-                    return(para)
-                }
-	    }
-        }
-        
-        if (model == "ZICP") {
-            if (is.null(random_effects_formula)) {
-                model_function <- cplm::zcpglm
-                summary_function <- function(fit) {
-                    zicp_out <- capture.output(
-                        zicp_summary <- cplm::summary(fit)$coefficients$tweedie)
-                    para <- as.data.frame(zicp_summary)[-1, -3]
-                    para$name <- rownames(zicp_summary)[-1]
-                    logging::logdebug(
-                        "Summary output\n%s", 
-                        paste(zicp_out, collapse = "\n"))
-                    return(para)
-                }
-            } else {
-	        model_function <-
-                    function(formula, data, na.action) {
-                        return(glmmTMB::glmmTMB(
-                            formula,
-                            data = data,
-                            family=glmmTMB::tweedie(link = "log"),
-			    ziformula = ~1,
-                            na.action = na.action
-                        ))
-                    }
-                summary_function <- function(fit) {
-		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]
-		    para$name <- rownames(glmmTMB_summary$cond)[-1]
                     return(para)
                 }
 	    }
@@ -301,7 +228,8 @@ fit.data <-
                 if (all(!inherits(fit, "try-error"))) {
                     output$para <- summary_function(fit)
                     output$residuals <- residuals(fit)
-                }
+		    output$fitted <- fitted(fit)
+		}
                 else{
                     logging::logwarn(paste(
                         "Fitting problem for feature", 
@@ -382,5 +310,5 @@ fit.data <-
                 c('feature', 'metadata', 'value'),
                 dplyr::everything())
         rownames(paras)<-NULL
-        return(list("results" = paras, "residuals" = residuals))
+        return(list("results" = paras, "residuals" = residuals, "fitted" = fitted))
     }
