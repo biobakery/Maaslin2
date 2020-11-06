@@ -248,7 +248,10 @@ fit.data <-
                     output$para <- summary_function(fit)
                     output$residuals <- residuals(fit)
                     output$fitted <- fitted(fit)
-                    if (!(is.null(random_effects_formula))) output$ranef <- ranef_function(fit)
+                    if (!(is.null(random_effects_formula))) {
+			    l <- ranef_function(fit)
+			    output$ranef<-do.call(rbind, unname(l))
+		    }
                     }
                 else
                   {
