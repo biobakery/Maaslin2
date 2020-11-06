@@ -242,8 +242,8 @@ fit.data <-
                     output$para$name <- colnames(metadata)
                     output$residuals <- NA
                     output$fitted <- NA
-                    output$ranef <- NA
-                    }
+                    if (!(is.null(random_effects_formula))) output$ranef <- NA
+                  }
                 colnames(output$para) <- c('coef', 'stderr' , 'pval', 'name')
                 output$para$feature <- colnames(features)[x]
                 return(output)
