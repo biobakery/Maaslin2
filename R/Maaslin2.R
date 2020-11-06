@@ -61,14 +61,14 @@ analysis_method_choices_names <-
     c("LM", "CPLM", "NEGBIN", "ZINB")
 transform_choices <- c("LOG", "LOGIT", "AST", "NONE")
 valid_choice_method_norm <- hash::hash()
+valid_choice_method_norm[[analysis_method_choices_names[3]]] <-
+    normalization_choices[3:5]
 valid_choice_method_norm[[analysis_method_choices_names[4]]] <-
-    normalization_choices[2:5]
-valid_choice_method_norm[[analysis_method_choices_names[5]]] <-
-    normalization_choices[2:5]
-valid_choice_method_transform <- analysis_method_choices_names[1:3]
+    normalization_choices[3:5]
+valid_choice_method_transform <- analysis_method_choices_names[1:2]
 valid_choice_transform_norm <- hash::hash()
 valid_choice_transform_norm[[transform_choices[2]]] <-
-    normalization_choices[1]
+    normalization_choices[c(1, 4)]
 valid_choice_transform_norm[[transform_choices[3]]] <-
     normalization_choices[c(1, 4)]
 correction_choices <-
@@ -315,7 +315,7 @@ Maaslin2 <-
         output,
         min_abundance = 0.0,
         min_prevalence = 0.1,
-	min_variance = 0.0,
+        min_variance = 0.0,
         normalization = "TSS",
         transform = "LOG",
         analysis_method = "LM",
@@ -785,7 +785,7 @@ Maaslin2 <-
         filtered_feature_names_var <- setdiff(names(filtered_data_norm), names(filtered_data_norm_var))
         logging::loginfo("Filtered feature names from variance filtering: %s",
                          toString(filtered_feature_names_var))
-	filtered_data_norm <- filtered_data_norm_var
+        filtered_data_norm <- filtered_data_norm_var
         
         ################################
         # Standardize metadata, if set #

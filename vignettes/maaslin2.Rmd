@@ -225,7 +225,7 @@ Options:
 
     -m ANALYSIS_METHOD, --analysis_method=ANALYSIS_METHOD
         The analysis method to apply [ Default: LM ]
-        [ Choices: LM, CPLM, ZICP, NEGBIN, ZINB ]
+        [ Choices: LM, CPLM, NEGBIN, ZINB ]
 
     -r RANDOM_EFFECTS, --random_effects=RANDOM_EFFECTS
         The random effects for the model, comma-delimited
