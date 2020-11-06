@@ -846,7 +846,10 @@ Maaslin2 <-
         # Write out the results #
         #########################
         
-        # write residuals to file
+        ###########################
+        # write residuals to file #
+        ###########################
+        
         residuals_file = file.path(output, "residuals.rds")
         # remove residuals file if already exists (since residuals append)
         if (file.exists(residuals_file)) {
@@ -857,7 +860,10 @@ Maaslin2 <-
         logging::loginfo("Writing residuals to file %s", residuals_file)
         saveRDS(fit_data$residuals, file = residuals_file)
         
-        # write fitted values to file
+        ###############################
+        # write fitted values to file #
+        ###############################
+        
         fitted_file = file.path(output, "fitted.rds")
         # remove fitted file if already exists (since fitted append)
         if (file.exists(fitted_file)) {
@@ -865,10 +871,29 @@ Maaslin2 <-
             "Deleting existing fitted file: %s", fitted_file)
           unlink(fitted_file)
         }
-        logging::loginfo("Writing fitted to file %s", fitted_file)
+        logging::loginfo("Writing fitted values to file %s", fitted_file)
         saveRDS(fit_data$fitted, file = fitted_file)
         
-        # write all results to file
+        ########################################################
+        # write extracted random effects to file (if prompted) #
+        ########################################################
+        
+        if (!is.null(random_effects)) {
+          ranef_file = file.path(output, "ranef.rds")
+          # remove ranef file if already exists (since ranef append)
+          if (file.exists(ranef_file)) {
+            logging::logwarn(
+              "Deleting existing ranef file: %s", ranef_file)
+            unlink(ranef_file)
+          }
+          logging::loginfo("Writing extracted random effects to file %s", ranef_file)
+          saveRDS(fit_data$ranef, file = ranef_file)
+        }
+        
+        #############################
+        # write all results to file #
+        #############################
+        
         results_file <- file.path(output, "all_results.tsv")
         logging::loginfo(
             "Writing all results to file (ordered by increasing q-values): %s",
@@ -905,7 +930,10 @@ Maaslin2 <-
             row.names = FALSE
         )
         
-        # write results passing threshold to file 
+        ###########################################
+        # write results passing threshold to file #
+        ###########################################
+        
         significant_results <-
             ordered_results[ordered_results$qval <= max_significance, ]
         significant_results_file <-

@@ -113,6 +113,10 @@ MaAsLin2 generates two types of output files: data and visualization.
         * It only includes associations with q-values <= to the threshold.
     * ``residuals.rds``
         * This file contains a data frame with residuals for each feature.
+    * ``fitted.rds``
+        * This file contains a data frame with fitted values for each feature.
+    * ``ranef.rds``
+        * This file contains a data frame with extracted random effects for each feature (if random effects is prompted).
     * ``maaslin2.log``
         * This file contains all log information for the run.
         * It includes all settings, warnings, errors, and steps run.

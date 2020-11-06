@@ -229,6 +229,9 @@ fit.data <-
                     output$para <- summary_function(fit)
                     output$residuals <- residuals(fit)
                     output$fitted <- fitted(fit)
+                    if (!(is.null(random_effects_formula))) {
+                      output$ranef <- ranef(fit)
+                      }
                     }
                 else{
                     logging::logwarn(paste(
@@ -241,7 +244,9 @@ fit.data <-
                     output$para$name <- colnames(metadata)
                     output$residuals <- NA
                     output$fitted <- NA
-                    }
+                    if (!(is.null(random_effects_formula))) {
+                      output$ranef <- NA
+                      }
                 colnames(output$para) <- c('coef', 'stderr' , 'pval', 'name')
                 output$para$feature <- colnames(features)[x]
                 return(output)
@@ -266,8 +271,16 @@ fit.data <-
           do.call(rbind, lapply(outputs, function(x) {
             return(x$fitted)
           }))
-        row.names(fitted) <- colnames(features)    
+        row.names(fitted) <- colnames(features)   
         
+        if (!(is.null(random_effects_formula))) {
+          ranef <-
+            do.call(rbind, lapply(outputs, function(x) {
+              return(x$ranef)
+            }))
+          row.names(ranef) <- colnames(features) 
+        }
+          
         ################################
         # Apply correction to p-values #
         ################################
@@ -312,5 +325,11 @@ fit.data <-
                 c('feature', 'metadata', 'value'),
                 dplyr::everything())
         rownames(paras)<-NULL
-        return(list("results" = paras, "residuals" = residuals, "fitted" = fitted))
-    }
+        
+        if (!(is.null(random_effects_formula))) {
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = ranef))
+        } else {
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted))
+        }
+        
+          
