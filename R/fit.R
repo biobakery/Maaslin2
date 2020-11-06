@@ -266,6 +266,12 @@ fit.data <-
                 return(x$residuals)
             }))
         row.names(residuals) <- colnames(features)
+	    
+	fitted <-
+            do.call(rbind, lapply(outputs, function(x) {
+                return(x$fitted)
+            }))
+        row.names(fitted) <- colnames(features)    
         
         ################################
         # Apply correction to p-values #
