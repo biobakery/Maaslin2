@@ -47,6 +47,10 @@ fit.data <-
         # Determine the function and summary for the model selected #
         #############################################################
         
+        ################
+        # Linear Model #
+        ################
+        
         if (model == "LM") {
             if (is.null(random_effects_formula)) {
                 model_function <-
@@ -65,7 +69,8 @@ fit.data <-
                     return(para)
                 }
             } else {
-                model_function <-
+              ranef_function <- lme4::ranef
+              model_function <-
                     function(formula, data, na.action) {
                         return(lmerTest::lmer(
                             formula, 
@@ -80,23 +85,28 @@ fit.data <-
                 }
             }
         }
+        
+        ####################
+        # Compound Poisson #
+        ####################
       
         if (model == "CPLM") {
             if (is.null(random_effects_formula)) {
-                model_function <- cplm::cpglm
-                summary_function <- function(fit) {
-                    cplm_out <-
-                        capture.output(
-                            cplm_summary <- cplm::summary(fit)$coefficients)
+              model_function <- cplm::cpglm
+              summary_function <- function(fit) {
+                cplm_out <-
+                  capture.output(
+                    cplm_summary <- cplm::summary(fit)$coefficients)
                     para <- as.data.frame(cplm_summary)[-1, -3]
                     para$name <- rownames(cplm_summary)[-1]
                     logging::logdebug(
                         "Summary output\n%s", 
                         paste(cplm_out, collapse = "\n"))
                     return(para)
-                }
-            } else {
-	        model_function <-
+                    }
+              } else {
+                ranef_function <- glmmTMB::ranef
+                model_function <-
                     function(formula, data, na.action) {
                         return(glmmTMB::glmmTMB(
                             formula,
@@ -107,68 +117,38 @@ fit.data <-
                         ))
                     }
                 summary_function <- function(fit) {
-		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; 
-		    para$name <- rownames(glmmTMB_summary$cond)[-1];
-                    return(para)
+                  glmmTMB_summary <- coef(summary(fit))
+                  para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]
+                  para$name <- rownames(glmmTMB_summary$cond)[-1]
+                  return(para)
                 }
-	    }
-        }
+              }
+          }
+        
+        #####################
+        # Negative Binomial #
+        #####################
         
         if (model == "NEGBIN") {
             if (is.null(random_effects_formula)) {
                 model_function <- MASS::glm.nb
                 summary_function <- function(fit) {
-                    glm_summary <- summary(fit)$coefficients
-                    para <- as.data.frame(glm_summary)[-1, -3]
-                    para$name <- rownames(glm_summary)[-1]
-                    return(para)
-                }
+                  glm_summary <- summary(fit)$coefficients
+                  para <- as.data.frame(glm_summary)[-1, -3]
+                  para$name <- rownames(glm_summary)[-1]
+                  return(para)
+                  }
             } else {
-	        model_function <-
+              ranef_function <- glmmTMB::ranef
+              model_function <-
                     function(formula, data, na.action) {
                         return(glmmTMB::glmmTMB(
                             formula,
                             data = data,
                             family=glmmTMB::nbinom2(link = "log"),
-			    ziformula = ~0,
+                            ziformula = ~0,
                             na.action = na.action
                         ))
-                    }
-                summary_function <- function(fit) {
-		    glmmTMB_summary <- coef(summary(fit))
-	            para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]; 
-		    para$name <- rownames(glmmTMB_summary$cond)[-1];
-                    return(para)
-                }
-	    }
-        }
-        
-        if (model == "ZINB") {
-            if (is.null(random_effects_formula)) {
-                model_function <-
-                    function(formula, data, na.action) {
-                        return(pscl::zeroinfl(
-				formula,
-				data = data,
-				dist = "negbin",
-				na.action = na.action))
-                     }
-                summary_function <- function(fit) {
-                    pscl_summary <- summary(fit)$coefficients$count
-                    para <-as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
-	            para$name <- rownames(pscl_summary)[-c(1, (ncol(metadata) + 2))]
-                    return(para)
-                }
-            } else {
-	        model_function <-
-                    function(formula, data, na.action) {
-                        return(glmmTMB::glmmTMB(
-                            formula,
-                            data = data,
-                            family=glmmTMB::nbinom2(link = "log"),
-                            ziformula = ~1,
-                            na.action = na.action))
                     }
                 summary_function <- function(fit) {
                   glmmTMB_summary <- coef(summary(fit))
@@ -177,7 +157,47 @@ fit.data <-
                   return(para)
                 }
             }
-	}
+          }
+        
+        ###################################
+        # Zero-inflated Negative Binomial #
+        ###################################
+        
+        if (model == "ZINB") {
+          if (is.null(random_effects_formula)) {
+            model_function <-
+              function(formula, data, na.action) {
+                return(pscl::zeroinfl(
+                  formula,
+                  data = data,
+                  dist = "negbin",
+                  na.action = na.action))
+                }
+            summary_function <- function(fit) {
+              pscl_summary <- summary(fit)$coefficients$count
+              para <-as.data.frame(pscl_summary)[-c(1, (ncol(metadata) + 2)), -3]
+	            para$name <- rownames(pscl_summary)[-c(1, (ncol(metadata) + 2))]
+	            return(para)
+	            }
+            } else {
+              ranef_function <- glmmTMB::ranef
+              model_function <-
+                function(formula, data, na.action) {
+                  return(glmmTMB::glmmTMB(
+                    formula,
+                    data = data,
+                    family=glmmTMB::nbinom2(link = "log"),
+                    ziformula = ~1,
+                    na.action = na.action))
+                  }
+              summary_function <- function(fit) {
+                glmmTMB_summary <- coef(summary(fit))
+                para <- as.data.frame(glmmTMB_summary$cond)[-1, -3]
+                para$name <- rownames(glmmTMB_summary$cond)[-1]
+                return(para)
+              }
+            }
+          }
         
         #######################################
         # Init cluster for parallel computing #
@@ -228,7 +248,7 @@ fit.data <-
                     output$para <- summary_function(fit)
                     output$residuals <- residuals(fit)
                     output$fitted <- fitted(fit)
-                    if (!(is.null(random_effects_formula))) output$ranef <- ranef(fit)
+                    if (!(is.null(random_effects_formula))) output$ranef <- ranef_function(fit)
                     }
                 else
                   {
