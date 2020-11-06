@@ -240,6 +240,7 @@ fit.data <-
                             nrow = ncol(metadata), ncol = 3))
                     output$para$name <- colnames(metadata)
                     output$residuals <- NA
+		    output$fitted <- NA
                 }
                 if (model == 'SLM')
                     colnames(output$para) <-
