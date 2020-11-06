@@ -249,9 +249,9 @@ fit.data <-
                     output$residuals <- residuals(fit)
                     output$fitted <- fitted(fit)
                     if (!(is.null(random_effects_formula))) {
-			    l <- ranef_function(fit)
-			    output$ranef<-do.call(rbind, unname(l))
-		    }
+                      l <- ranef_function(fit)
+                      output$ranef<-do.call(rbind, unname(l))
+                      }
                     }
                 else
                   {
