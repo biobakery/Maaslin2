@@ -250,7 +250,8 @@ fit.data <-
                     output$fitted <- fitted(fit)
                     if (!(is.null(random_effects_formula))) {
                       l <- ranef_function(fit)
-                      output$ranef<-do.call(rbind, unname(l))
+                      # output$ranef<-do.call(rbind, unname(l))
+		      output$ranef<-l
                       }
                     }
                 else
