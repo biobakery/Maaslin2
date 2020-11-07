@@ -249,10 +249,10 @@ fit.data <-
                     output$residuals <- residuals(fit)
                     output$fitted <- fitted(fit)
                     if (!(is.null(random_effects_formula))) {
-			    l <- ranef_function(fit)
-			    d<-as.vector(unlist(l))
-			    names(d)<-unlist(lapply(l, row.names))
-			    output$ranef<-d
+                      l <- ranef_function(fit)
+                      d<-as.vector(unlist(l))
+                      names(d)<-unlist(lapply(l, row.names))
+                      output$ranef<-d
                       }
                     }
                 else

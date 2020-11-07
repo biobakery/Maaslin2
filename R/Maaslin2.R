@@ -875,7 +875,7 @@ Maaslin2 <-
         saveRDS(fit_data$fitted, file = fitted_file)
         
         ########################################################
-        # write extracted random effects to file (if prompted) #
+        # write extracted random effects to file (if specified) #
         ########################################################
         
         if (!is.null(random_effects)) {
