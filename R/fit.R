@@ -249,8 +249,8 @@ fit.data <-
                     output$residuals <- residuals(fit)
                     output$fitted <- fitted(fit)
                     if (!(is.null(random_effects_formula))) {
-                      l <- ranef_function(fit)
-                      output$ranef<-setNames(unlist(l, use.names=F),rep(names(l), lengths(l)))
+			    l <- ranef_function(fit)
+			    output$ranef<-unlist(l)
                       }
                     }
                 else
