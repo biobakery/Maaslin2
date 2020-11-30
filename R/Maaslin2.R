@@ -764,6 +764,19 @@ Maaslin2 <-
             setdiff(names(unfiltered_data), names(filtered_data))
         logging::loginfo("Filtered feature names from abundance and prevalence filtering: %s",
             toString(filtered_feature_names))
+        
+        #################################
+        # Filter data based on variance #
+        #################################
+        
+        sds <- apply(filtered_data, 2, sd)
+        variance_filtered_data <- filtered_data[, which(sds > min_variance), drop = FALSE]
+        variance_filtered_features <- ncol(filtered_data) - ncol(variance_filtered_data)
+        logging::loginfo("Total filtered features with variance filtering: %d", variance_filtered_features)
+        variance_filtered_feature_names <- setdiff(names(filtered_data), names(variance_filtered_data))
+        logging::loginfo("Filtered feature names from variance filtering: %s",
+                         toString(variance_filtered_feature_names))
+        filtered_data <- variance_filtered_data
        
         ######################
         # Normalize features #
@@ -773,19 +786,6 @@ Maaslin2 <-
             "Running selected normalization method: %s", normalization)
         filtered_data_norm <-
             normalizeFeatures(filtered_data, normalization = normalization)
-        
-        #################################
-        # Filter data based on variance #
-        #################################
-
-        sds <- apply(filtered_data_norm, 2, sd)
-        filtered_data_norm_var <-filtered_data_norm[, which(sds >min_variance), drop = FALSE]
-        total_filtered_features_var <- ncol(filtered_data_norm) - ncol(filtered_data_norm_var)
-        logging::loginfo("Total filtered features with variance filtering: %d", total_filtered_features_var)
-        filtered_feature_names_var <- setdiff(names(filtered_data_norm), names(filtered_data_norm_var))
-        logging::loginfo("Filtered feature names from variance filtering: %s",
-                         toString(filtered_feature_names_var))
-        filtered_data_norm <- filtered_data_norm_var
         
         ################################
         # Standardize metadata, if set #
