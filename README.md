@@ -56,12 +56,20 @@ If only running from the command line, you do not need to install the MaAsLin2 p
 
 ### From R ###
 
-Install Bioconductor and then install Maaslin2
+To install the latest release version of MaAsLin 2:
 
 ```{r, eval=FALSE}
 if(!requireNamespace("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 BiocManager::install("Maaslin2")
+```
+
+To install the latest development version of MaAsLin 2:
+
+```{r, eval=FALSE}
+install.packages("devtools")
+library("devtools")
+install_github("biobakery/Maaslin2")
 ```
 
 ## How to Run ##
