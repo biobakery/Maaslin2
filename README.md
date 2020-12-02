@@ -15,6 +15,8 @@ If you have questions, please direct it to :
 
 ![](https://github.com/biobakery/Maaslin2/workflows/build%20and%20test/badge.svg)
 
+<a href="http://www.bioconductor.org/packages/devel/bioc/html/Maaslin2.html#since"><img border="0" src="http://www.bioconductor.org/shields/years-in-bioc/Maaslin2.svg" title="How long since the package was first in a released Bioconductor version (or is it in devel only)."></a> 
+
 --------------------------------------------
 
 ## Contents ##
