@@ -1,5 +1,5 @@
 
-Changes in version 1.3.3 (12-02-2020):
+Changes in version 1.5.1 (12-02-2020):
 * Update log from base 10 to base 2.
 * ZICP is now deprecated (https://cran.r-project.org/web/packages/cplm/NEWS)
 * SLM is removed in favor of a future R2 functionality for all models
