@@ -521,6 +521,14 @@ Maaslin2 <-
                     "as rows and metadata samples as rows"))
         } else {
             samples_column_row <- intersect(colnames(data), rownames(metadata))
+
+            if (length(samples_column_row) == 0) {
+                # modify possibly included special chars in sample names in metadata
+                rownames(metadata) <- make.names(rownames(metadata))
+            
+                samples_column_row <- intersect(colnames(data), rownames(metadata))
+            }
+
             if (length(samples_column_row) > 0) {
                 logging::loginfo(
                     paste(
@@ -545,6 +553,14 @@ Maaslin2 <-
                 } else {
                     samples_row_column <- 
                         intersect(rownames(data), colnames(metadata))
+
+                    if (length(samples_row_column) == 0) {
+                        # modify possibly included special chars in sample names in data
+                        rownames(data) <- make.names(rownames(data))
+            
+                        samples_row_column <- intersect(rownames(data), colnames(metadata))
+                    }
+
                     if (length(samples_row_column) > 0) {
                         logging::loginfo(
                             paste(
