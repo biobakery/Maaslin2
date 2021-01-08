@@ -261,6 +261,8 @@ Options:
         with more than two levels provided as a string 
         of 'variable,reference' semi-colon delimited 
         for multiple variables [ Default: NA ] 
+        NOTE: A space between the variable and reference
+        will not error but will cause an inaccurate result.
 
 ## Troubleshooting ##
 
