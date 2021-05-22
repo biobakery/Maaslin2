@@ -352,8 +352,8 @@ maaslin2_association_plots <-
             unlist(metadata_types[!duplicated(metadata_types)])
         metadata_number <- 1
         
-        saved_plots <- vector('list', max_pngs)
         for (label in metadata_labels) {
+            saved_plots <- vector('list', max_pngs)
             # for file name replace any non alphanumeric with underscore
             plot_file <-
                 paste(
