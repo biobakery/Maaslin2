@@ -547,7 +547,7 @@ Maaslin2 <-
                             "Input format is data samples",
                             "as columns and metadata samples as columns"))
                     data <- as.data.frame(t(data))
-                    metadata <- as.data.frame(t(metadata))
+                    metadata <- type.convert(as.data.frame(t(metadata)))
                     logging::logdebug(
                         "Transformed data and metadata so samples are rows")
                 } else {
@@ -566,7 +566,7 @@ Maaslin2 <-
                             paste(
                                 "Input format is data samples",
                                 "as rows and metadata samples as columns"))
-                        metadata <- as.data.frame(t(metadata))
+                        metadata <- type.convert(as.data.frame(t(metadata)))
                         logging::logdebug(
                             "Transformed metadata so samples are rows")
                     } else {
