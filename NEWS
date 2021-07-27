@@ -1,4 +1,8 @@
 
+Changes in version 1.5.2 (07-27-2021):
+* Update tutorial data files
+* Update knitr dependency for bioconductor tests
+
 Changes in version 1.5.1 (12-02-2020):
 * Update log from base 10 to base 2.
 * ZICP is now deprecated (https://cran.r-project.org/web/packages/cplm/NEWS)
