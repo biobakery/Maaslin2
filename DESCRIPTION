@@ -14,7 +14,8 @@ LazyData: false
 Imports: robustbase, biglm, pcaPP, edgeR, metagenomeSeq, lpsymphony, pbapply, car, dplyr, vegan, chemometrics, ggplot2, pheatmap, logging, data.table, lmerTest, hash, optparse, MuMIn, grDevices, stats, utils, glmmTMB, MASS, cplm, pscl
 Suggests: 
     knitr,
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    rmarkdown
 VignetteBuilder: knitr
 Collate: fit.R utility_scripts.R viz.R  Maaslin2.R
 URL: http://huttenhower.sph.harvard.edu/maaslin2
