@@ -1,7 +1,7 @@
 Package: Maaslin2
 Title: "Multivariable Association Discovery in Population-scale Meta-omics Studies"
 Year: 2021
-Version: 1.7.1
+Version: 1.7.2
 Authors@R: c(
   person("Himel", "Mallick", email = "himel.stat.iitk@gmail.com", role = "aut"), 
   person("Ali", "Rahnavard", email = "gholamali.rahnavard@gmail.com", role = "aut"),
@@ -11,7 +11,7 @@ Depends: R (>= 3.6)
 Description: MaAsLin2 is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta'omic features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, and offers a variety of data exploration, normalization, and transformation methods. MaAsLin2 is the next generation of MaAsLin.
 License: MIT + file LICENSE
 LazyData: false
-Imports: robustbase, biglm, pcaPP, edgeR, metagenomeSeq, lpsymphony, pbapply, car, dplyr, vegan, chemometrics, ggplot2, pheatmap, logging, data.table, lmerTest, hash, optparse, MuMIn, grDevices, stats, utils, glmmTMB, MASS, cplm, pscl
+Imports: robustbase, biglm, pcaPP, edgeR, metagenomeSeq, lpsymphony, pbapply, car, dplyr, vegan, chemometrics, ggplot2, pheatmap, logging, data.table, lmerTest, hash, optparse, grDevices, stats, utils, glmmTMB, MASS, cplm, pscl, lme4
 Suggests: 
     knitr,
     testthat (>= 2.1.0),
