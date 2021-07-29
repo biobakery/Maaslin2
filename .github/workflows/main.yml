@@ -26,7 +26,7 @@ jobs:
       run: R -q -e "BiocManager::install('BiocCheck')"
 
     - name: Install build and test dependencies from CRAN
-      run: R -q -e "install.packages(c('knitr','glmmTMB','rmarkdown'), repos='http://cran.r-project.org')" 
+      run: R -q -e "install.packages(c('knitr','glmmTMB','rmarkdown','markdown'), repos='http://cran.r-project.org')" 
 
     - name: Build
       run: cd $GITHUB_WORKSPACE && R CMD build .
