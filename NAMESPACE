@@ -11,3 +11,4 @@ importFrom("stats", "as.formula", "coef", "glm", "lm", "na.exclude",
 importFrom("utils", "capture.output", "read.table", "write.table")
 importFrom("dplyr", "%>%")
 importFrom("stats", "sd", "na.omit")
+importFrom("utils","type.convert")
