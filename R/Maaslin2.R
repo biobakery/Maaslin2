@@ -276,6 +276,17 @@ options <-
 options <-
     optparse::add_option(
         options,
+        c("-g", "--max_pngs"),
+        type = "double",
+        dest = "max_pngs",
+        default = args$max_pngs,
+        help = paste("The maximum number of scatterplots for signficant",
+                     " associations to save as png files [ Default: %default ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
         c("-e", "--cores"),
         type = "double",
         dest = "cores",
