@@ -255,7 +255,7 @@ Options:
         associations [ Default: TRUE ]
         
     -g MAX_PNGS, --max_pngs=MAX_PNGS
-        The maximum number of scatterplots for signficant  associations 
+        The maximum number of scatterplots for signficant associations 
         to save as png files [ Default: 10 ]
 
     -e CORES, --cores=CORES

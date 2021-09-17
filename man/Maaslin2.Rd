@@ -88,6 +88,10 @@ Maaslin2(
     \item{plot_scatter}{
     Generate scatter plots for the significant associations.
 }
+    \item{max_pngs}{
+    Set the maximum number of scatterplots for signficant associations 
+    to save as png files.  
+}
     \item{cores}{
     The number of R processes to run in parallel.
 }
