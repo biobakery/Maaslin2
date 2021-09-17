@@ -93,6 +93,7 @@ args$standardize <- TRUE
 args$plot_heatmap <- TRUE
 args$heatmap_first_n <- 50
 args$plot_scatter <- TRUE
+args$max_pngs <- 10
 args$cores <- 1
 args$reference <- NULL
 
@@ -276,6 +277,17 @@ options <-
 options <-
     optparse::add_option(
         options,
+        c("-g", "--max_pngs"),
+        type = "double",
+        dest = "max_pngs",
+        default = args$max_pngs,
+        help = paste("The maximum number of scatterplots for signficant",
+                     " associations to save as png files [ Default: %default ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
         c("-e", "--cores"),
         type = "double",
         dest = "cores",
@@ -327,6 +339,7 @@ Maaslin2 <-
         cores = 1,
         plot_heatmap = TRUE,
         plot_scatter = TRUE,
+        max_pngs = 10,
         heatmap_first_n = 50,
         reference = NULL)
     {
@@ -1014,7 +1027,8 @@ Maaslin2 <-
                 filtered_data,
                 significant_results_file,
                 output,
-                figures_folder)
+                figures_folder,
+                max_pngs)
         }
         
         return(fit_data)
@@ -1062,6 +1076,7 @@ if (identical(environment(), globalenv()) &&
             current_args$cores,
             current_args$plot_heatmap,
             current_args$plot_scatter,
+            current_args$max_pngs,
             current_args$heatmap_first_n,
             current_args$reference
         )
