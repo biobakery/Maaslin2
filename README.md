@@ -263,12 +263,11 @@ Options:
         [ Default: 1 ]
     
     -d REFERENCE, --reference=REFERENCE
-        The factor to use as a reference for a variable 
-        with more than two levels provided as a string 
-        of 'variable,reference' semi-colon delimited 
-        for multiple variables [ Default: NA ] 
-        NOTE: A space between the variable and reference
-        will not error but will cause an inaccurate result.
+        The factor to use as a reference level for a categorical variable 
+        provided as a string of 'variable,reference', semi-colon delimited for 
+        multiple variables. Not required if metadata is passed as a factor or 
+        for variables with less than two levels but can be set regardless.
+        [ Default: NA ] 
 
 ## Troubleshooting ##
 
