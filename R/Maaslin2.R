@@ -736,32 +736,48 @@ Maaslin2 <-
         # Filter data based on min abundance and min prevalence #
         #########################################################
 
-        # use ordered factor for variables with more than two levels
-        # find variables with more than two levels
         if (is.null(reference)) {
             reference <- ","
         }
-
-        for ( i in colnames(metadata) ) {
-            mlevels <- unique(na.omit(metadata[,i]))
-            numeric_levels <- grep('^-?[0-9.]+[eE+-]?', mlevels, value = T)
-            if ( ( length(mlevels[! (mlevels %in% c("UNK"))]) > 2 ) &&
-                 ( i %in% fixed_effects ) &&
-                 ( length(numeric_levels) == 0)) {
-                 split_reference <- unlist(strsplit(reference, "[,;]"))
-                if (! i %in% split_reference ) {
-                    stop(
-                      paste("Please provide the reference for the variable '",
-                        i, "' which includes more than 2 levels: ",
-                        paste(as.character(mlevels), collapse=", "), ".", sep="")
-                    )
-                } else {
-                    ref <- split_reference[match(i,split_reference)+1]
-                    other_levels <- as.character(mlevels)[! as.character(mlevels) == ref]
-                    metadata[,i] = factor(metadata[,i], levels=c(ref, other_levels))
-                }
+        split_reference <- unlist(strsplit(reference, "[,;]"))
+        
+        # for each fixed effect, check that a reference level has been set if necessary: number of levels > 2 and metadata isn't already an ordered factor
+        for (i in fixed_effects) {
+            # don't check for or require reference levels for numeric metadata
+            if (is.numeric(metadata[,i])) {
+                next
             }
-        }       
+            # respect ordering if a factor is explicitly passed in with no reference set
+            if (is.factor(metadata[,i]) && !(i %in% split_reference)) {
+                logging::loginfo(paste("Factor detected for categorial metadata '", 
+                                       i, "'. Provide a reference argument or manually set factor ordering to change reference level.", sep=""))
+                next
+            }
+            
+            # set metadata as a factor (ordered alphabetically)
+            metadata[,i] <- as.factor(metadata[,i])
+            mlevels <- levels(metadata[,i])
+            
+            # get reference level for variable being considered, returns NA if not found
+            ref <- split_reference[match(i, split_reference)+1]
+            
+            # if metadata has 2 levels, allow but don't require setting reference level, otherwise require it
+            if ((length(mlevels) == 2)) {
+                if(!is.na(ref)) {
+                    metadata[,i] = relevel(metadata[,i], ref = ref)
+                }
+            } else if (length(mlevels) > 2) {
+                if (!is.na(ref)) {
+                    metadata[,i] = relevel(metadata[,i], ref = ref)
+                } else {
+                    stop(paste("Please provide the reference for the variable '",
+                               i, "' which includes more than 2 levels: ",
+                               paste(as.character(mlevels), collapse=", "), ".", sep=""))   
+                } 
+            } else {
+                stop("Error determining reference level for metadata. Please check that provided category has 2 or more non-NA values.")
+            }
+        }
  
         unfiltered_data <- data
         unfiltered_metadata <- metadata
