@@ -97,7 +97,7 @@ args$max_pngs <- 10
 args$cores <- 1
 args$reference <- NULL
 args$save_fits <- FALSE
-
+args$interactions <- NULL
 ##############################
 # Add command line arguments #
 ##############################
@@ -216,8 +216,20 @@ options <-
         dest = "fixed_effects",
         default = args$fixed_effects,
         help = paste("The fixed effects for the model,",
-            " comma-delimited for multiple effects",
-            " [ Default: all ]"
+                     " comma-delimited for multiple effects",
+                     " [ Default: all ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
+        c( "--interactions"),
+        type = "character",
+        dest = "interactions",
+        default = args$interactions,
+        help = paste("The fixed effects for the model,",
+                     " comma-delimited for multiple effects",
+                     " [ Default: all ]"
         )
     )
 options <-
@@ -346,15 +358,16 @@ Maaslin2 <-
         max_significance = 0.25,
         random_effects = NULL,
         fixed_effects = NULL,
+        interactions = NULL,
         correction = "BH",
         standardize = TRUE,
         cores = 1,
         plot_heatmap = TRUE,
         plot_scatter = TRUE,
-        max_pngs = 10,
         heatmap_first_n = 50,
-        reference = NULL,
         save_fits=FALSE)
+        max_pngs = 10,
+        reference = NULL)
     {
         # Allow for lower case variables
         normalization <- toupper(normalization)
@@ -441,6 +454,7 @@ Maaslin2 <-
         logging::logdebug("Max significance: %f", max_significance)
         logging::logdebug("Random effects: %s", random_effects)
         logging::logdebug("Fixed effects: %s", fixed_effects)
+        logging::logdebug("Interactions: %s", interactions)
         logging::logdebug("Correction method: %s", correction)
         logging::logdebug("Standardize: %s", standardize)
         logging::logdebug("Cores: %d", cores)
@@ -680,6 +694,21 @@ Maaslin2 <-
                 stop()
             }
         }
+        ####### Interactions ############
+        if (!is.null(interactions)){
+            if (any(grepl("\\*", interactions))){
+                stop("Please specify interaction terms as `variable + variable:mod` rather than `variable*mod`.")
+            }
+            interaction_terms <-  unlist(strsplit(interactions, "[+:]"))
+            for (trm in interaction_terms){
+                if (!trm %in% fixed_effects){
+                    logging::logerror(
+                        paste("Feature name not found in fixed effects",
+                              "so not applied to formula: %s"), trm)
+                    stop("Please fix interaction terms and rerun")
+                }
+            }
+        }
         
         if (!is.null(random_effects)) {
             random_effects <-
@@ -730,7 +759,7 @@ Maaslin2 <-
         
         # create the fixed effects formula text
         formula_text <-
-            paste("expr ~ ", paste(fixed_effects, collapse = " + "))
+            paste("expr ~ ", paste(c(fixed_effects, interactions), collapse = " + "))
         logging::loginfo("Formula for fixed effects: %s", formula_text)
         formula <-
             tryCatch(
@@ -781,44 +810,14 @@ Maaslin2 <-
         
         # require at least total samples * min prevalence values 
         # for each feature to be greater than min abundance
-        logging::loginfo(
-            "Filter data based on min abundance and min prevalence")
-        total_samples <- nrow(unfiltered_data)
-        logging::loginfo("Total samples in data: %d", total_samples)
-        min_samples <- total_samples * min_prevalence
-        logging::loginfo(
-            paste("Min samples required with min abundance",
-                "for a feature not to be filtered: %f"),
-            min_samples
+         
+        filtered_data <- do_prevalence_abundance_filtering(
+            unfiltered_data,
+            min_abundance = min_abundance,
+            min_prevalence = min_prevalence,
+            min_variance = min_variance
         )
-        
-        # Filter by abundance using zero as value for NAs
-        data_zeros <- unfiltered_data
-        data_zeros[is.na(data_zeros)] <- 0
-        filtered_data <-
-            unfiltered_data[, 
-                colSums(data_zeros > min_abundance) > min_samples,
-                drop = FALSE]
-        total_filtered_features <-
-            ncol(unfiltered_data) - ncol(filtered_data)
-        logging::loginfo("Total filtered features: %d", total_filtered_features)
-        filtered_feature_names <-
-            setdiff(names(unfiltered_data), names(filtered_data))
-        logging::loginfo("Filtered feature names from abundance and prevalence filtering: %s",
-            toString(filtered_feature_names))
-        
-        #################################
-        # Filter data based on variance #
-        #################################
-        
-        sds <- apply(filtered_data, 2, sd)
-        variance_filtered_data <- filtered_data[, which(sds > min_variance), drop = FALSE]
-        variance_filtered_features <- ncol(filtered_data) - ncol(variance_filtered_data)
-        logging::loginfo("Total filtered features with variance filtering: %d", variance_filtered_features)
-        variance_filtered_feature_names <- setdiff(names(filtered_data), names(variance_filtered_data))
-        logging::loginfo("Filtered feature names from variance filtering: %s",
-                         toString(variance_filtered_feature_names))
-        filtered_data <- variance_filtered_data
+
        
         ######################
         # Normalize features #
@@ -1085,6 +1084,7 @@ if (identical(environment(), globalenv()) &&
             current_args$max_significance,
             current_args$random_effects,
             current_args$fixed_effects,
+            current_args$interactions,
             current_args$correction,
             current_args$standardize,
             current_args$cores,

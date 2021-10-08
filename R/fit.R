@@ -38,12 +38,13 @@ fit.data <-
             formula <-
                 paste(
                     '. ~', 
-                    paste(all.vars(formula)[-1], collapse = ' + '), 
+                    #paste(all.vars(formula)[-1], collapse = ' + '), 
+                    paste(labels(terms(tmp)), collapse = ' + '), 
                     '.', 
                     sep = ' + ')
 	    formula <- update(random_effects_formula, formula)
 	}
-        
+
         #############################################################
         # Determine the function and summary for the model selected #
         #############################################################
@@ -242,7 +243,6 @@ fit.data <-
                         })
                     return(fit1)
                 })
-                
                 # Gather Output
                 output <- list()
                 if (all(!inherits(fit, "try-error"))) {
