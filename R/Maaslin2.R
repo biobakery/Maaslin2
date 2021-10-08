@@ -339,8 +339,8 @@ Maaslin2 <-
         cores = 1,
         plot_heatmap = TRUE,
         plot_scatter = TRUE,
-        max_pngs = 10,
         heatmap_first_n = 50,
+        max_pngs = 10,
         reference = NULL)
     {
         # Allow for lower case variables
@@ -768,44 +768,14 @@ Maaslin2 <-
         
         # require at least total samples * min prevalence values 
         # for each feature to be greater than min abundance
-        logging::loginfo(
-            "Filter data based on min abundance and min prevalence")
-        total_samples <- nrow(unfiltered_data)
-        logging::loginfo("Total samples in data: %d", total_samples)
-        min_samples <- total_samples * min_prevalence
-        logging::loginfo(
-            paste("Min samples required with min abundance",
-                "for a feature not to be filtered: %f"),
-            min_samples
+         
+        filtered_data <- do_prevalence_abundance_filtering(
+            unfiltered_data,
+            min_abundance = min_abundance,
+            min_prevalence = min_prevalence,
+            min_variance = min_variance
         )
-        
-        # Filter by abundance using zero as value for NAs
-        data_zeros <- unfiltered_data
-        data_zeros[is.na(data_zeros)] <- 0
-        filtered_data <-
-            unfiltered_data[, 
-                colSums(data_zeros > min_abundance) > min_samples,
-                drop = FALSE]
-        total_filtered_features <-
-            ncol(unfiltered_data) - ncol(filtered_data)
-        logging::loginfo("Total filtered features: %d", total_filtered_features)
-        filtered_feature_names <-
-            setdiff(names(unfiltered_data), names(filtered_data))
-        logging::loginfo("Filtered feature names from abundance and prevalence filtering: %s",
-            toString(filtered_feature_names))
-        
-        #################################
-        # Filter data based on variance #
-        #################################
-        
-        sds <- apply(filtered_data, 2, sd)
-        variance_filtered_data <- filtered_data[, which(sds > min_variance), drop = FALSE]
-        variance_filtered_features <- ncol(filtered_data) - ncol(variance_filtered_data)
-        logging::loginfo("Total filtered features with variance filtering: %d", variance_filtered_features)
-        variance_filtered_feature_names <- setdiff(names(filtered_data), names(variance_filtered_data))
-        logging::loginfo("Filtered feature names from variance filtering: %s",
-                         toString(variance_filtered_feature_names))
-        filtered_data <- variance_filtered_data
+
        
         ######################
         # Normalize features #

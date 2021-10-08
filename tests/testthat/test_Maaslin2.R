@@ -36,3 +36,40 @@ expect_that(round(expected_results_run2$N[1:50],10),equals(round(maaslin_results
 expect_that(expected_results_run2$N.not.0[1:50],equals(maaslin_results$N.not.0[1:50]))
 expect_that(round(as.numeric(expected_results_run2$pval.value[1:50]),10),equals(round(as.numeric(maaslin_results$pval.value[1:50]),10)))
 expect_that(round(as.numeric(expected_results_run2$qval.value[1:50]),10),equals(round(as.numeric(maaslin_results$qval.value[1:50]),10)))
+
+
+# test the prevalence and abundance filtering
+logging::basicConfig(level = 'FINEST')
+logging::addHandler(logging::writeToFile,
+                    file = "tmp.log", level = "DEBUG")
+logging::setLevel(20, logging::getHandler('basic.stdout'))
+
+relab_matrix  <- head(features)
+counts_matrix <- ceiling(relab_matrix * 100000 )
+
+# the data should be the same whether or not the input data is relative or absolute.
+relab_filtered  <- do_prevalence_abundance_filtering(unfiltered_data = relab_matrix, min_abundance = .1, min_prevalence = .1, min_variance = 0)
+counts_filtered <- do_prevalence_abundance_filtering(unfiltered_data = counts_matrix, min_abundance = .1, min_prevalence = .1, min_variance = 0)
+expect_that(ceiling(relab_filtered*100000), equals(counts_filtered))
+
+
+# the prevalence filtering should be the same.
+relab_noab_filtered  <- do_prevalence_abundance_filtering(unfiltered_data = relab_matrix, min_abundance = 0, min_prevalence = .1, min_variance = 0)
+counts_noab_filtered <- do_prevalence_abundance_filtering(unfiltered_data = counts_matrix, min_abundance = 0, min_prevalence = .1, min_variance = 0)
+expect_that(ceiling(relab_noab_filtered*100000), equals(counts_noab_filtered))
+
+# the abund filtering should be the same.
+relab_noprev_filtered  <- do_prevalence_abundance_filtering(unfiltered_data = relab_matrix, min_abundance = .1, min_prevalence = 0, min_variance = 0)
+counts_noprev_filtered <- do_prevalence_abundance_filtering(unfiltered_data = counts_matrix, min_abundance = .1, min_prevalence = 0, min_variance = 0)
+expect_that(ceiling(relab_noprev_filtered*100000), equals(counts_noprev_filtered))
+
+
+# this shows the desired behavior 
+# -- for relative abundances, abundances are treated as a percent
+# -- for counts it is treated as a percentage if < 0 
+# -- fir counts it is treated as a count if > 0
+relab_percent_filtered  <- do_prevalence_abundance_filtering(unfiltered_data = relab_matrix, min_abundance = 20, min_prevalence = .1, min_variance = 0)
+counts_percent_filtered <- do_prevalence_abundance_filtering(unfiltered_data = counts_matrix, min_abundance = .2, min_prevalence = .1, min_variance = 0)
+counts_ammount_filtered <- do_prevalence_abundance_filtering(unfiltered_data = counts_matrix, min_abundance = 20, min_prevalence = .1, min_variance = 0)
+expect_that(ceiling(relab_percent_filtered*100000), equals(counts_percent_filtered))
+expect_false(ncol(relab_percent_filtered) == ncol(counts_ammount_filtered))
