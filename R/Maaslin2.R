@@ -96,7 +96,7 @@ args$plot_scatter <- TRUE
 args$max_pngs <- 10
 args$cores <- 1
 args$reference <- NULL
-
+args$interactions <- NULL
 ##############################
 # Add command line arguments #
 ##############################
@@ -215,8 +215,20 @@ options <-
         dest = "fixed_effects",
         default = args$fixed_effects,
         help = paste("The fixed effects for the model,",
-            " comma-delimited for multiple effects",
-            " [ Default: all ]"
+                     " comma-delimited for multiple effects",
+                     " [ Default: all ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
+        c( "--interactions"),
+        type = "character",
+        dest = "interactions",
+        default = args$interactions,
+        help = paste("The fixed effects for the model,",
+                     " comma-delimited for multiple effects",
+                     " [ Default: all ]"
         )
     )
 options <-
@@ -334,6 +346,7 @@ Maaslin2 <-
         max_significance = 0.25,
         random_effects = NULL,
         fixed_effects = NULL,
+        interactions = NULL,
         correction = "BH",
         standardize = TRUE,
         cores = 1,
@@ -428,6 +441,7 @@ Maaslin2 <-
         logging::logdebug("Max significance: %f", max_significance)
         logging::logdebug("Random effects: %s", random_effects)
         logging::logdebug("Fixed effects: %s", fixed_effects)
+        logging::logdebug("Interactions: %s", interactions)
         logging::logdebug("Correction method: %s", correction)
         logging::logdebug("Standardize: %s", standardize)
         logging::logdebug("Cores: %d", cores)
@@ -667,6 +681,21 @@ Maaslin2 <-
                 stop()
             }
         }
+        ####### Interactions ############
+        if (!is.null(interactions)){
+            if (any(grepl("\\*", interactions))){
+                stop("Please specify interaction terms as `variable + variable:mod` rather than `variable*mod`.")
+            }
+            interaction_terms <-  unlist(strsplit(interactions, "[+:]"))
+            for (trm in interaction_terms){
+                if (!trm %in% fixed_effects){
+                    logging::logerror(
+                        paste("Feature name not found in fixed effects",
+                              "so not applied to formula: %s"), trm)
+                    stop("Please fix interaction terms and rerun")
+                }
+            }
+        }
         
         if (!is.null(random_effects)) {
             random_effects <-
@@ -717,7 +746,7 @@ Maaslin2 <-
         
         # create the fixed effects formula text
         formula_text <-
-            paste("expr ~ ", paste(fixed_effects, collapse = " + "))
+            paste("expr ~ ", paste(c(fixed_effects, interactions), collapse = " + "))
         logging::loginfo("Formula for fixed effects: %s", formula_text)
         formula <-
             tryCatch(
@@ -1071,6 +1100,7 @@ if (identical(environment(), globalenv()) &&
             current_args$max_significance,
             current_args$random_effects,
             current_args$fixed_effects,
+            current_args$interactions,
             current_args$correction,
             current_args$standardize,
             current_args$cores,
