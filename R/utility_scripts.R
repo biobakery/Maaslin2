@@ -3,7 +3,91 @@ for (lib in c('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')) {
     suppressPackageStartupMessages(require(lib, character.only = TRUE))
 }
 
-
+###################
+##   Filtering   ##
+###################
+do_prevalence_abundance_filtering <- function(
+    unfiltered_data,
+    min_abundance = 0.0,
+    min_prevalence = 0.1,
+    min_variance = 0.0){
+    logging::loginfo(
+        "Filter data based on min abundance and min prevalence")
+    total_samples <- nrow(unfiltered_data)
+    logging::loginfo("Total samples in data: %d", total_samples)
+    min_samples <- total_samples * min_prevalence
+    logging::loginfo(
+        paste("Min samples required with min abundance",
+              "for a feature not to be filtered: %f"),
+        min_samples
+    )
+    # Filter by abundance using zero as value for NAs
+    data_zeros <- unfiltered_data
+    data_zeros[is.na(data_zeros)] <- 0
+    use_raw_abund_treshold = TRUE
+    # the example hmp dataset has relative abundance sample sums up to 1.0000004
+    if (all(rowSums(data_zeros) <=1.01)){
+        logging::loginfo("relative abundances detected")
+        if(min_abundance >1){
+            logging::loginfo("Min_abundance > 1 not informative for relative abundance data; converting min_abundance to percentage")
+            min_abundance = min_abundance/100
+            logging::loginfo("Min_abundance threshold: %s, or %s%%", min_abundance, 100*min_abundance)
+            use_raw_abund_treshold = FALSE
+        }
+    } else{
+        logging::loginfo("Count (or normalized) data detected")
+        if(min_abundance < 1 & all(data_zeros[data_zeros !=0 ] > min_abundance) ){
+            if(min_abundance != 0){
+                logging::loginfo("Min_abundance is less than 1  and no non-zero values in the data are less than 1. Treating minimum abundance as a percentage. To avoid this behavior, set min_abundance above the lowest non-zero value in data")
+                use_raw_abund_treshold = FALSE
+            }
+        }
+    }
+    if(use_raw_abund_treshold){
+        filtered_data <-
+            unfiltered_data[,
+                            colSums(data_zeros > min_abundance) > min_samples,
+                            drop = FALSE]
+        perc_lost_abundance <- rowSums(data_zeros <= min_abundance)/ncol(data_zeros)
+    } else{
+        # do filtering on prop table, carry names back to counts table
+        # margin 1 means do proportions rowwise
+        data_zeros_prop <- prop.table(data.matrix(data_zeros), margin = 1)
+        filtered_data_prop <-
+            unfiltered_data[,
+                            colSums(data_zeros_prop > min_abundance ) > min_samples,
+                            drop = FALSE]
+        filtered_data <- unfiltered_data[
+            rownames(filtered_data_prop),
+            colnames(filtered_data_prop)]
+        perc_lost_abundance <- rowSums(data_zeros_prop <= min_abundance)/ncol(data_zeros_prop)
+    }
+    total_filtered_features <-
+        ncol(unfiltered_data) - ncol(filtered_data)
+    logging::loginfo("Total filtered features: %d", total_filtered_features)
+    filtered_feature_names <-
+        setdiff(names(unfiltered_data), names(filtered_data))
+    logging::loginfo("Mean percent of features removed from abundance filtering: %s",
+                     toString(mean(perc_lost_abundance)))
+    logging::loginfo("Filtered feature names from abundance and prevalence filtering: %s",
+        toString(filtered_feature_names))
+    
+    
+    #################################
+    # Filter data based on variance #
+    #################################
+    
+    sds <- apply(filtered_data, 2, sd)
+    variance_filtered_data <- filtered_data[, which(sds > min_variance), drop = FALSE]
+    variance_filtered_features <- ncol(filtered_data) - ncol(variance_filtered_data)
+    logging::loginfo("Total filtered features with variance filtering: %d", variance_filtered_features)
+    variance_filtered_feature_names <- setdiff(names(filtered_data), names(variance_filtered_data))
+    logging::loginfo("Filtered feature names from variance filtering: %s",
+                     toString(variance_filtered_feature_names))
+    filtered_data <- variance_filtered_data
+    
+    return(filtered_data)
+}
 ###################
 ## Transformation #
 ###################
