@@ -775,7 +775,7 @@ Maaslin2 <-
                                paste(as.character(mlevels), collapse=", "), ".", sep=""))   
                 } 
             } else {
-                stop("Error determining reference level for metadata. Please check that provided category has 2 or more non-NA values.")
+                stop("Provided categorical metadata has fewer than 2 unique, non-NA values.")
             }
         }
  
