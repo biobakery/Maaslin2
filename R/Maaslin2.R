@@ -891,6 +891,17 @@ Maaslin2 <-
         # Write out the results #
         #########################
         
+        fits_file = file.path(output, "fits.rds")
+        # remove residuals file if already exists (since residuals append)
+        if (file.exists(fits_file)) {
+            logging::logwarn(
+                "Deleting existing residuals file: %s", fits_file)
+            unlink(fits_file)
+        }
+        logging::loginfo("Writing residuals to file %s", fits_file)
+        saveRDS(fit_data$fits, file = fits_file)
+        
+        
         ###############################
         # write filtered data to file #
         ###############################
