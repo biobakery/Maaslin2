@@ -891,6 +891,20 @@ Maaslin2 <-
         # Write out the results #
         #########################
         
+        ###############################
+        # write filtered data to file #
+        ###############################
+        
+        filtered_file = file.path(output, "filtered_data.tsv")
+        logging::loginfo("Writing filtered data to file %s", filtered_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data), filtered_data), 
+            file = filtered_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+            )
+        
         ###########################
         # write residuals to file #
         ###########################
