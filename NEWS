@@ -2,6 +2,7 @@
 Changes in version 1.7.1 (07-27-2021):
 * Update tutorial data files
 * Update knitr dependency for bioconductor tests
+* Update sourcing R scripts 
 
 Changes in version 1.5.1 (12-02-2020):
 * Update log from base 10 to base 2.
