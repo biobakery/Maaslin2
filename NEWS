@@ -1,8 +1,14 @@
+Changes in version 1.7.3 (11-02-2021):
+* Update sourcing R scripts 
+* Update reference level handling
+* Update example files
+* Fix saved plots to allow for runs with less then N plots per metadata
+* Convert strings to numeric when needed for metadata
+* Fix actions to build with latest version of dependencies
 
 Changes in version 1.7.1 (07-27-2021):
 * Update tutorial data files
 * Update knitr dependency for bioconductor tests
-* Update sourcing R scripts 
 
 Changes in version 1.5.1 (12-02-2020):
 * Update log from base 10 to base 2.
