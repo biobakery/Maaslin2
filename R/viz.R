@@ -235,7 +235,8 @@ maaslin2_heatmap <-
                     treeheight_row = 0,
                     treeheight_col = 0,
                     display_numbers = matrix(ifelse(
-                        a > 0.0, "+", ifelse(a < 0.0, "-", "")), nrow(a))
+                        a > 0.0, "+", ifelse(a < 0.0, "-", "")), nrow(a)),
+                    silent = TRUE
                 )
         }, error = function(err) {
             logging::logerror("Unable to plot heatmap")
