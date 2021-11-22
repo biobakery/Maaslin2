@@ -905,13 +905,13 @@ Maaslin2 <-
         ################################
         
         fits_file = file.path(fits_folder, "fits.rds")
-        # remove residuals file if already exists (since residuals append)
+        # remove fits file if already exists (since fits append)
         if (file.exists(fits_file)) {
             logging::logwarn(
-                "Deleting existing residuals file: %s", fits_file)
+                "Deleting existing fits file: %s", fits_file)
             unlink(fits_file)
         }
-        logging::loginfo("Writing residuals to file %s", fits_file)
+        logging::loginfo("Writing fits to file %s", fits_file)
         saveRDS(fit_data$fits, file = fits_file)
         
         
