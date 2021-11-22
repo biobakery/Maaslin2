@@ -45,7 +45,7 @@ if (identical(environment(), globalenv()) &&
     script_dir <- dirname(script_path)
     script_name <- basename(script_path)
     
-    for (R_file in dir(script_dir, pattern = "*.R"))
+    for (R_file in dir(script_dir, pattern = "*.R$"))
     {
         if (!(R_file == script_name))
             source(file.path(script_dir, R_file))
