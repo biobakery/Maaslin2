@@ -391,6 +391,12 @@ Maaslin2 <-
             print("Creating output feature tables folder")
             dir.create(features_folder)
         }
+        
+        fits_folder <- file.path(output, "fits")
+        if (!file.exists(fits_folder)) {
+            print("Creating output fits folder")
+            dir.create(fits_folder)
+        }
 
         if (plot_heatmap || plot_scatter) {
             figures_folder <- file.path(output, "figures")
@@ -894,11 +900,11 @@ Maaslin2 <-
                     length(which(filtered_data_norm[, x[1]] > 0))
             )
         
-        #########################
-        # Write out the results #
-        #########################
+        ################################
+        # Write out the raw model fits #
+        ################################
         
-        fits_file = file.path(output, "fits.rds")
+        fits_file = file.path(fits_folder, "fits.rds")
         # remove residuals file if already exists (since residuals append)
         if (file.exists(fits_file)) {
             logging::logwarn(
@@ -910,7 +916,7 @@ Maaslin2 <-
         
         
         ##########################################
-        # write processed feature tables to file #
+        # Write processed feature tables to file #
         ##########################################
         
         filtered_file = file.path(features_folder, "filtered_data.tsv")
@@ -944,10 +950,10 @@ Maaslin2 <-
         )
         
         ###########################
-        # write residuals to file #
+        # Write residuals to file #
         ###########################
         
-        residuals_file = file.path(output, "residuals.rds")
+        residuals_file = file.path(fits_folder, "residuals.rds")
         # remove residuals file if already exists (since residuals append)
         if (file.exists(residuals_file)) {
             logging::logwarn(
@@ -958,10 +964,10 @@ Maaslin2 <-
         saveRDS(fit_data$residuals, file = residuals_file)
         
         ###############################
-        # write fitted values to file #
+        # Write fitted values to file #
         ###############################
         
-        fitted_file = file.path(output, "fitted.rds")
+        fitted_file = file.path(fits_folder, "fitted.rds")
         # remove fitted file if already exists (since fitted append)
         if (file.exists(fitted_file)) {
           logging::logwarn(
@@ -971,12 +977,12 @@ Maaslin2 <-
         logging::loginfo("Writing fitted values to file %s", fitted_file)
         saveRDS(fit_data$fitted, file = fitted_file)
         
-        ########################################################
-        # write extracted random effects to file (if specified) #
-        ########################################################
+        #########################################################
+        # Write extracted random effects to file (if specified) #
+        #########################################################
         
         if (!is.null(random_effects)) {
-          ranef_file = file.path(output, "ranef.rds")
+          ranef_file = file.path(fits_folder, "ranef.rds")
           # remove ranef file if already exists (since ranef append)
           if (file.exists(ranef_file)) {
             logging::logwarn(
@@ -988,7 +994,7 @@ Maaslin2 <-
         }
         
         #############################
-        # write all results to file #
+        # Write all results to file #
         #############################
         
         results_file <- file.path(output, "all_results.tsv")
@@ -1028,7 +1034,7 @@ Maaslin2 <-
         )
         
         ###########################################
-        # write results passing threshold to file #
+        # Write results passing threshold to file #
         ###########################################
         
         significant_results <-
