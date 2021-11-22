@@ -123,6 +123,10 @@ MaAsLin2 generates two types of output files: data and visualization.
     * ``significant_results.tsv``
         * This file is a subset of the results in the first file.
         * It only includes associations with q-values <= to the threshold.
+    * ``features```
+        * This folder includes the filtered, normalized, and transformed versions of the input feature table if applicable.
+    * ``fits.rds``
+        * This file contains a list of lists with every model fit.
     * ``residuals.rds``
         * This file contains a data frame with residuals for each feature.
     * ``fitted.rds``
