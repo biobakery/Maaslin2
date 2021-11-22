@@ -902,9 +902,9 @@ Maaslin2 <-
         saveRDS(fit_data$fits, file = fits_file)
         
         
-        ###############################
-        # write filtered data to file #
-        ###############################
+        ##########################################
+        # write processed feature tables to file #
+        ##########################################
         
         filtered_file = file.path(output, "filtered_data.tsv")
         logging::loginfo("Writing filtered data to file %s", filtered_file)
@@ -915,6 +915,26 @@ Maaslin2 <-
             quote = FALSE, 
             row.names = FALSE
             )
+        
+        filtered_data_norm_file = file.path(output, "filtered_data_norm.tsv")
+        logging::loginfo("Writing filtered, normalized data to file %s", filtered_data_norm_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data_norm), filtered_data_norm), 
+            file = filtered_data_norm_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+        )
+        
+        filtered_data_norm_transformed_file = file.path(output, "filtered_data_norm_transformed.tsv")
+        logging::loginfo("Writing filtered, normalized, transformed data to file %s", filtered_data_norm_transformed_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data_norm_transformed), filtered_data_norm_transformed), 
+            file = filtered_data_norm_transformed_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+        )
         
         ###########################
         # write residuals to file #
