@@ -385,14 +385,21 @@ Maaslin2 <-
             print("Creating output folder")
             dir.create(output)
         }
+        
+        features_folder <- file.path(output, "features")
+        if (!file.exists(features_folder)) {
+            print("Creating output feature tables folder")
+            dir.create(features_folder)
+        }
 
-        if (plot_heatmap || plot_scatter){
-            figures_folder <- file.path(output,"figures")
-        if (!file.exists(figures_folder)) {
-            print("Creating output figures folder")
-            dir.create(figures_folder)
+        if (plot_heatmap || plot_scatter) {
+            figures_folder <- file.path(output, "figures")
+            if (!file.exists(figures_folder)) {
+                print("Creating output figures folder")
+                dir.create(figures_folder)
+            }
         }
-        }
+    
         
         # create log file (write info to stdout and debug level to log file)
         # set level to finest so all log levels are reviewed
@@ -906,7 +913,7 @@ Maaslin2 <-
         # write processed feature tables to file #
         ##########################################
         
-        filtered_file = file.path(output, "filtered_data.tsv")
+        filtered_file = file.path(features_folder, "filtered_data.tsv")
         logging::loginfo("Writing filtered data to file %s", filtered_file)
         write.table(
             data.frame("feature" = rownames(filtered_data), filtered_data), 
@@ -916,7 +923,7 @@ Maaslin2 <-
             row.names = FALSE
             )
         
-        filtered_data_norm_file = file.path(output, "filtered_data_norm.tsv")
+        filtered_data_norm_file = file.path(features_folder, "filtered_data_norm.tsv")
         logging::loginfo("Writing filtered, normalized data to file %s", filtered_data_norm_file)
         write.table(
             data.frame("feature" = rownames(filtered_data_norm), filtered_data_norm), 
@@ -926,7 +933,7 @@ Maaslin2 <-
             row.names = FALSE
         )
         
-        filtered_data_norm_transformed_file = file.path(output, "filtered_data_norm_transformed.tsv")
+        filtered_data_norm_transformed_file = file.path(features_folder, "filtered_data_norm_transformed.tsv")
         logging::loginfo("Writing filtered, normalized, transformed data to file %s", filtered_data_norm_transformed_file)
         write.table(
             data.frame("feature" = rownames(filtered_data_norm_transformed), filtered_data_norm_transformed), 
