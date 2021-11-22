@@ -128,7 +128,9 @@ MaAsLin2 generates two types of output files: data and visualization.
         * This file is a subset of the results in the first file.
         * It only includes associations with q-values <= to the threshold.
     * ``features```
-        * This folder includes the filtered, normalized, and transformed versions of the input feature table if applicable.
+        * This folder includes the filtered, normalized, and transformed versions of the input feature table.
+        * These steps are performed sequentially in the above order.
+        * If an option is set such that a step does not change the data, the resulting table will still be output.
     * ``fits.rds``
         * This file contains a list of lists with every model fit.
     * ``residuals.rds``
