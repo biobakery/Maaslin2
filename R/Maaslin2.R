@@ -696,7 +696,14 @@ Maaslin2 <-
             random_effects <-
                 unlist(strsplit(random_effects, ",", fixed = TRUE))
             # subtract random effects from fixed effects
-            fixed_effects <- setdiff(fixed_effects, random_effects)
+            common_variables <- intersect(fixed_effects, random_effects)
+            if (length(common_variables) > 0) {
+                logging::logwarn(
+                    paste("Feature name included as fixed and random effect,",
+                          "check that this is intended: %s"),
+                    paste(common_variables, collapse = " , ")
+                )
+            }
             # remove any random effects not found in metadata
             to_remove <- setdiff(random_effects, colnames(metadata))
             if (length(to_remove) > 0)
