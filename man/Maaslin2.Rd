@@ -33,6 +33,7 @@ Maaslin2(
     plot_scatter = TRUE,
     max_pngs = 10,
     heatmap_first_n = 50,
+    save_models = FALSE,
     reference = NULL
 )
 }
@@ -95,6 +96,9 @@ Maaslin2(
 }
     \item{cores}{
     The number of R processes to run in parallel.
+}
+    \item{save_models}{
+    Save the full model outputs to an RData file.
 }
     \item{reference}{
     The factor to use as a reference for a variable with more than two levels
