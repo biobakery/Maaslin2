@@ -915,16 +915,17 @@ Maaslin2 <-
         # Write out the raw model fits #
         ################################
         
-        fits_file = file.path(fits_folder, "fits.rds")
-        # remove fits file if already exists (since fits append)
-        if (file.exists(fits_file)) {
-            logging::logwarn(
-                "Deleting existing fits file: %s", fits_file)
-            unlink(fits_file)
+        if (save_models) {
+            model_file = file.path(fits_folder, "models.rds")
+            # remove models file if already exists (since models append)
+            if (file.exists(model_file)) {
+                logging::logwarn(
+                    "Deleting existing model objects file: %s", model_file)
+                unlink(model_file)
+            }
+            logging::loginfo("Writing model objects to file %s", model_file)
+            saveRDS(fit_data$fits, file = model_file)   
         }
-        logging::loginfo("Writing fits to file %s", fits_file)
-        saveRDS(fit_data$fits, file = fits_file)
-        
         
         ##########################################
         # Write processed feature tables to file #
