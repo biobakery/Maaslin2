@@ -1164,6 +1164,7 @@ if (identical(environment(), globalenv()) &&
             current_args$plot_scatter,
             current_args$max_pngs,
             current_args$heatmap_first_n,
+            current_args$save_models,
             current_args$reference
         )
 }
