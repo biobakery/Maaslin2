@@ -127,8 +127,9 @@ MaAsLin2 generates two types of output files: data and visualization.
         * This folder includes the filtered, normalized, and transformed versions of the input feature table.
         * These steps are performed sequentially in the above order.
         * If an option is set such that a step does not change the data, the resulting table will still be output.
-    * ``fits.rds``
-        * This file contains a list of lists with every model fit.
+    * ``models.rds``
+        * This file contains a list with every model fit object.
+        * It will only be generated if save_models is set to TRUE.
     * ``residuals.rds``
         * This file contains a data frame with residuals for each feature.
     * ``fitted.rds``
@@ -214,8 +215,7 @@ Options:
         is detected at minimum abundance [ Default: 0.1 ]
 
     -b MIN_VARIANCE, --min_variance=MIN_VARIANCE
-       Keep features with variance greater than
-       [ Default: 0.0 ]
+       Keep features with variance greater than [ Default: 0.0 ]
 
     -s MAX_SIGNIFICANCE, --max_significance=MAX_SIGNIFICANCE
         The q-value threshold for significance [ Default: 0.25 ]
@@ -267,6 +267,9 @@ Options:
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
+        
+    -j SAVE_MODELS --save_models=SAVE_MODELS
+        Save all full model objects as an RData file [ Default: FALSE ]
     
     -d REFERENCE, --reference=REFERENCE
         The factor to use as a reference level for a categorical variable 

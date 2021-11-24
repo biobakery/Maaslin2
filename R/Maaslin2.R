@@ -303,7 +303,7 @@ options <-
         type = "logical",
         dest = "save_models",
         default = args$save_models,
-        help = paste("Save the all full model objects",
+        help = paste("Save all full model objects",
                      " as an RData file [ Default: %default ]"
         )
     )
