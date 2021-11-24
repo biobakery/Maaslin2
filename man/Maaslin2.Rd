@@ -31,6 +31,7 @@ Maaslin2(
     cores = 1,
     plot_heatmap = TRUE,
     plot_scatter = TRUE,
+    max_pngs = 10,
     heatmap_first_n = 50,
     reference = NULL
 )
