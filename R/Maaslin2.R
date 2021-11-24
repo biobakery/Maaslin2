@@ -296,7 +296,17 @@ options <-
             "run in parallel [ Default: %default ]"
         )
     )
-
+options <-
+    optparse::add_option(
+        options,
+        c("-j", "--save_models"),
+        type = "logical",
+        dest = "save_models",
+        default = args$save_models,
+        help = paste("Save the all full model objects",
+                     " as an RData file [ Default: %default ]"
+        )
+    )
 options <-
     optparse::add_option(
         options,
@@ -341,6 +351,7 @@ Maaslin2 <-
         plot_scatter = TRUE,
         max_pngs = 10,
         heatmap_first_n = 50,
+        save_models = FALSE,
         reference = NULL)
     {
         # Allow for lower case variables
