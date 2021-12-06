@@ -1,14 +1,15 @@
 bibentry(bibtype = "Article",
          title = "Multivariable Association in Population-scale Meta-omics Studies.",
          author = "Himel Mallick, Ali Rahnavard, Lauren J. McIver, Siyuan Ma, Yangcong Zhang, Long H. Nguyen, Timothy L. Tickle, Geroge Weingart, Boyu Ren, Emma H. Schwager, Suvo Chatterjee, Kelsey N. Thompson, Jeremy E. Wilkinson, Ayshwarya Subramanian, Yiren Lu, Levi Waldron, Joseph N. Paulson, Eric A. Franzosa, Hector Corrada Bravo, Curtis Huttenhower",
-         year = 2020,
-         journal = "Nature Methods",
-         volume = "In Submission",
-         pages = "",
-         doi = "",
+         year = 2021,
+         journal = "PLOS Computational Biology",
+         volume = "17",
+         issue = "11",
+         pages = "e1009442",
+         doi = "https://doi.org/10.1371/journal.pcbi.1009442",
          url = "http://huttenhower.sph.harvard.edu/maaslin2",
          header = "To cite MaAsLin 2 in publications, please use:",
-         textVersion = "Mallick H et al. (2020). Multivariable Association in Population-scale Meta-omics Studies, http://huttenhower.sph.harvard.edu/maaslin2."
+         textVersion = "Mallick H et al. (2021). Multivariable Association in Population-scale Meta-omics Studies, http://huttenhower.sph.harvard.edu/maaslin2."
          )
      
 bibentry(bibtype = "Manual",
