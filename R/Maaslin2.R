@@ -296,7 +296,17 @@ options <-
             "run in parallel [ Default: %default ]"
         )
     )
-
+options <-
+    optparse::add_option(
+        options,
+        c("-j", "--save_models"),
+        type = "logical",
+        dest = "save_models",
+        default = args$save_models,
+        help = paste("Save all full model objects",
+                     " as an RData file [ Default: %default ]"
+        )
+    )
 options <-
     optparse::add_option(
         options,
@@ -341,6 +351,7 @@ Maaslin2 <-
         plot_scatter = TRUE,
         max_pngs = 10,
         heatmap_first_n = 50,
+        save_models = FALSE,
         reference = NULL)
     {
         # Allow for lower case variables
@@ -385,14 +396,27 @@ Maaslin2 <-
             print("Creating output folder")
             dir.create(output)
         }
+        
+        features_folder <- file.path(output, "features")
+        if (!file.exists(features_folder)) {
+            print("Creating output feature tables folder")
+            dir.create(features_folder)
+        }
+        
+        fits_folder <- file.path(output, "fits")
+        if (!file.exists(fits_folder)) {
+            print("Creating output fits folder")
+            dir.create(fits_folder)
+        }
 
-        if (plot_heatmap || plot_scatter){
-            figures_folder <- file.path(output,"figures")
-        if (!file.exists(figures_folder)) {
-            print("Creating output figures folder")
-            dir.create(figures_folder)
+        if (plot_heatmap || plot_scatter) {
+            figures_folder <- file.path(output, "figures")
+            if (!file.exists(figures_folder)) {
+                print("Creating output figures folder")
+                dir.create(figures_folder)
+            }
         }
-        }
+    
         
         # create log file (write info to stdout and debug level to log file)
         # set level to finest so all log levels are reviewed
@@ -887,15 +911,61 @@ Maaslin2 <-
                     length(which(filtered_data_norm[, x[1]] > 0))
             )
         
-        #########################
-        # Write out the results #
-        #########################
+        ################################
+        # Write out the raw model fits #
+        ################################
+        
+        if (save_models) {
+            model_file = file.path(fits_folder, "models.rds")
+            # remove models file if already exists (since models append)
+            if (file.exists(model_file)) {
+                logging::logwarn(
+                    "Deleting existing model objects file: %s", model_file)
+                unlink(model_file)
+            }
+            logging::loginfo("Writing model objects to file %s", model_file)
+            saveRDS(fit_data$fits, file = model_file)   
+        }
+        
+        ##########################################
+        # Write processed feature tables to file #
+        ##########################################
+        
+        filtered_file = file.path(features_folder, "filtered_data.tsv")
+        logging::loginfo("Writing filtered data to file %s", filtered_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data), filtered_data), 
+            file = filtered_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+            )
+        
+        filtered_data_norm_file = file.path(features_folder, "filtered_data_norm.tsv")
+        logging::loginfo("Writing filtered, normalized data to file %s", filtered_data_norm_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data_norm), filtered_data_norm), 
+            file = filtered_data_norm_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+        )
+        
+        filtered_data_norm_transformed_file = file.path(features_folder, "filtered_data_norm_transformed.tsv")
+        logging::loginfo("Writing filtered, normalized, transformed data to file %s", filtered_data_norm_transformed_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data_norm_transformed), filtered_data_norm_transformed), 
+            file = filtered_data_norm_transformed_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+        )
         
         ###########################
-        # write residuals to file #
+        # Write residuals to file #
         ###########################
         
-        residuals_file = file.path(output, "residuals.rds")
+        residuals_file = file.path(fits_folder, "residuals.rds")
         # remove residuals file if already exists (since residuals append)
         if (file.exists(residuals_file)) {
             logging::logwarn(
@@ -906,10 +976,10 @@ Maaslin2 <-
         saveRDS(fit_data$residuals, file = residuals_file)
         
         ###############################
-        # write fitted values to file #
+        # Write fitted values to file #
         ###############################
         
-        fitted_file = file.path(output, "fitted.rds")
+        fitted_file = file.path(fits_folder, "fitted.rds")
         # remove fitted file if already exists (since fitted append)
         if (file.exists(fitted_file)) {
           logging::logwarn(
@@ -919,12 +989,12 @@ Maaslin2 <-
         logging::loginfo("Writing fitted values to file %s", fitted_file)
         saveRDS(fit_data$fitted, file = fitted_file)
         
-        ########################################################
-        # write extracted random effects to file (if specified) #
-        ########################################################
+        #########################################################
+        # Write extracted random effects to file (if specified) #
+        #########################################################
         
         if (!is.null(random_effects)) {
-          ranef_file = file.path(output, "ranef.rds")
+          ranef_file = file.path(fits_folder, "ranef.rds")
           # remove ranef file if already exists (since ranef append)
           if (file.exists(ranef_file)) {
             logging::logwarn(
@@ -936,7 +1006,7 @@ Maaslin2 <-
         }
         
         #############################
-        # write all results to file #
+        # Write all results to file #
         #############################
         
         results_file <- file.path(output, "all_results.tsv")
@@ -976,7 +1046,7 @@ Maaslin2 <-
         )
         
         ###########################################
-        # write results passing threshold to file #
+        # Write results passing threshold to file #
         ###########################################
         
         significant_results <-
@@ -1094,6 +1164,7 @@ if (identical(environment(), globalenv()) &&
             current_args$plot_scatter,
             current_args$max_pngs,
             current_args$heatmap_first_n,
+            current_args$save_models,
             current_args$reference
         )
 }
