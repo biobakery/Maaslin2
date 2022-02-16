@@ -281,7 +281,9 @@ Options:
 
 ## Contributions ##
 Thanks go to these wonderful people:
+
 - Nick Waters <nickp60@gmail.com>
+    * Design of the PR and attribution process
 
 ## Troubleshooting ##
 
