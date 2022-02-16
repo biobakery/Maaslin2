@@ -1,4 +1,5 @@
 
+
 # MaAsLin2 User Manual #
 
 MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association with Linear Models).
@@ -277,6 +278,10 @@ Options:
         multiple variables. Not required if metadata is passed as a factor or 
         for variables with less than two levels but can be set regardless.
         [ Default: NA ] 
+
+## Contributions ##
+Thanks go to these wonderful people:
+- Nick Waters <nickp60@gmail.com>
 
 ## Troubleshooting ##
 
