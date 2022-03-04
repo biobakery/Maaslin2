@@ -358,7 +358,9 @@ Maaslin2 <-
         normalization <- toupper(normalization)
         transform <- toupper(transform)
         analysis_method <- toupper(analysis_method)
-        correction <- toupper(correction)
+        
+        # Match variable ignoring case then set correctly as required for p.adjust
+        correction <- correction_choices[match(toupper(correction), toupper(correction_choices))]
 
         #################################################################
         # Read in the data and metadata, create output folder, init log #
