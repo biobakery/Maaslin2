@@ -147,7 +147,7 @@ MaAsLin2 generates two types of output files: data and visualization.
         * A plot is generated for each significant association.
         * Scatter plots are used for continuous metadata.
         * Box plots are for categorical data.
-        * Data points plotted are after normalization, filtering, and transform.
+        * Data points plotted are after filtering but prior to normalization and transform.
 
 ### Run a Demo ###
 
