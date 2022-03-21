@@ -147,7 +147,7 @@ MaAsLin2 generates two types of output files: data and visualization.
         * A plot is generated for each significant association.
         * Scatter plots are used for continuous metadata.
         * Box plots are for categorical data.
-        * Data points plotted are after normalization, filtering, and transform.
+        * Data points plotted are after filtering but prior to normalization and transform.
 
 ### Run a Demo ###
 
@@ -162,7 +162,7 @@ the HMP2 data which can be downloaded from https://ibdmdb.org/ .
 
 #### Command line ####
 
-``$ Maaslin2.R --transform=AST --fixed_effects="diagnosis,dysbiosisnonIBD,dysbiosisUC,dysbiosisCD,antibiotics,age" --random_effects="site,subject" --normalization=NONE --standardize=FALSE inst/extdata/HMP2_taxonomy.tsv inst/extdata/HMP2_metadata.tsv demo_output``
+``$ Maaslin2.R --fixed_effects="diagnosis,dysbiosisnonIBD,dysbiosisUC,dysbiosisCD,antibiotics,age" --random_effects="site,subject" --standardize=FALSE inst/extdata/HMP2_taxonomy.tsv inst/extdata/HMP2_metadata.tsv demo_output``
 
 * Make sure to provide the full path to the MaAsLin2 executable (ie ./R/Maaslin2.R).
 * In the demo command:
@@ -180,10 +180,9 @@ input_data <- system.file(
 input_metadata <-system.file(
     'extdata','HMP2_metadata.tsv', package="Maaslin2")
 fit_data <- Maaslin2(
-    input_data, input_metadata, 'demo_output', transform = "AST",
+    input_data, input_metadata, 'demo_output'
     fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
     random_effects = c('site', 'subject'),
-    normalization = 'NONE',
     standardize = FALSE)
 ```
 
