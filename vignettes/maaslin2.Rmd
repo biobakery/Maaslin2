@@ -1,5 +1,5 @@
 ---
-title: "maaslin2"
+title: "Maaslin2"
 date: "Friday, May 10, 2019"
 author:
  - name: Himel Mallick
@@ -10,7 +10,7 @@ author:
    email: lauren.j.mciver@gmail.com
 output: html_document
 vignette: >
-    %\VignetteIndexEntry{MaAsLin2}
+    %\VignetteIndexEntry{Maaslin2}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
