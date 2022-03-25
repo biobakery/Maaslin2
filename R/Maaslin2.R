@@ -303,8 +303,8 @@ options <-
         type = "logical",
         dest = "save_models",
         default = args$save_models,
-        help = paste("Save all full model objects",
-                     " as an RData file [ Default: %default ]"
+        help = paste("Return the full model outputs ",
+                     "and save to an RData file. [ Default: %default ]"
         )
     )
 options <-
@@ -897,6 +897,7 @@ Maaslin2 <-
                 formula = formula,
                 random_effects_formula = random_effects_formula,
                 correction = correction,
+                save_models = save_models,
                 cores = cores
             )
         

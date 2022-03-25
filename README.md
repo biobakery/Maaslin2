@@ -269,7 +269,8 @@ Options:
         [ Default: 1 ]
         
     -j SAVE_MODELS --save_models=SAVE_MODELS
-        Save all full model objects as an RData file [ Default: FALSE ]
+        Return the full model outputs and save to an RData file.
+        [ Default: FALSE ]
     
     -d REFERENCE, --reference=REFERENCE
         The factor to use as a reference level for a categorical variable 

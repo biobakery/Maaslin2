@@ -98,7 +98,7 @@ Maaslin2(
     The number of R processes to run in parallel.
 }
     \item{save_models}{
-    Save the full model outputs to an RData file.
+    Return the full model outputs and save to an RData file.
 }
     \item{reference}{
     The factor to use as a reference for a variable with more than two levels
