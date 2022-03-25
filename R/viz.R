@@ -290,7 +290,8 @@ maaslin2_association_plots <-
         output_results,
         write_to = './',
         figures_folder = './figures/',
-        max_pngs = 10)
+        max_pngs = 10,
+        save_scatter = FALSE)
     {
         #MaAslin2 scatter plot function and theme
         
@@ -352,9 +353,10 @@ maaslin2_association_plots <-
         metadata_labels <-
             unlist(metadata_types[!duplicated(metadata_types)])
         metadata_number <- 1
+        saved_plots <- list()
         
         for (label in metadata_labels) {
-            saved_plots <- vector('list', max_pngs)
+            saved_plots[[label]] <- list()
             # for file name replace any non alphanumeric with underscore
             plot_file <-
                 paste(
@@ -520,21 +522,36 @@ maaslin2_association_plots <-
                 stdout <- capture.output(print(temp_plot), type = "message")
                 if (length(stdout) > 0)
                     logging::logdebug(stdout)
-                if (count < max_pngs + 1)
-                    saved_plots[[count]] <- temp_plot
+                
+                # keep all plots if desired
+                # or only keep plots to be printed to png
+                if (save_scatter) {
+                  saved_plots[[label]][[y_label]] <- temp_plot
+                }
+                else if (count < max_pngs + 1) {
+                  saved_plots[[label]][[y_label]] <- temp_plot
+                }
                 count <- count + 1
             }
             dev.off()
+            
             # print the saved figures
-            for (plot_number in seq(1,max_pngs)) {
+            # this is done separately from pdf generation 
+            # because nested graphics devices cause problems in rmarkdown output
+            for (plot_number in seq(1, max_pngs)) {
                 png_file <- file.path(figures_folder,
                     paste0(
                         substr(basename(plot_file),1,nchar(basename(plot_file))-4),
                         "_",plot_number,".png"))
                 png(png_file, res = 300, width = 960, height = 960)
-                stdout <- capture.output(print(saved_plots[[plot_number]]))
+                stdout <- capture.output(print(saved_plots[[label]][[max_pngs]]))
                 dev.off()
+            }
+            # remove plots saved for png generation
+            if (!save_scatter) {
+              saved_plots[[label]] <- NULL
             }
             metadata_number <- metadata_number + 1
         }
+        return(saved_plots)
     }
