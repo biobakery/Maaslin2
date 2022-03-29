@@ -30,9 +30,10 @@ Maaslin2(
     standardize = TRUE,
     cores = 1,
     plot_heatmap = TRUE,
+    heatmap_first_n = 50,
     plot_scatter = TRUE,
     max_pngs = 10,
-    heatmap_first_n = 50,
+    save_scatter = FALSE,
     save_models = FALSE,
     reference = NULL
 )
@@ -91,8 +92,12 @@ Maaslin2(
     Generate scatter plots for the significant associations.
 }
     \item{max_pngs}{
-    Set the maximum number of scatterplots for signficant associations 
+    Set the maximum number of scatter plots for signficant associations 
     to save as png files.  
+}
+    \item{save_scatter}{
+    Save all scatter plot ggplot objects
+    to an RData file.
 }
     \item{cores}{
     The number of R processes to run in parallel.
@@ -107,7 +112,7 @@ Maaslin2(
 }
 }
 \value{
-    Data.frame containing the results from applying the model.
+    List containing the results from applying the model.
 }
 \author{
     Himel Mallick<himel.stat.iitk@gmail.com>,\cr
