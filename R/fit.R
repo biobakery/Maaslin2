@@ -367,9 +367,9 @@ fit.data <-
         rownames(paras)<-NULL
         
         if (!(is.null(random_effects_formula))) {
-          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "fits" = fits, "ranef" = ranef))
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = ranef, "fits" = fits))
         } else {
-          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "fits" = fits))
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = NULL, "fits" = fits))
         }
     }        
           
