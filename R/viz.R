@@ -444,7 +444,7 @@ maaslin2_association_plots <-
                                 size = 2,
                                 fontface = "italic"
                             )
-                } else{
+                } else {
                     # if Metadata is categorical generate a boxplot
                     ### check if the variable is categorical
                     
@@ -526,10 +526,10 @@ maaslin2_association_plots <-
                 # keep all plots if desired
                 # or only keep plots to be printed to png
                 if (save_scatter) {
-                  saved_plots[[label]][[y_label]] <- temp_plot
+                  saved_plots[[label]][[count]] <- temp_plot
                 }
-                else if (count < max_pngs + 1) {
-                  saved_plots[[label]][[y_label]] <- temp_plot
+                else if (count <= max_pngs) {
+                  saved_plots[[label]][[count]] <- temp_plot
                 }
                 count <- count + 1
             }
@@ -544,12 +544,14 @@ maaslin2_association_plots <-
                         substr(basename(plot_file),1,nchar(basename(plot_file))-4),
                         "_",plot_number,".png"))
                 png(png_file, res = 300, width = 960, height = 960)
-                stdout <- capture.output(print(saved_plots[[label]][[max_pngs]]))
+                stdout <- capture.output(print(saved_plots[[label]][[plot_number]]))
                 dev.off()
             }
-            # remove plots saved for png generation
-            if (!save_scatter) {
-              saved_plots[[label]] <- NULL
+            # give plots informative names
+            if (save_scatter) {
+              names(saved_plots[[label]]) <- make.names(output_df_all[data_index, 'feature'], unique = TRUE)
+            } else {
+              saved_plots[[label]] <- NULL  # instead remove plots if only saved for png generation
             }
             metadata_number <- metadata_number + 1
         }
