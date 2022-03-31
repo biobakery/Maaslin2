@@ -269,15 +269,20 @@ Options:
         associations [ Default: TRUE ]
         
     -g MAX_PNGS, --max_pngs=MAX_PNGS
-        The maximum number of scatterplots for signficant associations 
+        The maximum number of scatter plots for signficant associations 
         to save as png files [ Default: 10 ]
+    
+    -O SAVE_SCATTER, --save_scatter=SAVE_SCATTER
+        Save all scatter plot ggplot objects
+        to an RData file [ Default: FALSE ]
 
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
         
     -j SAVE_MODELS --save_models=SAVE_MODELS
-        Save all full model objects as an RData file [ Default: FALSE ]
+        Return the full model outputs and save to an RData file
+        [ Default: FALSE ]
 
     -d REFERENCE, --reference=REFERENCE
         The factor to use as a reference level for a categorical variable 

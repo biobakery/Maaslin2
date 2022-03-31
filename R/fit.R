@@ -23,6 +23,7 @@ fit.data <-
         formula = NULL,
         random_effects_formula = NULL,
         correction = "BH",
+        save_models = FALSE,
         cores = 1) {
 
         # set the formula default to all fixed effects if not provided
@@ -254,7 +255,11 @@ fit.data <-
                       names(d)<-unlist(lapply(l, row.names))
                       output$ranef<-d
                     }
-                    output$fit <- fit
+                    if (save_models) {
+                      output$fit <- fit
+                    } else {
+                      output$fit <- NA
+                    }
                 }
                 else
                   {
@@ -301,7 +306,12 @@ fit.data <-
           lapply(outputs, function(x) {
             return(x$fit)
           })
-        names(fits) <- colnames(features)   
+        names(fits) <- colnames(features)  
+        
+        # Return NULL rather than empty object if fits aren't saved
+        if (all(is.na(fits))) {
+          fits <- NULL
+        }
         
         if (!(is.null(random_effects_formula))) {
           ranef <-
@@ -357,9 +367,9 @@ fit.data <-
         rownames(paras)<-NULL
         
         if (!(is.null(random_effects_formula))) {
-          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "fits" = fits, "ranef" = ranef))
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = ranef, "fits" = fits))
         } else {
-          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "fits" = fits))
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = NULL, "fits" = fits))
         }
     }        
           

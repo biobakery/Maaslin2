@@ -94,7 +94,9 @@ args$plot_heatmap <- TRUE
 args$heatmap_first_n <- 50
 args$plot_scatter <- TRUE
 args$max_pngs <- 10
+args$save_scatter <- FALSE
 args$cores <- 1
+args$save_models <- FALSE
 args$reference <- NULL
 
 ##############################
@@ -117,7 +119,7 @@ options <-
         dest = "min_abundance",
         default = args$min_abundance,
         help = paste0("The minimum abundance for each feature",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -129,7 +131,7 @@ options <-
         default = args$min_prevalence,
         help = paste0("The minimum percent of samples for which",
             "a feature is detected at minimum abundance",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -141,7 +143,7 @@ options <-
         default = args$min_variance,
         help = paste0("Keep features with variances",
             "greater than value",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -152,7 +154,7 @@ options <-
         dest = "max_significance",
         default = args$max_significance,
         help = paste0("The q-value threshold for significance",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -164,7 +166,7 @@ options <-
         default = args$normalization,
         help = paste(
             "The normalization method to apply",
-            " [ Default: %default ] [ Choices:",
+            "[ Default: %default ] [ Choices:",
             toString(normalization_choices),
             "]"
         )
@@ -204,7 +206,7 @@ options <-
         default = args$random_effects,
         help = paste("The random effects for the model, ",
             "comma-delimited for multiple effects",
-            " [ Default: none ]"
+            "[ Default: none ]"
         )
     )
 options <-
@@ -215,8 +217,8 @@ options <-
         dest = "fixed_effects",
         default = args$fixed_effects,
         help = paste("The fixed effects for the model,",
-            " comma-delimited for multiple effects",
-            " [ Default: all ]"
+            "comma-delimited for multiple effects",
+            "[ Default: all ]"
         )
     )
 options <-
@@ -227,7 +229,7 @@ options <-
         dest = "correction",
         default = args$correction,
         help = paste("The correction method for computing",
-            " the q-value [ Default: %default ]"
+            "the q-value [ Default: %default ]"
         )
     )
 options <-
@@ -238,7 +240,7 @@ options <-
         dest = "standardize",
         default = args$standardize,
         help = paste("Apply z-score so continuous metadata are on",
-            " the same scale [ Default: %default ]"
+            "the same scale [ Default: %default ]"
         )
     )
 options <-
@@ -248,7 +250,7 @@ options <-
         type = "logical",
         dest = "plot_heatmap",
         default = args$plot_heatmap,
-        help = paste("Generate a heatmap for the significant ",
+        help = paste("Generate a heatmap for the significant",
             "associations [ Default: %default ]"
         )
     )
@@ -259,7 +261,7 @@ options <-
         type = "double",
         dest = "heatmap_first_n",
         default = args$heatmap_first_n,
-        help = paste("In heatmap, plot top N features with significant ",
+        help = paste("In heatmap, plot top N features with significant",
             "associations [ Default: %default ]"
         )
     )
@@ -271,7 +273,7 @@ options <-
         dest = "plot_scatter",
         default = args$plot_scatter,
         help = paste("Generate scatter plots for the significant",
-            " associations [ Default: %default ]"
+            "associations [ Default: %default ]"
         )
     )
 options <-
@@ -282,7 +284,18 @@ options <-
         dest = "max_pngs",
         default = args$max_pngs,
         help = paste("The maximum number of scatterplots for signficant",
-                     " associations to save as png files [ Default: %default ]"
+                     "associations to save as png files [ Default: %default ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
+        c("-O", "--save_scatter"),
+        type = "logical",
+        dest = "save_scatter",
+        default = args$save_scatter,
+        help = paste("Save all scatter plot ggplot objects",
+                     "to an RData file [ Default: %default ]"
         )
     )
 options <-
@@ -303,8 +316,8 @@ options <-
         type = "logical",
         dest = "save_models",
         default = args$save_models,
-        help = paste("Save all full model objects",
-                     " as an RData file [ Default: %default ]"
+        help = paste("Return the full model outputs ",
+                     "and save to an RData file [ Default: %default ]"
         )
     )
 options <-
@@ -348,9 +361,10 @@ Maaslin2 <-
         standardize = TRUE,
         cores = 1,
         plot_heatmap = TRUE,
+        heatmap_first_n = 50,
         plot_scatter = TRUE,
         max_pngs = 10,
-        heatmap_first_n = 50,
+        save_scatter = FALSE,
         save_models = FALSE,
         reference = NULL)
     {
@@ -544,6 +558,11 @@ Maaslin2 <-
                     toString(valid_choice_method_transform)
                 )
             }
+        }
+        # check that plots are generated if to be saved
+        if (!plot_scatter && save_scatter) {
+            logging::logerror("Scatter plots cannot be saved if they are not plotted")
+            stop("Option not valid", call. = FALSE)
         }
         
         ###############################################################
@@ -897,6 +916,7 @@ Maaslin2 <-
                 formula = formula,
                 random_effects_formula = random_effects_formula,
                 correction = correction,
+                save_models = save_models,
                 cores = cores
             )
         
@@ -1117,13 +1137,25 @@ Maaslin2 <-
                     "to output folder: %s"),
                 output
             )
-            maaslin2_association_plots(
+            saved_plots <- maaslin2_association_plots(
                 unfiltered_metadata,
                 filtered_data,
                 significant_results_file,
                 output,
                 figures_folder,
-                max_pngs)
+                max_pngs,
+                save_scatter)
+            if (save_scatter) {
+                scatter_file <- file.path(figures_folder, "scatter_plots.rds")
+                # remove plots file if already exists
+                if (file.exists(scatter_file)) {
+                    logging::logwarn(
+                        "Deleting existing scatter plot objects file: %s", scatter_file)
+                    unlink(scatter_file)
+                }
+                logging::loginfo("Writing scatter plot objects to file %s", scatter_file)
+                saveRDS(saved_plots, file = scatter_file)   
+            }
         }
         
         return(fit_data)
@@ -1170,9 +1202,10 @@ if (identical(environment(), globalenv()) &&
             current_args$standardize,
             current_args$cores,
             current_args$plot_heatmap,
+            current_args$heatmap_first_n,
             current_args$plot_scatter,
             current_args$max_pngs,
-            current_args$heatmap_first_n,
+            current_args$save_scatter,
             current_args$save_models,
             current_args$reference
         )
