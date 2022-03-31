@@ -538,14 +538,14 @@ maaslin2_association_plots <-
             # print the saved figures
             # this is done separately from pdf generation 
             # because nested graphics devices cause problems in rmarkdown output
-            for (plot_number in seq(1, max_pngs)) {
-                png_file <- file.path(figures_folder,
+            for (plot_number in seq(1, min((count-1), max_pngs))) {
+              png_file <- file.path(figures_folder,
                     paste0(
                         substr(basename(plot_file),1,nchar(basename(plot_file))-4),
                         "_",plot_number,".png"))
-                png(png_file, res = 300, width = 960, height = 960)
-                stdout <- capture.output(print(saved_plots[[label]][[plot_number]]))
-                dev.off()
+              png(png_file, res = 300, width = 960, height = 960)
+              stdout <- capture.output(print(saved_plots[[label]][[plot_number]]))
+              dev.off()
             }
             # give plots informative names
             if (save_scatter) {
