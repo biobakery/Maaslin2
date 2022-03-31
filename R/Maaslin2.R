@@ -96,6 +96,7 @@ args$plot_scatter <- TRUE
 args$max_pngs <- 10
 args$save_scatter <- FALSE
 args$cores <- 1
+args$save_models <- FALSE
 args$reference <- NULL
 
 ##############################
@@ -360,10 +361,10 @@ Maaslin2 <-
         standardize = TRUE,
         cores = 1,
         plot_heatmap = TRUE,
+        heatmap_first_n = 50,
         plot_scatter = TRUE,
         max_pngs = 10,
         save_scatter = FALSE,
-        heatmap_first_n = 50,
         save_models = FALSE,
         reference = NULL)
     {
@@ -1201,10 +1202,10 @@ if (identical(environment(), globalenv()) &&
             current_args$standardize,
             current_args$cores,
             current_args$plot_heatmap,
+            current_args$heatmap_first_n,
             current_args$plot_scatter,
             current_args$max_pngs,
             current_args$save_scatter,
-            current_args$heatmap_first_n,
             current_args$save_models,
             current_args$reference
         )
