@@ -95,9 +95,9 @@ maaslin2_heatmap <-
         title_additional <- ""
         if (!is.na(first_n) & first_n > 0 & first_n < dim(df)[1]) {
             if (cell_value == 'coef') {
-                df <- df[order(-abs(df[cell_value])) , ]
+                df <- df[order(-abs(df[[cell_value]])) , ]
             } else{
-                df <- df[order(df[cell_value]), ]
+                df <- df[order(df[[cell_value]]), ]
             }
             # get the top n features with significant associations
             df_sub <- df[1:first_n,]
