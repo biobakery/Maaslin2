@@ -1,7 +1,7 @@
 Package: Maaslin2
 Title: "Multivariable Association Discovery in Population-scale Meta-omics Studies"
 Year: 2021
-Version: 1.12.0
+Version: 1.13.0
 Authors@R: c(
   person("Himel", "Mallick", email = "himel.stat.iitk@gmail.com", role = "aut"), 
   person("Ali", "Rahnavard", email = "gholamali.rahnavard@gmail.com", role = "aut"),
