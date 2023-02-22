@@ -381,7 +381,7 @@ Maaslin2 <-
         #################################################################
         # if a character string then this is a file name, else it 
         # is a data frame
-        if (is.character(input_data)) {
+        if (is.character(input_data) && file.exists(input_data)) {
             data <-
                 data.frame(data.table::fread(
                     input_data, header = TRUE, sep = "\t"),
@@ -390,10 +390,16 @@ Maaslin2 <-
                 # read again to get row name
                 data <- read.table(input_data, header = TRUE, row.names = 1)
             }
+        } else if (is.data.frame(input_data)) {
+            if (!tibble::has_rownames(input_data)) {
+              stop("If supplying input_data as a data frame, it must have appropriate rownames!")
+            }
+            data <- as.data.frame(input_data) # in case it's a tibble or something
         } else {
-            data <- input_data
+          stop("input_data is neither a file nor a data frame!")
         }
-        if (is.character(input_metadata)) {
+
+        if (is.character(input_metadata) && file.exists(input_metadata)) {
             metadata <-
                 data.frame(data.table::fread(
                     input_metadata, header = TRUE, sep = "\t"),
@@ -403,10 +409,14 @@ Maaslin2 <-
                     header = TRUE,
                     row.names = 1)
             }
+        } else if (is.data.frame(input_metadata)) {
+            if (!tibble::has_rownames(input_metadata)) {
+              stop("If supplying input_metadata as a data frame, it must have appropriate rownames!")
+            }
+            metadata <- as.data.frame(input_metadata) # in case it's a tibble or something
         } else {
-            metadata <- input_metadata
-        }
-        
+          stop("input_metadata is neither a file nor a data frame!")
+        } 
         # create an output folder and figures folder if it does not exist
         if (!file.exists(output)) {
             print("Creating output folder")
