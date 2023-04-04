@@ -395,8 +395,11 @@ Maaslin2 <-
               stop("If supplying input_data as a data frame, it must have appropriate rownames!")
             }
             data <- as.data.frame(input_data) # in case it's a tibble or something
+        } else if (is.matrix(input_data)) {
+            logging::logwarn("Input is a matrix, passing through as.data.frame() .")
+            data <- as.data.frame(input_data)
         } else {
-          stop("input_data is neither a file nor a data frame!")
+            stop("input_data is neither a file nor a data frame!")
         }
 
         if (is.character(input_metadata) && file.exists(input_metadata)) {
