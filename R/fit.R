@@ -232,7 +232,14 @@ fit.data <-
                             formula, 
                             data = dat_sub, 
                             na.action = na.exclude)
-                }, error = function(err) {
+                }, warning = function(w) { 
+                  message(paste("Feature", colnames(features)[x], ":", w))
+                  logging::logwarn(paste(
+                    "Fitting problem for feature", 
+                    x, 
+                    "a warning was issued"))
+                  return(fit1)
+                  }, error = function(err) {
                     fit1 <-
                         try({
                             model_function(
