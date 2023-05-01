@@ -1,19 +1,3 @@
-# Load Required Packages
-for (lib in c(
-    'dplyr',
-    'pbapply',
-    'lmerTest',
-    'car',
-    'parallel',
-    'MuMIn',
-    'glmmTMB',
-    'MASS',
-    'cplm',
-    'pscl'
-)) {
-    suppressPackageStartupMessages(require(lib, character.only = TRUE))
-}
-
 # fit the data using the model selected and applying the correction
 fit.data <-
     function(

@@ -1,9 +1,3 @@
-# Load Required Packages
-for (lib in c('vegan', 'chemometrics', 'car', 'metagenomeSeq', 'edgeR')) {
-    suppressPackageStartupMessages(require(lib, character.only = TRUE))
-}
-
-
 ###################
 ## Transformation #
 ###################
