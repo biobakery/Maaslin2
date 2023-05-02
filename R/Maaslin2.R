@@ -30,20 +30,23 @@
 
 # this evaluates to true if script is being called directly as an executable
 if (identical(environment(), globalenv()) &&
-        !length(grep("^source\\(", sys.calls()))) {
-    # source all R in Maaslin2 package, relative to this folder
-    # same method as original maaslin
-    script_options <- commandArgs(trailingOnly = FALSE)
-    script_path <-
-        sub("--file=", "", script_options[grep("--file=", script_options)])
-    script_dir <- dirname(script_path)
-    script_name <- basename(script_path)
-    
-    for (R_file in dir(script_dir, pattern = "*.R$"))
-    {
-        if (!(R_file == script_name))
-            source(file.path(script_dir, R_file))
-    }
+    !length(grep("^source\\(", sys.calls()))) {
+  script_options <- commandArgs(trailingOnly = FALSE)
+  script_path <-
+    sub("--file=", "", script_options[grep("--file=", script_options)])
+  script_dir <- dirname(script_path)
+  script_name <- basename(script_path)
+  
+  # source all files other than Maaslin2.R
+  #   needed to use non-exported functions in command line call
+  for (R_file in dir(script_dir, pattern = "*.R$"))
+  {
+    if (!(R_file == script_name))
+      source(file.path(script_dir, R_file))
+  }
+  # import libraries
+  #   only do this for command line call, this is handled when attaching package in R
+  library("stats", "grDevices", "utils", quietly = TRUE)
 }
 
 ###########################
@@ -885,7 +888,7 @@ Maaslin2 <-
         if (standardize) {
             logging::loginfo(
                 "Applying z-score to standardize continuous metadata")
-            metadata <- metadata %>% dplyr::mutate_if(is.numeric, scale)
+            metadata <- dplyr::mutate_if(metadata, is.numeric, scale)
         } else {
             logging::loginfo("Bypass z-score application to metadata")
         }
