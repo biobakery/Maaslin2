@@ -404,7 +404,8 @@ maaslin2_association_plots <-
                                 alpha = .5,
                                 shape = 21,
                                 size = 1,
-                                stroke = 0.15
+                                stroke = 0.15,
+                                na.rm = TRUE
                             ) +
                             ggplot2::scale_x_continuous(
                                 limits = c(min(
@@ -412,7 +413,7 @@ maaslin2_association_plots <-
                             ggplot2::scale_y_continuous(
                                 limits = c(min(
                                     input_df['y']), max(input_df['y']))) +
-                            ggplot2::stat_smooth(
+                            ggplot2::stat_smooth(formula = y ~ x,
                                 method = "glm",
                                 size = 0.5,
                                 color = 'blue',
@@ -465,7 +466,7 @@ maaslin2_association_plots <-
 
                     temp_plot <-
                         ggplot2::ggplot(
-                            data = input_df, ggplot2::aes(xnames, y)) +
+                            data = input_df, ggplot2::aes(input_df$xnames, y)) +
                         ggplot2::geom_boxplot(
                             ggplot2::aes(fill = x),
                             outlier.alpha = 0.0,
