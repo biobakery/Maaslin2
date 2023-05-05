@@ -27,11 +27,6 @@
 # This script includes functions for visualizing overall output of MaAsLin2 and
 # individual associations as scatterplot and boxplot
 
-# Load libararies
-for (lib in c('ggplot2', "grid", 'pheatmap')) {
-    suppressPackageStartupMessages(require(lib, character.only = TRUE))
-}
-
 # MaAsLin2 theme based on Nature journal requirements
 nature_theme <- function(x_axis_labels, y_label) {
     # set default text format based on categorical and length

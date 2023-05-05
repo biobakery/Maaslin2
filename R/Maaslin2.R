@@ -50,6 +50,7 @@ if (identical(environment(), globalenv()) &&
         if (!(R_file == script_name))
             source(file.path(script_dir, R_file))
     }
+    library("stats", "utils", "grDevices", quietly = TRUE)
 }
 
 ###########################
@@ -904,7 +905,7 @@ Maaslin2 <-
         if (standardize) {
             logging::loginfo(
                 "Applying z-score to standardize continuous metadata")
-            metadata <- metadata %>% dplyr::mutate_if(is.numeric, scale)
+            metadata <- dplyr::mutate_if(metadata, is.numeric, scale)
         } else {
             logging::loginfo("Bypass z-score application to metadata")
         }
