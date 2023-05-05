@@ -126,7 +126,8 @@ Maaslin2(
         'extdata','HMP2_metadata.tsv', package="Maaslin2")
     fit_data <- Maaslin2(
         input_data, input_metadata,'demo_output', transform = "AST",
-        fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
+        fixed_effects = c('diagnosis', 'dysbiosisnonIBD', 'dysbiosisUC', 
+                          'dysbiosisCD', 'antibiotics', 'age'),
         random_effects = c('site', 'subject'),
         normalization = 'NONE',
         reference = 'diagnosis,nonIBD',
