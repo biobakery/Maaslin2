@@ -24,12 +24,6 @@
 # THE SOFTWARE.
 ###############################################################################
 
-# load in the required libraries, report an error if they are not installed
-
-for (lib in c('optparse', 'logging', 'data.table', 'dplyr')) {
-    suppressPackageStartupMessages(require(lib, character.only = TRUE))
-}
-
 ###############################################################
 # If running on the command line, load other Maaslin2 modules #
 ###############################################################
@@ -51,6 +45,10 @@ if (identical(environment(), globalenv()) &&
             source(file.path(script_dir, R_file))
     }
     library("stats", "utils", "grDevices", quietly = TRUE)
+}
+
+ignore_unused_imports <- function() {
+  optparse::OptionParser()
 }
 
 ###########################
