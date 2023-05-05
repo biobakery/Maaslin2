@@ -19,7 +19,9 @@ if (identical(environment(), globalenv()) &&
       source(file.path(script_dir, R_file))
     }
   }
-  library("stats", "utils", "grDevices", quietly = TRUE)
+  for (lib in c("stats", "utils", "grDevices")) {
+    suppressPackageStartupMessages(require(lib, character.only = TRUE))
+  }
 }
 
 ignore_unused_imports <- function() {
