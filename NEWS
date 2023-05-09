@@ -1,3 +1,12 @@
+Changes in version 1.7.4 (05-09-2023):
+* Resolve "cannot xtfrm data frames" error
+* Add argument to save full model outputs
+* Add argument to set number of pngs saved
+* Update reference level handling to accept factors
+* Allow for variable to be a fixed and random effect
+* Allow tibble input
+* Update build check to current bioconductor standards
+
 Changes in version 1.7.3 (11-02-2021):
 * Update sourcing R scripts 
 * Update reference level handling
