@@ -5,6 +5,7 @@ Changes in version 1.7.4 (05-09-2023):
 * Update reference level handling to accept factors
 * Allow for variable to be a fixed and random effect
 * Allow tibble input
+* Remove unused dependencies
 * Update build check to current bioconductor standards
 
 Changes in version 1.7.3 (11-02-2021):
