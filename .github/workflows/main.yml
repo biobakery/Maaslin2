@@ -56,8 +56,6 @@ jobs:
       RSPM: ${{ matrix.config.rspm }}
       NOT_CRAN: true
       TZ: UTC
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       ## Set the R library to the directory matching the
