@@ -40,7 +40,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, cont: "bioconductor/bioconductor_docker:devel", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
+          - { os: ubuntu-latest, cont: "bioconductor/bioconductor_docker", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
           - { os: macOS-latest }
           - { os: windows-latest }
           ## Check https://github.com/r-lib/actions/tree/master/examples
@@ -118,7 +118,7 @@ jobs:
 
       - name: Set BiocVersion
         run: |
-          BiocManager::install(version = "${{ matrix.config.bioc }}", ask = FALSE, force = TRUE)
+          BiocManager::install()
         shell: Rscript {0}
 
       - name: Install dependencies pass 1
