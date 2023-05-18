@@ -62,9 +62,6 @@ jobs:
       - name: Setup R from r-lib
         if: runner.os != 'Linux'
         uses: r-lib/actions/setup-r@v2
-        with:
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
 
       ## pandoc is already included in the Bioconductor docker images
       - name: Setup pandoc from r-lib
@@ -118,7 +115,7 @@ jobs:
 
       - name: Set BiocVersion
         run: |
-          BiocManager::install()
+          BiocManager::install(force = TRUE, ask = FALSE)
         shell: Rscript {0}
 
       - name: Install dependencies pass 1
