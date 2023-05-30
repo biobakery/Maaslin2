@@ -3,7 +3,6 @@ export(Maaslin2)
 import("robustbase")
 import("biglm")
 import("pcaPP")
-import("lpsymphony")
 import("optparse")
 importFrom("grDevices", "colorRampPalette", "dev.off", "pdf", "jpeg","png")
 importFrom("stats", "as.formula", "coef", "glm", "lm", "na.exclude",

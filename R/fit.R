@@ -5,7 +5,6 @@ for (lib in c(
     'lmerTest',
     'car',
     'parallel',
-    'MuMIn',
     'glmmTMB',
     'MASS',
     'cplm',
