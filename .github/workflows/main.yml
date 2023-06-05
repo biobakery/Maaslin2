@@ -40,14 +40,13 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { os: ubuntu-latest, cont: "bioconductor/bioconductor_docker", rspm: "https://packagemanager.rstudio.com/cran/__linux__/jammy/latest" }
+          - { os: ubuntu-latest, cont: "bioconductor/bioconductor_docker" }
           - { os: macOS-latest }
           - { os: windows-latest }
           ## Check https://github.com/r-lib/actions/tree/master/examples
           ## for examples using the http-user-agent
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
-      RSPM: ${{ matrix.config.rspm }}
       NOT_CRAN: true
       TZ: UTC
 
@@ -77,9 +76,7 @@ jobs:
       - name: Install Linux system dependencies
         if: runner.os == 'Linux'
         run: |
-          sysreqs=$(Rscript -e 'cat("apt-get update -y && apt-get install -y", paste(gsub("apt-get install -y ", "", remotes::system_requirements("ubuntu", "20.04")), collapse = " "))')
-          echo $sysreqs
-          sudo -s eval "$sysreqs"
+          apt-get update -y && apt-get install -y make cmake libicu-dev zlib1g-dev pandoc
 
       - name: Install macOS system dependencies
         if: matrix.config.os == 'macOS-latest'
