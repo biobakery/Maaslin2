@@ -45,7 +45,7 @@ if (identical(environment(), globalenv()) &&
     script_dir <- dirname(script_path)
     script_name <- basename(script_path)
     
-    for (R_file in dir(script_dir, pattern = "*.R"))
+    for (R_file in dir(script_dir, pattern = "*.R$"))
     {
         if (!(R_file == script_name))
             source(file.path(script_dir, R_file))
@@ -93,7 +93,10 @@ args$standardize <- TRUE
 args$plot_heatmap <- TRUE
 args$heatmap_first_n <- 50
 args$plot_scatter <- TRUE
+args$max_pngs <- 10
+args$save_scatter <- FALSE
 args$cores <- 1
+args$save_models <- FALSE
 args$reference <- NULL
 
 ##############################
@@ -116,7 +119,7 @@ options <-
         dest = "min_abundance",
         default = args$min_abundance,
         help = paste0("The minimum abundance for each feature",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -128,7 +131,7 @@ options <-
         default = args$min_prevalence,
         help = paste0("The minimum percent of samples for which",
             "a feature is detected at minimum abundance",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -140,7 +143,7 @@ options <-
         default = args$min_variance,
         help = paste0("Keep features with variances",
             "greater than value",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -151,7 +154,7 @@ options <-
         dest = "max_significance",
         default = args$max_significance,
         help = paste0("The q-value threshold for significance",
-            " [ Default: %default ]"
+            "[ Default: %default ]"
         )
     )
 options <-
@@ -163,7 +166,7 @@ options <-
         default = args$normalization,
         help = paste(
             "The normalization method to apply",
-            " [ Default: %default ] [ Choices:",
+            "[ Default: %default ] [ Choices:",
             toString(normalization_choices),
             "]"
         )
@@ -203,7 +206,7 @@ options <-
         default = args$random_effects,
         help = paste("The random effects for the model, ",
             "comma-delimited for multiple effects",
-            " [ Default: none ]"
+            "[ Default: none ]"
         )
     )
 options <-
@@ -214,8 +217,8 @@ options <-
         dest = "fixed_effects",
         default = args$fixed_effects,
         help = paste("The fixed effects for the model,",
-            " comma-delimited for multiple effects",
-            " [ Default: all ]"
+            "comma-delimited for multiple effects",
+            "[ Default: all ]"
         )
     )
 options <-
@@ -226,7 +229,7 @@ options <-
         dest = "correction",
         default = args$correction,
         help = paste("The correction method for computing",
-            " the q-value [ Default: %default ]"
+            "the q-value [ Default: %default ]"
         )
     )
 options <-
@@ -237,7 +240,7 @@ options <-
         dest = "standardize",
         default = args$standardize,
         help = paste("Apply z-score so continuous metadata are on",
-            " the same scale [ Default: %default ]"
+            "the same scale [ Default: %default ]"
         )
     )
 options <-
@@ -247,7 +250,7 @@ options <-
         type = "logical",
         dest = "plot_heatmap",
         default = args$plot_heatmap,
-        help = paste("Generate a heatmap for the significant ",
+        help = paste("Generate a heatmap for the significant",
             "associations [ Default: %default ]"
         )
     )
@@ -258,7 +261,7 @@ options <-
         type = "double",
         dest = "heatmap_first_n",
         default = args$heatmap_first_n,
-        help = paste("In heatmap, plot top N features with significant ",
+        help = paste("In heatmap, plot top N features with significant",
             "associations [ Default: %default ]"
         )
     )
@@ -270,7 +273,29 @@ options <-
         dest = "plot_scatter",
         default = args$plot_scatter,
         help = paste("Generate scatter plots for the significant",
-            " associations [ Default: %default ]"
+            "associations [ Default: %default ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
+        c("-g", "--max_pngs"),
+        type = "double",
+        dest = "max_pngs",
+        default = args$max_pngs,
+        help = paste("The maximum number of scatterplots for signficant",
+                     "associations to save as png files [ Default: %default ]"
+        )
+    )
+options <-
+    optparse::add_option(
+        options,
+        c("-O", "--save_scatter"),
+        type = "logical",
+        dest = "save_scatter",
+        default = args$save_scatter,
+        help = paste("Save all scatter plot ggplot objects",
+                     "to an RData file [ Default: %default ]"
         )
     )
 options <-
@@ -284,7 +309,17 @@ options <-
             "run in parallel [ Default: %default ]"
         )
     )
-
+options <-
+    optparse::add_option(
+        options,
+        c("-j", "--save_models"),
+        type = "logical",
+        dest = "save_models",
+        default = args$save_models,
+        help = paste("Return the full model outputs ",
+                     "and save to an RData file [ Default: %default ]"
+        )
+    )
 options <-
     optparse::add_option(
         options,
@@ -326,22 +361,27 @@ Maaslin2 <-
         standardize = TRUE,
         cores = 1,
         plot_heatmap = TRUE,
-        plot_scatter = TRUE,
         heatmap_first_n = 50,
+        plot_scatter = TRUE,
+        max_pngs = 10,
+        save_scatter = FALSE,
+        save_models = FALSE,
         reference = NULL)
     {
         # Allow for lower case variables
         normalization <- toupper(normalization)
         transform <- toupper(transform)
         analysis_method <- toupper(analysis_method)
-        correction <- toupper(correction)
+        
+        # Match variable ignoring case then set correctly as required for p.adjust
+        correction <- correction_choices[match(toupper(correction), toupper(correction_choices))]
 
         #################################################################
         # Read in the data and metadata, create output folder, init log #
         #################################################################
         # if a character string then this is a file name, else it 
         # is a data frame
-        if (is.character(input_data)) {
+        if (is.character(input_data) && file.exists(input_data)) {
             data <-
                 data.frame(data.table::fread(
                     input_data, header = TRUE, sep = "\t"),
@@ -350,10 +390,19 @@ Maaslin2 <-
                 # read again to get row name
                 data <- read.table(input_data, header = TRUE, row.names = 1)
             }
+        } else if (is.data.frame(input_data)) {
+            if (!tibble::has_rownames(input_data)) {
+              stop("If supplying input_data as a data frame, it must have appropriate rownames!")
+            }
+            data <- as.data.frame(input_data) # in case it's a tibble or something
+        } else if (is.matrix(input_data)) {
+            logging::logwarn("Input is a matrix, passing through as.data.frame() .")
+            data <- as.data.frame(input_data)
         } else {
-            data <- input_data
+            stop("input_data is neither a file nor a data frame!")
         }
-        if (is.character(input_metadata)) {
+
+        if (is.character(input_metadata) && file.exists(input_metadata)) {
             metadata <-
                 data.frame(data.table::fread(
                     input_metadata, header = TRUE, sep = "\t"),
@@ -363,23 +412,40 @@ Maaslin2 <-
                     header = TRUE,
                     row.names = 1)
             }
+        } else if (is.data.frame(input_metadata)) {
+            if (!tibble::has_rownames(input_metadata)) {
+              stop("If supplying input_metadata as a data frame, it must have appropriate rownames!")
+            }
+            metadata <- as.data.frame(input_metadata) # in case it's a tibble or something
         } else {
-            metadata <- input_metadata
-        }
-        
+          stop("input_metadata is neither a file nor a data frame!")
+        } 
         # create an output folder and figures folder if it does not exist
         if (!file.exists(output)) {
             print("Creating output folder")
             dir.create(output)
         }
+        
+        features_folder <- file.path(output, "features")
+        if (!file.exists(features_folder)) {
+            print("Creating output feature tables folder")
+            dir.create(features_folder)
+        }
+        
+        fits_folder <- file.path(output, "fits")
+        if (!file.exists(fits_folder)) {
+            print("Creating output fits folder")
+            dir.create(fits_folder)
+        }
 
-        if (plot_heatmap || plot_scatter){
-            figures_folder <- file.path(output,"figures")
-        if (!file.exists(figures_folder)) {
-            print("Creating output figures folder")
-            dir.create(figures_folder)
+        if (plot_heatmap || plot_scatter) {
+            figures_folder <- file.path(output, "figures")
+            if (!file.exists(figures_folder)) {
+                print("Creating output figures folder")
+                dir.create(figures_folder)
+            }
         }
-        }
+    
         
         # create log file (write info to stdout and debug level to log file)
         # set level to finest so all log levels are reviewed
@@ -505,6 +571,11 @@ Maaslin2 <-
                     toString(valid_choice_method_transform)
                 )
             }
+        }
+        # check that plots are generated if to be saved
+        if (!plot_scatter && save_scatter) {
+            logging::logerror("Scatter plots cannot be saved if they are not plotted")
+            stop("Option not valid", call. = FALSE)
         }
         
         ###############################################################
@@ -659,7 +730,14 @@ Maaslin2 <-
             random_effects <-
                 unlist(strsplit(random_effects, ",", fixed = TRUE))
             # subtract random effects from fixed effects
-            fixed_effects <- setdiff(fixed_effects, random_effects)
+            common_variables <- intersect(fixed_effects, random_effects)
+            if (length(common_variables) > 0) {
+                logging::logwarn(
+                    paste("Feature name included as fixed and random effect,",
+                          "check that this is intended: %s"),
+                    paste(common_variables, collapse = " , ")
+                )
+            }
             # remove any random effects not found in metadata
             to_remove <- setdiff(random_effects, colnames(metadata))
             if (length(to_remove) > 0)
@@ -723,32 +801,48 @@ Maaslin2 <-
         # Filter data based on min abundance and min prevalence #
         #########################################################
 
-        # use ordered factor for variables with more than two levels
-        # find variables with more than two levels
         if (is.null(reference)) {
             reference <- ","
         }
-
-        for ( i in colnames(metadata) ) {
-            mlevels <- unique(na.omit(metadata[,i]))
-            numeric_levels <- grep('^-?[0-9.]+[eE+-]?', mlevels, value = T)
-            if ( ( length(mlevels[! (mlevels %in% c("UNK"))]) > 2 ) &&
-                 ( i %in% fixed_effects ) &&
-                 ( length(numeric_levels) == 0)) {
-                 split_reference <- unlist(strsplit(reference, "[,;]"))
-                if (! i %in% split_reference ) {
-                    stop(
-                      paste("Please provide the reference for the variable '",
-                        i, "' which includes more than 2 levels: ",
-                        paste(as.character(mlevels), collapse=", "), ".", sep="")
-                    )
-                } else {
-                    ref <- split_reference[match(i,split_reference)+1]
-                    other_levels <- as.character(mlevels)[! as.character(mlevels) == ref]
-                    metadata[,i] = factor(metadata[,i], levels=c(ref, other_levels))
-                }
+        split_reference <- unlist(strsplit(reference, "[,;]"))
+        
+        # for each fixed effect, check that a reference level has been set if necessary: number of levels > 2 and metadata isn't already an ordered factor
+        for (i in fixed_effects) {
+            # don't check for or require reference levels for numeric metadata
+            if (is.numeric(metadata[,i])) {
+                next
             }
-        }       
+            # respect ordering if a factor is explicitly passed in with no reference set
+            if (is.factor(metadata[,i]) && !(i %in% split_reference)) {
+                logging::loginfo(paste("Factor detected for categorial metadata '", 
+                                       i, "'. Provide a reference argument or manually set factor ordering to change reference level.", sep=""))
+                next
+            }
+            
+            # set metadata as a factor (ordered alphabetically)
+            metadata[,i] <- as.factor(metadata[,i])
+            mlevels <- levels(metadata[,i])
+            
+            # get reference level for variable being considered, returns NA if not found
+            ref <- split_reference[match(i, split_reference)+1]
+            
+            # if metadata has 2 levels, allow but don't require setting reference level, otherwise require it
+            if ((length(mlevels) == 2)) {
+                if(!is.na(ref)) {
+                    metadata[,i] = relevel(metadata[,i], ref = ref)
+                }
+            } else if (length(mlevels) > 2) {
+                if (!is.na(ref)) {
+                    metadata[,i] = relevel(metadata[,i], ref = ref)
+                } else {
+                    stop(paste("Please provide the reference for the variable '",
+                               i, "' which includes more than 2 levels: ",
+                               paste(as.character(mlevels), collapse=", "), ".", sep=""))   
+                } 
+            } else {
+                stop("Provided categorical metadata has fewer than 2 unique, non-NA values.")
+            }
+        }
  
         unfiltered_data <- data
         unfiltered_metadata <- metadata
@@ -835,6 +929,7 @@ Maaslin2 <-
                 formula = formula,
                 random_effects_formula = random_effects_formula,
                 correction = correction,
+                save_models = save_models,
                 cores = cores
             )
         
@@ -858,15 +953,61 @@ Maaslin2 <-
                     length(which(filtered_data_norm[, x[1]] > 0))
             )
         
-        #########################
-        # Write out the results #
-        #########################
+        ################################
+        # Write out the raw model fits #
+        ################################
+        
+        if (save_models) {
+            model_file = file.path(fits_folder, "models.rds")
+            # remove models file if already exists (since models append)
+            if (file.exists(model_file)) {
+                logging::logwarn(
+                    "Deleting existing model objects file: %s", model_file)
+                unlink(model_file)
+            }
+            logging::loginfo("Writing model objects to file %s", model_file)
+            saveRDS(fit_data$fits, file = model_file)   
+        }
+        
+        ##########################################
+        # Write processed feature tables to file #
+        ##########################################
+        
+        filtered_file = file.path(features_folder, "filtered_data.tsv")
+        logging::loginfo("Writing filtered data to file %s", filtered_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data), filtered_data), 
+            file = filtered_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+            )
+        
+        filtered_data_norm_file = file.path(features_folder, "filtered_data_norm.tsv")
+        logging::loginfo("Writing filtered, normalized data to file %s", filtered_data_norm_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data_norm), filtered_data_norm), 
+            file = filtered_data_norm_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+        )
+        
+        filtered_data_norm_transformed_file = file.path(features_folder, "filtered_data_norm_transformed.tsv")
+        logging::loginfo("Writing filtered, normalized, transformed data to file %s", filtered_data_norm_transformed_file)
+        write.table(
+            data.frame("feature" = rownames(filtered_data_norm_transformed), filtered_data_norm_transformed), 
+            file = filtered_data_norm_transformed_file, 
+            sep = "\t", 
+            quote = FALSE, 
+            row.names = FALSE
+        )
         
         ###########################
-        # write residuals to file #
+        # Write residuals to file #
         ###########################
         
-        residuals_file = file.path(output, "residuals.rds")
+        residuals_file = file.path(fits_folder, "residuals.rds")
         # remove residuals file if already exists (since residuals append)
         if (file.exists(residuals_file)) {
             logging::logwarn(
@@ -877,10 +1018,10 @@ Maaslin2 <-
         saveRDS(fit_data$residuals, file = residuals_file)
         
         ###############################
-        # write fitted values to file #
+        # Write fitted values to file #
         ###############################
         
-        fitted_file = file.path(output, "fitted.rds")
+        fitted_file = file.path(fits_folder, "fitted.rds")
         # remove fitted file if already exists (since fitted append)
         if (file.exists(fitted_file)) {
           logging::logwarn(
@@ -890,12 +1031,12 @@ Maaslin2 <-
         logging::loginfo("Writing fitted values to file %s", fitted_file)
         saveRDS(fit_data$fitted, file = fitted_file)
         
-        ########################################################
-        # write extracted random effects to file (if specified) #
-        ########################################################
+        #########################################################
+        # Write extracted random effects to file (if specified) #
+        #########################################################
         
         if (!is.null(random_effects)) {
-          ranef_file = file.path(output, "ranef.rds")
+          ranef_file = file.path(fits_folder, "ranef.rds")
           # remove ranef file if already exists (since ranef append)
           if (file.exists(ranef_file)) {
             logging::logwarn(
@@ -907,7 +1048,7 @@ Maaslin2 <-
         }
         
         #############################
-        # write all results to file #
+        # Write all results to file #
         #############################
         
         results_file <- file.path(output, "all_results.tsv")
@@ -947,7 +1088,7 @@ Maaslin2 <-
         )
         
         ###########################################
-        # write results passing threshold to file #
+        # Write results passing threshold to file #
         ###########################################
         
         significant_results <-
@@ -1009,12 +1150,25 @@ Maaslin2 <-
                     "to output folder: %s"),
                 output
             )
-            maaslin2_association_plots(
+            saved_plots <- maaslin2_association_plots(
                 unfiltered_metadata,
                 filtered_data,
                 significant_results_file,
                 output,
-                figures_folder)
+                figures_folder,
+                max_pngs,
+                save_scatter)
+            if (save_scatter) {
+                scatter_file <- file.path(figures_folder, "scatter_plots.rds")
+                # remove plots file if already exists
+                if (file.exists(scatter_file)) {
+                    logging::logwarn(
+                        "Deleting existing scatter plot objects file: %s", scatter_file)
+                    unlink(scatter_file)
+                }
+                logging::loginfo("Writing scatter plot objects to file %s", scatter_file)
+                saveRDS(saved_plots, file = scatter_file)   
+            }
         }
         
         return(fit_data)
@@ -1061,8 +1215,11 @@ if (identical(environment(), globalenv()) &&
             current_args$standardize,
             current_args$cores,
             current_args$plot_heatmap,
-            current_args$plot_scatter,
             current_args$heatmap_first_n,
+            current_args$plot_scatter,
+            current_args$max_pngs,
+            current_args$save_scatter,
+            current_args$save_models,
             current_args$reference
         )
 }

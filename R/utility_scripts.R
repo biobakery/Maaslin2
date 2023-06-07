@@ -186,7 +186,15 @@ TMMnorm = function(features) {
 
 # Arc Sine Square Root Transformation
 AST <- function(x) {
-    return(sign(x) * asin(sqrt(abs(x))))
+    y <- sign(x) * asin(sqrt(abs(x)))
+    if(any(is.na(y))) {
+        logging::logerror(
+            paste0("AST transform is only valid for values between -1 and 1. ",
+                   "Please select an appropriate normalization option or ",
+                   "normalize your data prior to running."))
+        stop()
+    }
+    return(y)
 }
 
 ########################

@@ -1,5 +1,5 @@
 ---
-title: "maaslin2"
+title: "Maaslin2"
 date: "Friday, May 10, 2019"
 author:
  - name: Himel Mallick
@@ -10,22 +10,26 @@ author:
    email: lauren.j.mciver@gmail.com
 output: html_document
 vignette: >
-    %\VignetteIndexEntry{MaAsLin2}
+    %\VignetteIndexEntry{Maaslin2}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
 
 # MaAsLin2 User Manual #
 
-MaAsLin2 is the next generation of MaAsLin.
+MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association with Linear Models).
 
-[MaAsLin2](http://huttenhower.sph.harvard.edu/maaslin2) is comprehensive R package for finding multivariable association between clinical metadata and microbial meta-omics features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including multiple analysis methods (with support for multiple covariates and repeated measures), filtering, normalization, and transform options to customize analysis for your specific study.
+[MaAsLin2](http://huttenhower.sph.harvard.edu/maaslin2) is comprehensive R package for efficiently determining multivariable association between clinical metadata and microbial meta-omics features. MaAsLin2 relies on general linear models to accommodate most modern epidemiological study designs, including cross-sectional and longitudinal, along with a variety of filtering, normalization, and transform methods.
 
 If you use the MaAsLin2 software, please cite our manuscript: 
-Mallick et al. (2020+). "Multivariable Association in Population-scale Meta-omics Studies" (In Preparation).
 
-If you have questions, please email the google group
-[MaAsLin Users](https://groups.google.com/forum/#!forum/maaslin-users).
+Mallick H, Rahnavard A, McIver LJ, Ma S, Zhang Y, Nguyen LH, Tickle TL, Weingart G, Ren B, Schwager EH, Chatterjee S, Thompson KN, Wilkinson JE, Subramanian A, Lu Y, Waldron L, Paulson JN, Franzosa EA, Bravo HC, Huttenhower C (2021). [Multivariable Association Discovery in Population-scale Meta-omics Studies](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009442). PLoS Computational Biology, 17(11):e1009442.
+
+Check out the [MaAsLin 2 tutorial](https://github.com/biobakery/biobakery/wiki/maaslin2) for an overview of analysis options.
+
+If you have questions, please direct it to :   
+[MaAsLin2 Forum](https://forum.biobakery.org/c/Downstream-analysis-and-statistics/MaAsLin2)    
+[Google Groups](https://groups.google.com/forum/#!forum/maaslin-users) (Read only)
 
 --------------------------------------------
 
@@ -66,7 +70,7 @@ the MaAsLin2 dependencies.
     * ``$ tar xzvf maaslin2.tar.gz``
 3. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 4. Install the CRAN dependencies:
-    * ``$ R -q -e "install.packages(c('lmerTest','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','hash','logging','data.table','MuMIn','glmmTMB','MASS','cplm','pscl'), repos='http://cran.r-project.org')"``
+    * ``$ R -q -e "install.packages(c('lmerTest','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','hash','logging','data.table','glmmTMB','MASS','cplm','pscl'), repos='http://cran.r-project.org')"``
 5. Install the MaAsLin2 package (only r,equired if running as an R function): 
     * ``$ R CMD INSTALL maaslin2``
 
@@ -127,6 +131,13 @@ MaAsLin2 generates two types of output files: data and visualization.
     * ``significant_results.tsv``
         * This file is a subset of the results in the first file.
         * It only includes associations with q-values <= to the threshold.
+    * ``features```
+        * This folder includes the filtered, normalized, and transformed versions of the input feature table.
+        * These steps are performed sequentially in the above order.
+        * If an option is set such that a step does not change the data, the resulting table will still be output.
+    * ``models.rds``
+        * This file contains a list with every model fit object.
+        * It will only be generated if save_models is set to TRUE.
     * ``residuals.rds``
         * This file contains a data frame with residuals for each feature.
     * ``fitted.rds``
@@ -143,7 +154,7 @@ MaAsLin2 generates two types of output files: data and visualization.
         * A plot is generated for each significant association.
         * Scatter plots are used for continuous metadata.
         * Box plots are for categorical data.
-        * Data points plotted are after normalization, filtering, and transform.
+        * Data points plotted are after filtering but prior to normalization and transform.
 
 ### Run a Demo ###
 
@@ -158,7 +169,7 @@ the HMP2 data which can be downloaded from https://ibdmdb.org/ .
 
 #### Command line ####
 
-``$ Maaslin2.R --transform=AST --fixed_effects="diagnosis,dysbiosisnonIBD,dysbiosisUC,dysbiosisCD,antibiotics,age" --random_effects="site,subject" --normalization=NONE --standardize=FALSE inst/extdata/HMP2_taxonomy.tsv inst/extdata/HMP2_metadata.tsv demo_output``
+``$ Maaslin2.R --fixed_effects="diagnosis,dysbiosisnonIBD,dysbiosisUC,dysbiosisCD,antibiotics,age" --random_effects="site,subject" --standardize=FALSE inst/extdata/HMP2_taxonomy.tsv inst/extdata/HMP2_metadata.tsv demo_output``
 
 * Make sure to provide the full path to the MaAsLin2 executable (ie ./R/Maaslin2.R).
 * In the demo command:
@@ -176,11 +187,10 @@ input_data <- system.file(
 input_metadata <-system.file(
     'extdata','HMP2_metadata.tsv', package="Maaslin2")
 fit_data <- Maaslin2(
-    input_data, input_metadata, 'demo_output', transform = "AST",
+    input_data, input_metadata, 'demo_output',
     fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
     random_effects = c('site', 'subject'),
     reference = "diagnosis,nonIBD",
-    normalization = 'NONE',
     standardize = FALSE)
 ```
 
@@ -213,8 +223,7 @@ Options:
         is detected at minimum abundance [ Default: 0.1 ]
 
     -b MIN_VARIANCE, --min_variance=MIN_VARIANCE
-        Keep features with variance greater than
-	[ Default: 0.0 ]
+        Keep features with variance greater than [ Default: 0.0 ]
 
     -s MAX_SIGNIFICANCE, --max_significance=MAX_SIGNIFICANCE
         The q-value threshold for significance [ Default: 0.25 ]
@@ -258,16 +267,29 @@ Options:
     -o PLOT_SCATTER, --plot_scatter=PLOT_SCATTER
         Generate scatter plots for the significant
         associations [ Default: TRUE ]
+        
+    -g MAX_PNGS, --max_pngs=MAX_PNGS
+        The maximum number of scatter plots for signficant associations 
+        to save as png files [ Default: 10 ]
+    
+    -O SAVE_SCATTER, --save_scatter=SAVE_SCATTER
+        Save all scatter plot ggplot objects
+        to an RData file [ Default: FALSE ]
 
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
+        
+    -j SAVE_MODELS --save_models=SAVE_MODELS
+        Return the full model outputs and save to an RData file
+        [ Default: FALSE ]
 
     -d REFERENCE, --reference=REFERENCE
-        The factor to use as a reference for a variable 
-        with more than two levels provided as a string  
-        of 'variable,reference' semi-colon delimited 
-        for multiple variables [ Default: NA ] 
+        The factor to use as a reference level for a categorical variable 
+        provided as a string of 'variable,reference', semi-colon delimited for 
+        multiple variables. Not required if metadata is passed as a factor or 
+        for variables with less than two levels but can be set regardless.
+        [ Default: NA ] 
 
 ## Troubleshooting ##
 

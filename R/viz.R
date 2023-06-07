@@ -95,9 +95,9 @@ maaslin2_heatmap <-
         title_additional <- ""
         if (!is.na(first_n) & first_n > 0 & first_n < dim(df)[1]) {
             if (cell_value == 'coef') {
-                df <- df[order(-abs(df[cell_value])) , ]
+                df <- df[order(-abs(df[[cell_value]])) , ]
             } else{
-                df <- df[order(df[cell_value]), ]
+                df <- df[order(df[[cell_value]]), ]
             }
             # get the top n features with significant associations
             df_sub <- df[1:first_n,]
@@ -235,7 +235,8 @@ maaslin2_heatmap <-
                     treeheight_row = 0,
                     treeheight_col = 0,
                     display_numbers = matrix(ifelse(
-                        a > 0.0, "+", ifelse(a < 0.0, "-", "")), nrow(a))
+                        a > 0.0, "+", ifelse(a < 0.0, "-", "")), nrow(a)),
+                    silent = TRUE
                 )
         }, error = function(err) {
             logging::logerror("Unable to plot heatmap")
@@ -289,7 +290,8 @@ maaslin2_association_plots <-
         output_results,
         write_to = './',
         figures_folder = './figures/',
-        max_pngs = 10)
+        max_pngs = 10,
+        save_scatter = FALSE)
     {
         #MaAslin2 scatter plot function and theme
         
@@ -351,9 +353,10 @@ maaslin2_association_plots <-
         metadata_labels <-
             unlist(metadata_types[!duplicated(metadata_types)])
         metadata_number <- 1
+        saved_plots <- list()
         
         for (label in metadata_labels) {
-            saved_plots <- vector('list', max_pngs)
+            saved_plots[[label]] <- list()
             # for file name replace any non alphanumeric with underscore
             plot_file <-
                 paste(
@@ -441,7 +444,7 @@ maaslin2_association_plots <-
                                 size = 2,
                                 fontface = "italic"
                             )
-                } else{
+                } else {
                     # if Metadata is categorical generate a boxplot
                     ### check if the variable is categorical
                     
@@ -519,21 +522,38 @@ maaslin2_association_plots <-
                 stdout <- capture.output(print(temp_plot), type = "message")
                 if (length(stdout) > 0)
                     logging::logdebug(stdout)
-                if (count < max_pngs + 1)
-                    saved_plots[[count]] <- temp_plot
+                
+                # keep all plots if desired
+                # or only keep plots to be printed to png
+                if (save_scatter) {
+                  saved_plots[[label]][[count]] <- temp_plot
+                }
+                else if (count <= max_pngs) {
+                  saved_plots[[label]][[count]] <- temp_plot
+                }
                 count <- count + 1
             }
             dev.off()
+            
             # print the saved figures
-            for (plot_number in seq(1,max_pngs)) {
-                png_file <- file.path(figures_folder,
+            # this is done separately from pdf generation 
+            # because nested graphics devices cause problems in rmarkdown output
+            for (plot_number in seq(1, min((count-1), max_pngs))) {
+              png_file <- file.path(figures_folder,
                     paste0(
                         substr(basename(plot_file),1,nchar(basename(plot_file))-4),
                         "_",plot_number,".png"))
-                png(png_file, res = 300, width = 960, height = 960)
-                stdout <- capture.output(print(saved_plots[[plot_number]]))
-                dev.off()
+              png(png_file, res = 300, width = 960, height = 960)
+              stdout <- capture.output(print(saved_plots[[label]][[plot_number]]))
+              dev.off()
+            }
+            # give plots informative names
+            if (save_scatter) {
+              names(saved_plots[[label]]) <- make.names(output_df_all[data_index, 'feature'], unique = TRUE)
+            } else {
+              saved_plots[[label]] <- NULL  # instead remove plots if only saved for png generation
             }
             metadata_number <- metadata_number + 1
         }
+        return(saved_plots)
     }

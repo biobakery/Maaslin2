@@ -1,4 +1,5 @@
 
+
 # MaAsLin2 User Manual #
 
 MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association with Linear Models).
@@ -7,7 +8,7 @@ MaAsLin2 is the next generation of MaAsLin (Microbiome Multivariable Association
 
 If you use the MaAsLin2 software, please cite our manuscript: 
 
-Mallick H, Rahnavard A, McIver LJ, Ma S, Zhang Y, Nguyen LH, Tickle TL, Weingart G, Ren B, Schwager EH, Chatterjee S, Thompson KN, Wilkinson JE, Subramanian A, Lu Y, Waldron L, Paulson JN, Franzosa EA, Bravo HC, Huttenhower C (2021). [Multivariable Association Discovery in Population-scale Meta-omics Studies](https://www.biorxiv.org/content/10.1101/2021.01.20.427420v1). bioRxiv, https://doi.org/10.1101/2021.01.20.427420.
+Mallick H, Rahnavard A, McIver LJ, Ma S, Zhang Y, Nguyen LH, Tickle TL, Weingart G, Ren B, Schwager EH, Chatterjee S, Thompson KN, Wilkinson JE, Subramanian A, Lu Y, Waldron L, Paulson JN, Franzosa EA, Bravo HC, Huttenhower C (2021). [Multivariable Association Discovery in Population-scale Meta-omics Studies](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009442). PLoS Computational Biology, 17(11):e1009442.
 
 Check out the [MaAsLin 2 tutorial](https://github.com/biobakery/biobakery/wiki/maaslin2) for an overview of analysis options.
 
@@ -51,10 +52,10 @@ If only running from the command line, you do not need to install the MaAsLin2 p
 
 1. Download the source: [MaAsLin2.master.zip](https://github.com/biobakery/Maaslin2/archive/master.zip)
 2. Decompress the download: 
-    * ``$ tar xzvf Maaslin2-master.zip``
+    * ``$ unzip master.zip``
 3. Install the Bioconductor dependencies edgeR and metagenomeSeq. 
 4. Install the CRAN dependencies:
-    * ``$ R -q -e "install.packages(c('lmerTest','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','hash','logging','data.table','MuMIn','glmmTMB','MASS','cplm','pscl'), repos='http://cran.r-project.org')"``
+    * ``$ R -q -e "install.packages(c('lmerTest','pbapply','car','dplyr','vegan','chemometrics','ggplot2','pheatmap','hash','logging','data.table','glmmTMB','MASS','cplm','pscl'), repos='http://cran.r-project.org')"``
 5. Install the MaAsLin2 package (only r,equired if running as an R function): 
     * ``$ R CMD INSTALL maaslin2``
 
@@ -123,6 +124,13 @@ MaAsLin2 generates two types of output files: data and visualization.
     * ``significant_results.tsv``
         * This file is a subset of the results in the first file.
         * It only includes associations with q-values <= to the threshold.
+    * ``features```
+        * This folder includes the filtered, normalized, and transformed versions of the input feature table.
+        * These steps are performed sequentially in the above order.
+        * If an option is set such that a step does not change the data, the resulting table will still be output.
+    * ``models.rds``
+        * This file contains a list with every model fit object.
+        * It will only be generated if save_models is set to TRUE.
     * ``residuals.rds``
         * This file contains a data frame with residuals for each feature.
     * ``fitted.rds``
@@ -139,7 +147,7 @@ MaAsLin2 generates two types of output files: data and visualization.
         * A plot is generated for each significant association.
         * Scatter plots are used for continuous metadata.
         * Box plots are for categorical data.
-        * Data points plotted are after normalization, filtering, and transform.
+        * Data points plotted are after filtering but prior to normalization and transform.
 
 ### Run a Demo ###
 
@@ -154,7 +162,7 @@ the HMP2 data which can be downloaded from https://ibdmdb.org/ .
 
 #### Command line ####
 
-``$ Maaslin2.R --transform=AST --fixed_effects="diagnosis,dysbiosisnonIBD,dysbiosisUC,dysbiosisCD,antibiotics,age" --random_effects="site,subject" --normalization=NONE --standardize=FALSE inst/extdata/HMP2_taxonomy.tsv inst/extdata/HMP2_metadata.tsv demo_output``
+``$ Maaslin2.R --fixed_effects="diagnosis,dysbiosisnonIBD,dysbiosisUC,dysbiosisCD,antibiotics,age" --random_effects="site,subject" --standardize=FALSE inst/extdata/HMP2_taxonomy.tsv inst/extdata/HMP2_metadata.tsv demo_output``
 
 * Make sure to provide the full path to the MaAsLin2 executable (ie ./R/Maaslin2.R).
 * In the demo command:
@@ -172,10 +180,9 @@ input_data <- system.file(
 input_metadata <-system.file(
     'extdata','HMP2_metadata.tsv', package="Maaslin2")
 fit_data <- Maaslin2(
-    input_data, input_metadata, 'demo_output', transform = "AST",
+    input_data, input_metadata, 'demo_output'
     fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
     random_effects = c('site', 'subject'),
-    normalization = 'NONE',
     standardize = FALSE)
 ```
 
@@ -208,8 +215,7 @@ Options:
         is detected at minimum abundance [ Default: 0.1 ]
 
     -b MIN_VARIANCE, --min_variance=MIN_VARIANCE
-       Keep features with variance greater than
-       [ Default: 0.0 ]
+       Keep features with variance greater than [ Default: 0.0 ]
 
     -s MAX_SIGNIFICANCE, --max_significance=MAX_SIGNIFICANCE
         The q-value threshold for significance [ Default: 0.25 ]
@@ -253,18 +259,35 @@ Options:
     -o PLOT_SCATTER, --plot_scatter=PLOT_SCATTER
         Generate scatter plots for the significant
         associations [ Default: TRUE ]
+        
+    -g MAX_PNGS, --max_pngs=MAX_PNGS
+        The maximum number of scatter plots for signficant associations 
+        to save as png files [ Default: 10 ]
+    
+    -O SAVE_SCATTER, --save_scatter=SAVE_SCATTER
+        Save all scatter plot ggplot objects
+        to an RData file [ Default: FALSE ]
 
     -e CORES, --cores=CORES
         The number of R processes to run in parallel
         [ Default: 1 ]
+        
+    -j SAVE_MODELS --save_models=SAVE_MODELS
+        Return the full model outputs and save to an RData file
+        [ Default: FALSE ]
     
     -d REFERENCE, --reference=REFERENCE
-        The factor to use as a reference for a variable 
-        with more than two levels provided as a string 
-        of 'variable,reference' semi-colon delimited 
-        for multiple variables [ Default: NA ] 
-        NOTE: A space between the variable and reference
-        will not error but will cause an inaccurate result.
+        The factor to use as a reference level for a categorical variable 
+        provided as a string of 'variable,reference', semi-colon delimited for 
+        multiple variables. Not required if metadata is passed as a factor or 
+        for variables with less than two levels but can be set regardless.
+        [ Default: NA ] 
+
+## Contributions ##
+Thanks go to these wonderful people:
+
+- Nick Waters <nickp60@gmail.com>
+    * Design of the PR and attribution process
 
 ## Troubleshooting ##
 

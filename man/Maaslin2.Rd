@@ -30,8 +30,11 @@ Maaslin2(
     standardize = TRUE,
     cores = 1,
     plot_heatmap = TRUE,
-    plot_scatter = TRUE,
     heatmap_first_n = 50,
+    plot_scatter = TRUE,
+    max_pngs = 10,
+    save_scatter = FALSE,
+    save_models = FALSE,
     reference = NULL
 )
 }
@@ -88,8 +91,19 @@ Maaslin2(
     \item{plot_scatter}{
     Generate scatter plots for the significant associations.
 }
+    \item{max_pngs}{
+    Set the maximum number of scatter plots for signficant associations 
+    to save as png files.  
+}
+    \item{save_scatter}{
+    Save all scatter plot ggplot objects
+    to an RData file.
+}
     \item{cores}{
     The number of R processes to run in parallel.
+}
+    \item{save_models}{
+    Return the full model outputs and save to an RData file.
 }
     \item{reference}{
     The factor to use as a reference for a variable with more than two levels
@@ -98,7 +112,7 @@ Maaslin2(
 }
 }
 \value{
-    Data.frame containing the results from applying the model.
+    List containing the results from applying the model.
 }
 \author{
     Himel Mallick<himel.stat.iitk@gmail.com>,\cr

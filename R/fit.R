@@ -5,7 +5,6 @@ for (lib in c(
     'lmerTest',
     'car',
     'parallel',
-    'MuMIn',
     'glmmTMB',
     'MASS',
     'cplm',
@@ -23,6 +22,7 @@ fit.data <-
         formula = NULL,
         random_effects_formula = NULL,
         correction = "BH",
+        save_models = FALSE,
         cores = 1) {
 
         # set the formula default to all fixed effects if not provided
@@ -231,7 +231,14 @@ fit.data <-
                             formula, 
                             data = dat_sub, 
                             na.action = na.exclude)
-                }, error = function(err) {
+                }, warning = function(w) { 
+                  message(paste("Feature", colnames(features)[x], ":", w))
+                  logging::logwarn(paste(
+                    "Fitting problem for feature", 
+                    x, 
+                    "a warning was issued"))
+                  return(fit1)
+                  }, error = function(err) {
                     fit1 <-
                         try({
                             model_function(
@@ -253,8 +260,13 @@ fit.data <-
                       d<-as.vector(unlist(l))
                       names(d)<-unlist(lapply(l, row.names))
                       output$ranef<-d
-                      }
                     }
+                    if (save_models) {
+                      output$fit <- fit
+                    } else {
+                      output$fit <- NA
+                    }
+                }
                 else
                   {
                     logging::logwarn(paste(
@@ -268,6 +280,7 @@ fit.data <-
                     output$residuals <- NA
                     output$fitted <- NA
                     if (!(is.null(random_effects_formula))) output$ranef <- NA
+                    output$fit <- NA
                   }
                 colnames(output$para) <- c('coef', 'stderr' , 'pval', 'name')
                 output$para$feature <- colnames(features)[x]
@@ -294,6 +307,17 @@ fit.data <-
             return(x$fitted)
           }))
         row.names(fitted) <- colnames(features)   
+        
+        fits <-
+          lapply(outputs, function(x) {
+            return(x$fit)
+          })
+        names(fits) <- colnames(features)  
+        
+        # Return NULL rather than empty object if fits aren't saved
+        if (all(is.na(fits))) {
+          fits <- NULL
+        }
         
         if (!(is.null(random_effects_formula))) {
           ranef <-
@@ -349,9 +373,9 @@ fit.data <-
         rownames(paras)<-NULL
         
         if (!(is.null(random_effects_formula))) {
-          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = ranef))
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = ranef, "fits" = fits))
         } else {
-          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted))
+          return(list("results" = paras, "residuals" = residuals, "fitted" = fitted, "ranef" = NULL, "fits" = fits))
         }
     }        
           
