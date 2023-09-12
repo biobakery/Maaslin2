@@ -950,7 +950,7 @@ Maaslin2 <-
                 fit_data$results,
                 1,
                 FUN = function(x)
-                    length(which(filtered_data_norm[, x[1]] > 0))
+                    length(which(filtered_data[, x[1]] > 0))
             )
         
         ################################
