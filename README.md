@@ -180,10 +180,11 @@ input_data <- system.file(
 input_metadata <-system.file(
     'extdata','HMP2_metadata.tsv', package="Maaslin2")
 fit_data <- Maaslin2(
-    input_data, input_metadata, 'demo_output'
-    fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
-    random_effects = c('site', 'subject'),
-    standardize = FALSE)
+  input_data, input_metadata, 'demo_output',
+  fixed_effects = c('diagnosis', 'dysbiosisnonIBD','dysbiosisUC','dysbiosisCD', 'antibiotics', 'age'),
+  random_effects = c('site', 'subject'),
+  reference=c("diagnosis,CD"),
+  standardize = FALSE, cores=1)
 ```
 
 ##### Session Info #####
