@@ -208,6 +208,7 @@ fit.data <-
         {
             logging::loginfo("Creating cluster of %s R processes", cores)
             cluster <- parallel::makeCluster(cores)
+            if(exists("current_args")) clusterExport(cluster, "current_args")
         }
         
         ##############################
