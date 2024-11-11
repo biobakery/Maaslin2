@@ -268,7 +268,7 @@ save_heatmap <-
                 metadata_label,
                 border_color,
                 color,
-                first_n)
+                first_n=first_n)
         
         if (!is.null(heatmap)) {
             pdf(heatmap_file)
