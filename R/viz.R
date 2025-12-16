@@ -57,9 +57,9 @@ nature_theme <- function(x_axis_labels, y_label) {
         plot.title = ggplot2::element_text(size = 7, face = 'bold'),
         legend.title = ggplot2::element_text(size = 6, face = 'bold'),
         legend.text = ggplot2::element_text(size = 6),
-        axis.line = ggplot2::element_line(colour = 'black', size = .25),
-        axis.line.x = ggplot2::element_line(colour = 'black', size = .25),
-        axis.line.y = ggplot2::element_line(colour = 'black', size = .25),
+        axis.line = ggplot2::element_line(colour = 'black', linewidth = .25),
+        axis.line.x = ggplot2::element_line(colour = 'black', linewidth = .25),
+        axis.line.y = ggplot2::element_line(colour = 'black', linewidth = .25),
         panel.border = ggplot2::element_blank(),
         panel.grid.major = ggplot2::element_blank(),
         panel.grid.minor = ggplot2::element_blank())
@@ -424,7 +424,6 @@ maaslin2_association_plots <-
                                 na.rm = TRUE
                             ) +
                             ggplot2::guides(alpha = 'none') + 
-                            ggplot2::labs("") +
                             ggplot2::xlab(x_label) + 
                             ggplot2::ylab(y_label) + 
                             nature_theme(input_df[, 'x'], y_label) +
